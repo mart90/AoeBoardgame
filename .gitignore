@@ -262,6 +262,3 @@ __pycache__/
 *.pyc
 
 # Custom
-Content/
-Icon.ico
-Properties/
