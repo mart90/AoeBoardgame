@@ -2,9 +2,10 @@
 {
     enum TileType
     {
-        Default,
-        Grass,
+        Dirt,
         Forest,
-        StoneMine
+        StoneMine,
+        GoldMine,
+        IronMine
     }
 }

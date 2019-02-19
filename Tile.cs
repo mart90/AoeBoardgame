@@ -9,30 +9,18 @@ namespace AoeBoardgame
         public Rectangle Location { get; set; }
         public Texture2D Texture { get; private set; }
 
-        private TextureLibrary _tileLibrary;
+        private readonly TextureLibrary _textureLibrary;
 
-        public Tile(Rectangle location, TextureLibrary tileLibrary)
+        public Tile(Rectangle location, TextureLibrary textureLibrary)
         {
             Location = location;
-            _tileLibrary = tileLibrary;
+            _textureLibrary = textureLibrary;
         }
 
-        public void SetGrass()
+        public void SetType(TileType tileType)
         {
-            Type = TileType.Grass;
-            Texture = _tileLibrary.Grass;
-        }
-
-        public void SetForest()
-        {
-            Type = TileType.Forest;
-            Texture = _tileLibrary.Forest;
-        }
-
-        public void SetStoneMine()
-        {
-            Type = TileType.StoneMine;
-            Texture = _tileLibrary.StoneMine;
+            Type = tileType;
+            Texture = _textureLibrary.GetTileTextureByType(tileType);
         }
     }
 }

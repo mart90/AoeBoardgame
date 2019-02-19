@@ -1,19 +1,48 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace AoeBoardgame
 {
     class TextureLibrary
     {
-        public Texture2D Grass { get; set; }
-        public Texture2D Forest { get; set; }
-        public Texture2D StoneMine { get; set; }
-
+        private readonly List<TileTexture> _tileTextures;
+        
         public TextureLibrary(ContentManager contentManager)
         {
-            Grass = contentManager.Load<Texture2D>("Tiles/Terrain/Grass/grass_05");
-            Forest = contentManager.Load<Texture2D>("Tiles/Terrain/Grass/grass_12");
-            StoneMine = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_18");
+            _tileTextures = new List<TileTexture>
+            {
+                new TileTexture
+                {
+                    TileType = TileType.Dirt,
+                    Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_06")
+                },
+                new TileTexture
+                {
+                    TileType = TileType.Forest,
+                    Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Grass/grass_12")
+                },
+                new TileTexture
+                {
+                    TileType = TileType.StoneMine,
+                    Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_18")
+                },
+                new TileTexture
+                {
+                    TileType = TileType.GoldMine,
+                    Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_20")
+                },
+                new TileTexture
+                {
+                    TileType = TileType.IronMine,
+                    Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_21")
+                },
+            };
+        }
+
+        public Texture2D GetTileTextureByType(TileType tileType)
+        {
+            return _tileTextures.Find(e => e.TileType == tileType).Texture;
         }
     }
 }

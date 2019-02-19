@@ -10,7 +10,7 @@ namespace AoeBoardgame
     /// </summary>
     class Game1 : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         private Map _gameMap;
@@ -48,7 +48,7 @@ namespace AoeBoardgame
             var textureLibrary = new TextureLibrary(Content);
             var mapGenerator = new MapGenerator(textureLibrary, 12);
                 
-            _gameMap = mapGenerator.GenerateMap(20, 20);
+            _gameMap = mapGenerator.GenerateMap(20, 22);
         }
 
         /// <summary>
