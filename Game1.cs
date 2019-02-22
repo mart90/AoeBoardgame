@@ -29,9 +29,11 @@ namespace AoeBoardgame
         /// </summary>
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferHeight = 860;
-            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 1020;
+            _graphics.PreferredBackBufferWidth = 1920;
             _graphics.ApplyChanges();
+
+            IsMouseVisible = true;
 
             base.Initialize();
         }
@@ -46,9 +48,9 @@ namespace AoeBoardgame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             var textureLibrary = new TextureLibrary(Content);
-            var mapGenerator = new MapGenerator(textureLibrary, 12);
+            var mapGenerator = new MapGenerator(textureLibrary, 14);
                 
-            _gameMap = mapGenerator.GenerateMap(20, 22);
+            _gameMap = mapGenerator.GenerateMap(25, 22);
         }
 
         /// <summary>
@@ -70,7 +72,16 @@ namespace AoeBoardgame
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            MouseState mouseState = Mouse.GetState();
+
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                var selectedTile = _gameMap.GetTileByLocation(mouseState.Position);
+                if (selectedTile != null)
+                {
+                    selectedTile.Selected = true;
+                }
+            }
 
             base.Update(gameTime);
         }

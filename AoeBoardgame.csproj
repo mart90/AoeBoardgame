@@ -43,13 +43,16 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Map.cs" />
-    <Compile Include="MapGenerator.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\MapGenerator.cs" />
+    <Compile Include="Tiles\TileColorTexture.cs" />
+    <Compile Include="Tiles\TileObjectTexture.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tile.cs" />
-    <Compile Include="TextureLibrary.cs" />
-    <Compile Include="TileTexture.cs" />
+    <Compile Include="Tiles\Tile.cs" />
+    <Compile Include="Tiles\TileTextureLibrary.cs" />
+    <Compile Include="Tiles\TileObject.cs" />
+    <Compile Include="Tiles\TileTexture.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
