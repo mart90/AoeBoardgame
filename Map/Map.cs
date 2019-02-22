@@ -13,8 +13,12 @@ namespace AoeBoardgame
         public int Width { get; }
         public int Height { get; }
 
+        private readonly Random _random;
+
         public Map(int width, int height)
         {
+            _random = new Random();
+
             Width = width;
             Height = height;
 
@@ -37,6 +41,13 @@ namespace AoeBoardgame
         public Tile GetTileByLocation(Point point)
         {
             return Tiles.Find(e => e.IncludesPoint(point));
+        }
+
+        public Tile GetRandomUnoccupiedTile()
+        {
+            var dirtTiles = Tiles.FindAll(e => e.Type == TileType.Dirt);
+            var randomTileNumber = _random.Next(0, dirtTiles.Count - 1);
+            return Tiles[randomTileNumber];
         }
     }
 }

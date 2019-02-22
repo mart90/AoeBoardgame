@@ -6,18 +6,10 @@
         Forest,
         StoneMine,
         GoldMine,
-        IronMine,
-
-        ArcheryRange,
-        Blacksmith,
-        Church,
-        LumberCamp,
-        Castle,
-        Farms,
-
+        IronMine
     }
 
-    enum TileObjectType
+    enum PlaceableObjectType
     {
         Berries,
 
@@ -26,7 +18,15 @@
         GuardTower,
         Mine,
         University,
-        Barracks
+        Barracks,
+        Stable,
+        Blacksmith,
+        Church,
+        LumberCamp,
+        Castle,
+        Farms,
+        
+        Villager,
     }
 
     enum TileColor

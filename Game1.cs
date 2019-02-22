@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Hosting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,7 +14,7 @@ namespace AoeBoardgame
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Map _gameMap;
+        private Board _board;
 
         public Game1()
         {
@@ -48,9 +49,16 @@ namespace AoeBoardgame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             var textureLibrary = new TextureLibrary(Content);
-            var mapGenerator = new MapGenerator(textureLibrary, 14);
-                
-            _gameMap = mapGenerator.GenerateMap(25, 22);
+            var mapGenerator = new MapGenerator(textureLibrary, 14);    
+            var gameMap = mapGenerator.GenerateMap(25, 22);
+            var players = new List<Player>
+            {
+                new Player(TileColor.Blue),
+                new Player(TileColor.Red)
+            };
+
+            _board = new Board(textureLibrary, players, gameMap);
+            _board.PlaceStartingTownCenters();
         }
 
         /// <summary>
@@ -76,11 +84,8 @@ namespace AoeBoardgame
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                var selectedTile = _gameMap.GetTileByLocation(mouseState.Position);
-                if (selectedTile != null)
-                {
-                    selectedTile.Selected = true;
-                }
+                var selectedTile = _board.Map.GetTileByLocation(mouseState.Position);
+                selectedTile?.SetSelected();
             }
 
             base.Update(gameTime);
@@ -96,7 +101,7 @@ namespace AoeBoardgame
 
             _spriteBatch.Begin();
 
-            _gameMap.Draw(_spriteBatch);
+            _board.Map.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

@@ -6,7 +6,6 @@ namespace AoeBoardgame
 {
     class MapGenerator
     {
-        private readonly Random _random;
         private readonly TextureLibrary _textureLibrary;
         private readonly int _tileDimensions;
 
@@ -14,7 +13,6 @@ namespace AoeBoardgame
 
         public MapGenerator(TextureLibrary textureLibrary, int tileRelativeSize)
         {
-            _random = new Random();
             _textureLibrary = textureLibrary;
             _tileDimensions = tileRelativeSize * 4;
         }
@@ -30,7 +28,7 @@ namespace AoeBoardgame
             AddRandomlyGeneratedTiles(TileType.StoneMine, 0.02);
             AddRandomlyGeneratedTiles(TileType.GoldMine, 0.02);
 
-            AddRandomlyGeneratedObjects(TileObjectType.Berries, 0.05);
+            AddRandomlyGeneratedGaiaObjects(PlaceableObjectType.Berries, 0.05);
 
             return _map;
         }
@@ -41,20 +39,19 @@ namespace AoeBoardgame
 
             for (var i = 0; i < amountToAdd; i++)
             {
-                var randomTileNumber = _random.Next(0, _map.Tiles.Count - 1);
-                _map.Tiles[randomTileNumber].SetType(tileType);
+                _map.GetRandomUnoccupiedTile().SetType(tileType);
             }
         }
 
-        public void AddRandomlyGeneratedObjects(TileObjectType objectType, double fractionOfDirtTiles)
+        public void AddRandomlyGeneratedGaiaObjects(PlaceableObjectType objectType, double fractionOfDirtTiles)
         {
             List<Tile> dirtTiles = _map.GetTilesByType(TileType.Dirt);
             int amountToAdd = (int)Math.Round(fractionOfDirtTiles * dirtTiles.Count);
 
             for (var i = 0; i < amountToAdd; i++)
             {
-                var randomTileNumber = _random.Next(0, dirtTiles.Count - 1);
-                dirtTiles[randomTileNumber].SetObject(objectType);
+                var obj = new GaiaObject(_textureLibrary, PlaceableObjectType.Berries);
+                _map.GetRandomUnoccupiedTile().SetObject(obj);
             }
         }
 

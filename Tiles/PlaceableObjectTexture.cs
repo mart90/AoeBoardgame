@@ -2,9 +2,9 @@
 
 namespace AoeBoardgame
 {
-    class TileObjectTexture
+    class PlaceableObjectTexture
     {
-        public TileObjectType TileObjectType { get; set; }
+        public PlaceableObjectType PlaceableObjectType { get; set; }
         public Texture2D Texture { get; set; }
     }
 }

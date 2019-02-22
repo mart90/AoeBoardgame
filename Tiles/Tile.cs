@@ -7,13 +7,11 @@ namespace AoeBoardgame
     class Tile
     {
         public TileType Type { get; private set; }
-        public bool Selected { get; set; }
 
         private Texture2D _texture;
         private readonly Rectangle _location;
         private readonly Rectangle _objectLocation;
-        private readonly TileColorTexture _colorTexture;
-        private TileObject _object;
+        private PlaceableObject _object;
 
         private readonly TextureLibrary _textureLibrary;
         
@@ -21,8 +19,6 @@ namespace AoeBoardgame
         {
             _textureLibrary = textureLibrary;
             _location = location;
-
-            _colorTexture = new TileColorTexture();
 
             // Largest possible square inside hexagon has dimensions 0.634 * a, where a is the hexagon height & width
             // Give any object to be placed on this tile these (max) dimensions
@@ -48,37 +44,38 @@ namespace AoeBoardgame
             _texture = _textureLibrary.GetTileTextureByType(tileType);
         }
 
-        public void SetObject(TileObjectType tileObjectType)
+        public void SetObject(PlaceableObject obj)
         {
-            _object = new TileObject(_textureLibrary);
-            _object.SetType(tileObjectType);
+            SetType(TileType.Dirt);
+            _object = obj;
         }
 
-        public void SetColor(TileColor tileColor)
+        public void SetSelected()
         {
-            _colorTexture.TileColor = tileColor;
-            _colorTexture.Texture = _textureLibrary.GetTileColorByType(tileColor);
-        }
-
-        public void RemoveObject()
-        {
-            _object = null;
+            if (_object != null)
+            {
+                _object.Selected = true;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _location, Color.White);
 
-            if (Selected)
+            if (_object == null)
             {
-                spriteBatch.Draw(_textureLibrary.GetTileColorByType(TileColor.Green), _location, Color.White);
-            }
-            else if (_colorTexture.TileColor != TileColor.Default)
-            {
-                spriteBatch.Draw(_colorTexture.Texture, _location, Color.White);
+                return;
             }
 
-            _object?.Draw(spriteBatch, _objectLocation);
+            if (_object.GetType() != typeof(GaiaObject))
+            {
+                spriteBatch.Draw(
+                    _object.Selected ? _textureLibrary.GetTileColorByType(TileColor.Green) : _object.ColorTexture.Texture,
+                    _location,
+                    Color.White);
+            }
+
+            _object.Draw(spriteBatch, _objectLocation);
         }
     }
 }

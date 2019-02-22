@@ -7,13 +7,13 @@ namespace AoeBoardgame
     class TextureLibrary
     {
         private readonly List<TileTexture> _tileTextures;
-        private readonly List<TileObjectTexture> _objectTextures;
+        private readonly List<PlaceableObjectTexture> _objectTextures;
         private readonly List<TileColorTexture> _colorTextures;
         
         public TextureLibrary(ContentManager contentManager)
         {
             _tileTextures = new List<TileTexture>();
-            _objectTextures = new List<TileObjectTexture>();
+            _objectTextures = new List<PlaceableObjectTexture>();
             _colorTextures = new List<TileColorTexture>();
 
             AddTileTextures(contentManager);
@@ -21,9 +21,9 @@ namespace AoeBoardgame
             AddColorTextures(contentManager);
         }
 
-        public Texture2D GetTileObjectTextureByType(TileObjectType tileObjectType)
+        public Texture2D GetObjectTextureByType(PlaceableObjectType tileObjectType)
         {
-            return _objectTextures.Find(e => e.TileObjectType == tileObjectType).Texture;
+            return _objectTextures.Find(e => e.PlaceableObjectType == tileObjectType).Texture;
         }
 
         public Texture2D GetTileTextureByType(TileType tileType)
@@ -64,79 +64,85 @@ namespace AoeBoardgame
                 TileType = TileType.IronMine,
                 Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_21")
             });
-
-            // Buildings
-            _tileTextures.Add(new TileTexture
-            {
-                TileType = TileType.ArcheryRange,
-                Texture = contentManager.Load<Texture2D>("Tiles/Medieval/medieval_archery")
-            });
-            _tileTextures.Add(new TileTexture
-            {
-                TileType = TileType.Blacksmith,
-                Texture = contentManager.Load<Texture2D>("Tiles/Medieval/medieval_blacksmith")
-            });
-            _tileTextures.Add(new TileTexture
-            {
-                TileType = TileType.Church,
-                Texture = contentManager.Load<Texture2D>("Tiles/Medieval/medieval_church")
-            });
-            _tileTextures.Add(new TileTexture
-            {
-                TileType = TileType.LumberCamp,
-                Texture = contentManager.Load<Texture2D>("Tiles/Medieval/medieval_lumber")
-            });
-            _tileTextures.Add(new TileTexture
-            {
-                TileType = TileType.Castle,
-                Texture = contentManager.Load<Texture2D>("Tiles/Medieval/medieval_largeCastle")
-            });
-            _tileTextures.Add(new TileTexture
-            {
-                TileType = TileType.Farms,
-                Texture = contentManager.Load<Texture2D>("Tiles/Medieval/medieval_windmill")
-            });
         }
 
         private void AddObjectTextures(ContentManager contentManager)
         {
             // Resources
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.Berries,
+                PlaceableObjectType = PlaceableObjectType.Berries,
                 Texture = contentManager.Load<Texture2D>("Objects/berries")
             });
+            // TODO Boar
 
             // Buildings
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.TownCenter,
+                PlaceableObjectType = PlaceableObjectType.TownCenter,
                 Texture = contentManager.Load<Texture2D>("Objects/castle_small")
             });
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.Tower,
+                PlaceableObjectType = PlaceableObjectType.Tower,
                 Texture = contentManager.Load<Texture2D>("Objects/watertower")
             });
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.GuardTower,
+                PlaceableObjectType = PlaceableObjectType.GuardTower,
                 Texture = contentManager.Load<Texture2D>("Objects/tower")
             });
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.Mine,
+                PlaceableObjectType = PlaceableObjectType.Mine,
                 Texture = contentManager.Load<Texture2D>("Objects/mine")
             });
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.University,
+                PlaceableObjectType = PlaceableObjectType.University,
                 Texture = contentManager.Load<Texture2D>("Objects/oldBuilding")
             });
-            _objectTextures.Add(new TileObjectTexture
+            _objectTextures.Add(new PlaceableObjectTexture
             {
-                TileObjectType = TileObjectType.Barracks,
+                PlaceableObjectType = PlaceableObjectType.Barracks,
                 Texture = contentManager.Load<Texture2D>("Objects/mill_redBrick")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.Stable,
+                Texture = contentManager.Load<Texture2D>("Objects/house")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.Blacksmith,
+                Texture = contentManager.Load<Texture2D>("Objects/oven")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.Church,
+                Texture = contentManager.Load<Texture2D>("Objects/church")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.LumberCamp,
+                Texture = contentManager.Load<Texture2D>("Objects/housing")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.Castle,
+                Texture = contentManager.Load<Texture2D>("Objects/castle_large")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.Farms,
+                Texture = contentManager.Load<Texture2D>("Objects/hedge")
+            });
+
+            // Units
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = PlaceableObjectType.Villager,
+                Texture = contentManager.Load<Texture2D>("Objects/villager")
             });
         }
 
