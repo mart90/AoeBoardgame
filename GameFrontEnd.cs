@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Hosting;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -9,14 +8,14 @@ namespace AoeBoardgame
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    class Game1 : Game
+    class GameFrontEnd : Microsoft.Xna.Framework.Game
     {
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Board _board;
+        private Game _game;
 
-        public Game1()
+        public GameFrontEnd()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -57,8 +56,8 @@ namespace AoeBoardgame
                 new Player(TileColor.Red)
             };
 
-            _board = new Board(textureLibrary, players, gameMap);
-            _board.PlaceStartingTownCenters();
+            _game = new Game(textureLibrary, players, gameMap);
+            _game.PlaceStartingTownCenters();
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace AoeBoardgame
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                var selectedTile = _board.Map.GetTileByLocation(mouseState.Position);
+                var selectedTile = _game.Map.GetTileByLocation(mouseState.Position);
                 selectedTile?.SetSelected();
             }
 
@@ -101,7 +100,7 @@ namespace AoeBoardgame
 
             _spriteBatch.Begin();
 
-            _board.Map.Draw(_spriteBatch);
+            _game.Map.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

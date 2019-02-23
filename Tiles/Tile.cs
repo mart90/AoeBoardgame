@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace AoeBoardgame
-{
+{ 
     class Tile
     {
         public TileType Type { get; private set; }
@@ -32,11 +32,11 @@ namespace AoeBoardgame
                 objectDimensions);
         }
 
-        public bool IncludesPoint(Point point)
-        {
-            return point.X >= _location.X && point.X <= _location.X + _location.Width
-                && point.Y >= _location.Y && point.Y <= _location.Y + _location.Height;
-        }
+        public bool IncludesPoint(Point point) => 
+            point.X >= _location.X && point.X <= _location.X + _location.Width
+            && point.Y >= _location.Y && point.Y <= _location.Y + _location.Height;
+
+        public bool IsAccessible() => _object == null && Type == TileType.Dirt;
 
         public void SetType(TileType tileType)
         {

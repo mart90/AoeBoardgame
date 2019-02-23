@@ -50,7 +50,7 @@ namespace AoeBoardgame
 
             for (var i = 0; i < amountToAdd; i++)
             {
-                var obj = new GaiaObject(_textureLibrary, PlaceableObjectType.Berries);
+                var obj = new GaiaObject(_textureLibrary, objectType);
                 _map.GetRandomUnoccupiedTile().SetObject(obj);
             }
         }

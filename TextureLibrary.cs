@@ -38,7 +38,6 @@ namespace AoeBoardgame
 
         private void AddTileTextures(ContentManager contentManager)
         {
-            // Terrain
             _tileTextures.Add(new TileTexture
             {
                 TileType = TileType.Dirt,
@@ -148,6 +147,7 @@ namespace AoeBoardgame
 
         private void AddColorTextures(ContentManager contentManager)
         {
+            // Player colors
             _colorTextures.Add(new TileColorTexture
             {
                 TileColor = TileColor.Blue,
@@ -158,10 +158,27 @@ namespace AoeBoardgame
                 TileColor = TileColor.Red,
                 Texture = contentManager.Load<Texture2D>("Colors/red")
             });
+
+            // Misc
             _colorTextures.Add(new TileColorTexture
             {
-                TileColor = TileColor.Green,
+                TileColor = TileColor.Green, // Selected
                 Texture = contentManager.Load<Texture2D>("Colors/green")
+            });
+            _colorTextures.Add(new TileColorTexture
+            {
+                TileColor = TileColor.Teal, // Path
+                Texture = contentManager.Load<Texture2D>("Colors/teal")
+            });
+            _colorTextures.Add(new TileColorTexture
+            {
+                TileColor = TileColor.Pink, // Destination
+                Texture = contentManager.Load<Texture2D>("Colors/pink")
+            });
+            _colorTextures.Add(new TileColorTexture
+            {
+                TileColor = TileColor.Orange, // Max range
+                Texture = contentManager.Load<Texture2D>("Colors/orange")
             });
         }
     }

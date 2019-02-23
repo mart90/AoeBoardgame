@@ -34,6 +34,9 @@
         Default,
         Blue,
         Red,
-        Green
+        Green,
+        Teal,
+        Pink,
+        Orange
     }
 }
