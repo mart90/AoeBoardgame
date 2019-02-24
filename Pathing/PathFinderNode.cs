@@ -1,106 +1,87 @@
 ﻿using System.Collections.Generic;
-using System.Management.Instrumentation;
 
 namespace AoeBoardgame
 {
     partial class PathFinder
     {
-        private class PathFinderNode
+        private class Node
         {
-            public readonly int Id;
             public readonly int X;
             public readonly int Y;
+            public readonly List<Node> NodesVisited;
 
-            public PathFinderNode(int id, int x, int y)
+            private readonly Direction _lastDirection;
+
+            public Node(int x, int y, Node lastNode = null, Direction lastDirection = Direction.Default)
             {
-                Id = id;
                 X = x;
                 Y = y;
+                NodesVisited = new List<Node>();
+                _lastDirection = lastDirection;
+
+                if (lastNode != null)
+                {
+                    NodesVisited.AddRange(lastNode.NodesVisited);
+                    NodesVisited.Add(lastNode);
+                }
             }
 
-            public int DistanceToNode(PathFinderNode destinationNode)
+            public List<Direction> GetNewDirections()
             {
-                if (destinationNode.Y == Y && destinationNode.X == X)
+                switch (_lastDirection)
                 {
-                    return 0;
-                }
-
-                int x = X, y = Y;
-                int stepsTaken = 0;
-
-                var direction = FindDirectionToNode(destinationNode, x, y);
-                while (x != destinationNode.X && y != destinationNode.Y)
-                {
-                    TakeStep(direction, ref x, ref y);
-                    stepsTaken++;
-                }
-
-                direction = FindDirectionToNode(destinationNode, x, y);
-                while (x != destinationNode.X || y != destinationNode.Y)
-                {
-                    TakeStep(direction, ref x, ref y);
-                    stepsTaken++;
-                }
-
-                return stepsTaken;
-            }
-
-            private static Direction FindDirectionToNode(PathFinderNode node, int originX, int originY)
-            {
-                if (node.Y == originY)
-                {
-                    return node.X > originX ? Direction.East : Direction.West;
-                }
-
-                if (node.Y < originY)
-                {
-                    return node.X == originX ? Direction.South :
-                        node.X > originX ? Direction.SouthEast : Direction.SouthWest;
-                }
-
-                // node.Y > y
-                return node.X == originX ? Direction.North :
-                    node.X > originX ? Direction.NorthEast : Direction.NorthWest;
-            }
-
-            private static void TakeStep(Direction direction, ref int x, ref int y)
-            {
-                bool evenRow = y % 2 == 0;
-
-                switch (direction)
-                {
-                    case Direction.North:
-                        y++;
-                        break;
                     case Direction.NorthEast:
-                        y++;
-                        if (!evenRow)
-                            x++;
-                        break;
+                        return new List<Direction>
+                        {
+                            Direction.NorthEast,
+                            Direction.NorthWest,
+                            Direction.East
+                        };
                     case Direction.East:
-                        x++;
-                        break;
+                        return new List<Direction>
+                        {
+                            Direction.East,
+                            Direction.NorthEast,
+                            Direction.SouthEast
+                        };
                     case Direction.SouthEast:
-                        y--;
-                        if (!evenRow)
-                            x++;
-                        break;
-                    case Direction.South:
-                        y--;
-                        break;
+                        return new List<Direction>
+                        {
+                            Direction.SouthEast,
+                            Direction.East,
+                            Direction.SouthWest
+                        };
                     case Direction.SouthWest:
-                        y--;
-                        if (evenRow)
-                            x--;
-                        break;
+                        return new List<Direction>
+                        {
+                            Direction.SouthWest,
+                            Direction.West,
+                            Direction.SouthEast
+                        };
                     case Direction.West:
-                        x--;
-                        break;
+                        return new List<Direction>
+                        {
+                            Direction.West,
+                            Direction.NorthWest,
+                            Direction.SouthWest
+                        };
                     case Direction.NorthWest:
-                        y++;
-                        if (evenRow)
-                            x--;
-                        break;
+                        return new List<Direction>
+                        {
+                            Direction.NorthWest,
+                            Direction.West,
+                            Direction.NorthEast
+                        };
+                    default:
+                        return new List<Direction>
+                        {
+                            Direction.NorthEast,
+                            Direction.East,
+                            Direction.SouthEast,
+                            Direction.SouthWest,
+                            Direction.West,
+                            Direction.NorthWest
+                        };
                 }
             }
         }

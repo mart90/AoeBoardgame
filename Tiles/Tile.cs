@@ -12,6 +12,7 @@ namespace AoeBoardgame
         private readonly Rectangle _location;
         private readonly Rectangle _objectLocation;
         private PlaceableObject _object;
+        private TileColor _temporaryColor;
 
         private readonly TextureLibrary _textureLibrary;
         
@@ -32,11 +33,16 @@ namespace AoeBoardgame
                 objectDimensions);
         }
 
-        public bool IncludesPoint(Point point) => 
-            point.X >= _location.X && point.X <= _location.X + _location.Width
-            && point.Y >= _location.Y && point.Y <= _location.Y + _location.Height;
+        public bool LocationSquareIncludesPoint(Point point) =>
+            // If true the point is in this tile's square, but could still be in one of the corners
+            point.X >= _location.X
+            && point.X <= _location.X + _location.Width
+            && point.Y >= _location.Y
+            && point.Y <= _location.Y + _location.Height;
 
         public bool IsAccessible() => _object == null && Type == TileType.Dirt;
+
+        public Point Center() => _location.Center;
 
         public void SetType(TileType tileType)
         {
@@ -58,24 +64,32 @@ namespace AoeBoardgame
             }
         }
 
+        public void SetTemporaryColor(TileColor color)
+        {
+            _temporaryColor = color;
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _location, Color.White);
 
-            if (_object == null)
+            if (_temporaryColor != TileColor.Default)
             {
-                return;
+                spriteBatch.Draw(_textureLibrary.GetTileColorByType(_temporaryColor), _location, Color.White);
             }
 
-            if (_object.GetType() != typeof(GaiaObject))
+            if (_object != null)
             {
-                spriteBatch.Draw(
-                    _object.Selected ? _textureLibrary.GetTileColorByType(TileColor.Green) : _object.ColorTexture.Texture,
-                    _location,
-                    Color.White);
-            }
+                if (_object.GetType() != typeof(GaiaObject) && _temporaryColor == TileColor.Default)
+                {
+                    spriteBatch.Draw(
+                        _object.Selected ? _textureLibrary.GetTileColorByType(TileColor.Green) : _object.ColorTexture.Texture,
+                        _location,
+                        Color.White);
+                }
 
-            _object.Draw(spriteBatch, _objectLocation);
+                _object.Draw(spriteBatch, _objectLocation);
+            }
         }
     }
 }

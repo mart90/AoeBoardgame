@@ -1,4 +1,6 @@
-﻿namespace AoeBoardgame
+﻿using System.Collections.Generic;
+
+namespace AoeBoardgame
 {
     class Unit : PlaceableObject
     {

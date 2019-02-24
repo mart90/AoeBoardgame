@@ -84,7 +84,19 @@ namespace AoeBoardgame
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
                 var selectedTile = _game.Map.GetTileByLocation(mouseState.Position);
-                selectedTile?.SetSelected();
+                if (selectedTile != null)
+                {
+                    _game.ClearTemporaryTileColors();
+                    selectedTile.SetSelected();
+                    if (selectedTile.IsAccessible())
+                    {
+                        var tiles = _game.FindPathFromTileToTile(_game.Map.Tiles[0], selectedTile);
+                        foreach (var tile in tiles)
+                        {
+                            tile.SetTemporaryColor(TileColor.Teal);
+                        }
+                    }
+                }
             }
 
             base.Update(gameTime);

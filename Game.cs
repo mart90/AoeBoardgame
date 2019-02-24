@@ -7,7 +7,6 @@ namespace AoeBoardgame
         public List<Player> Players { get; set; }
         public Map Map { get; set; }
 
-        private PathFinder _pathFinder;
         private readonly TextureLibrary _textureLibrary;
 
         public Game(TextureLibrary textureLibrary, List<Player> players, Map map)
@@ -15,8 +14,6 @@ namespace AoeBoardgame
             _textureLibrary = textureLibrary;
             Players = players;
             Map = map;
-
-            _pathFinder = new PathFinder(Map);
         }
 
         public void PlaceStartingTownCenters()
@@ -33,6 +30,19 @@ namespace AoeBoardgame
 
                 tile.SetObject(building);
             }
+        }
+
+        public void ClearTemporaryTileColors()
+        {
+            foreach (var tile in Map.Tiles)
+            {
+                tile.SetTemporaryColor(TileColor.Default);
+            }
+        }
+
+        public List<Tile> FindPathFromTileToTile(Tile origin, Tile destination)
+        {
+            return new PathFinder(Map).GetOptimalPath(Map.Tiles.IndexOf(origin), Map.Tiles.IndexOf(destination));
         }
     }
 }
