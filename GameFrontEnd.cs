@@ -86,7 +86,7 @@ namespace AoeBoardgame
                 var selectedTile = _game.Map.GetTileByLocation(mouseState.Position);
                 if (selectedTile != null)
                 {
-                    _game.ClearTemporaryTileColors();
+                    _game.ClearCurrentSelection();
                     selectedTile.SetSelected();
                     if (selectedTile.IsAccessible())
                     {

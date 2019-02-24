@@ -7,6 +7,7 @@ namespace AoeBoardgame
     class Tile
     {
         public TileType Type { get; private set; }
+        public bool IsSelected { get; private set; }
 
         private Texture2D _texture;
         private readonly Rectangle _location;
@@ -58,9 +59,19 @@ namespace AoeBoardgame
 
         public void SetSelected()
         {
+            IsSelected = true;
             if (_object != null)
             {
-                _object.Selected = true;
+                _object.IsSelected = true;
+            }
+        }
+
+        public void RemoveSelection()
+        {
+            IsSelected = false;
+            if (_object != null)
+            {
+                _object.IsSelected = false;
             }
         }
 
@@ -83,7 +94,7 @@ namespace AoeBoardgame
                 if (_object.GetType() != typeof(GaiaObject) && _temporaryColor == TileColor.Default)
                 {
                     spriteBatch.Draw(
-                        _object.Selected ? _textureLibrary.GetTileColorByType(TileColor.Green) : _object.ColorTexture.Texture,
+                        _object.IsSelected ? _textureLibrary.GetTileColorByType(TileColor.Green) : _object.ColorTexture.Texture,
                         _location,
                         Color.White);
                 }

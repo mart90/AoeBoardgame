@@ -7,7 +7,7 @@ namespace AoeBoardgame
     {
         public PlaceableObjectType Type { get; private set; }
         public Player Owner { get; set; }
-        public bool Selected { get; set; }
+        public bool IsSelected { get; set; }
         public TileColorTexture ColorTexture { get; set; }
 
         private Texture2D _texture;

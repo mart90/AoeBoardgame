@@ -32,7 +32,13 @@ namespace AoeBoardgame
             }
         }
 
-        public void ClearTemporaryTileColors()
+        public void ClearCurrentSelection()
+        {
+            Map.Tiles.Find(e => e.IsSelected)?.RemoveSelection();
+            ClearTemporaryTileColors();
+        }
+
+        private void ClearTemporaryTileColors()
         {
             foreach (var tile in Map.Tiles)
             {
@@ -42,7 +48,16 @@ namespace AoeBoardgame
 
         public List<Tile> FindPathFromTileToTile(Tile origin, Tile destination)
         {
-            return new PathFinder(Map).GetOptimalPath(Map.Tiles.IndexOf(origin), Map.Tiles.IndexOf(destination));
+            List<Tile> path = new PathFinder(Map)
+                .GetOptimalPath(Map.Tiles.IndexOf(origin), Map.Tiles.IndexOf(destination));
+
+            if (path == null)
+            {
+                // TODO message to user
+                return null;
+            }
+
+            return path;
         }
     }
 }
