@@ -5,6 +5,7 @@ namespace AoeBoardgame
     class Player
     {
         public TileColor Color { get; set; }
+        public bool IsActive { get; set; }
 
         public int Food { get; set; }
         public int Wood { get; set; }

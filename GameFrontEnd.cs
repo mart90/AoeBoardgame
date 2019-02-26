@@ -49,7 +49,7 @@ namespace AoeBoardgame
 
             var textureLibrary = new TextureLibrary(Content);
             var mapGenerator = new MapGenerator(textureLibrary, 14);    
-            var gameMap = mapGenerator.GenerateMap(25, 22);
+            Map gameMap = mapGenerator.GenerateMap(25, 22);
             var players = new List<Player>
             {
                 new Player(TileColor.Blue),
@@ -83,20 +83,11 @@ namespace AoeBoardgame
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                var selectedTile = _game.Map.GetTileByLocation(mouseState.Position);
-                if (selectedTile != null)
-                {
-                    _game.ClearCurrentSelection();
-                    selectedTile.SetSelected();
-                    if (selectedTile.IsAccessible())
-                    {
-                        var tiles = _game.FindPathFromTileToTile(_game.Map.Tiles[0], selectedTile);
-                        foreach (var tile in tiles)
-                        {
-                            tile.SetTemporaryColor(TileColor.Teal);
-                        }
-                    }
-                }
+                _game.SelectTileByLocation(mouseState.Position);
+            }
+            else
+            {
+                _game.HoverOverTileByLocation(mouseState.Position);
             }
 
             base.Update(gameTime);
@@ -112,7 +103,7 @@ namespace AoeBoardgame
 
             _spriteBatch.Begin();
 
-            _game.Map.Draw(_spriteBatch);
+            _game.DrawMap(_spriteBatch);
 
             _spriteBatch.End();
 

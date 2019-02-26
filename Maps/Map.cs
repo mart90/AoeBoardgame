@@ -23,6 +23,10 @@ namespace AoeBoardgame
             Tiles = new List<Tile>();
         }
 
+        public Tile SelectedTile => Tiles.Find(e => e.IsSelected);
+
+        public Tile HoveredTile => Tiles.Find(e => e.IsHovered);
+
         public void Draw(SpriteBatch spriteBatch)
         {
             foreach (var tile in Tiles)

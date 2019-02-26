@@ -80,14 +80,15 @@ namespace AoeBoardgame
 
         private List<Tile> ConvertBestPathToTiles()
         {
-            var tilePath = new List<Tile>();
+            var path = new List<Tile>();
 
             foreach (Node node in _bestPath)
             {
-                tilePath.Add(_map.Tiles[node.Y * _map.Width + node.X]);
+                path.Add(_map.Tiles[node.Y * _map.Width + node.X]);
             }
 
-            return tilePath;
+            path.RemoveAt(0);
+            return path;
         }
 
         private List<Node> GetAccessibleChildren(Node node)
