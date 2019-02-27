@@ -37,10 +37,7 @@ namespace AoeBoardgame
 
         public bool LocationSquareIncludesPoint(Point point) =>
             // If true the point is in this tile's square, but could still be in one of the corners
-            point.X >= _location.X
-            && point.X <= _location.X + _location.Width
-            && point.Y >= _location.Y
-            && point.Y <= _location.Y + _location.Height;
+            _location.Contains(point);
 
         public bool IsAccessible() => Object == null && Type == TileType.Dirt;
 
