@@ -35,9 +35,8 @@ namespace AoeBoardgame
                 objectDimensions);
         }
 
-        public bool LocationSquareIncludesPoint(Point point) =>
-            // If true the point is in this tile's square, but could still be in one of the corners
-            _location.Contains(point);
+        // If true the point is in this tile's square, but could still be in one of the corners which would overlap with another tile
+        public bool LocationSquareIncludesPoint(Point point) => _location.Contains(point);
 
         public bool IsAccessible() => Object == null && Type == TileType.Dirt;
 

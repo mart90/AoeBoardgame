@@ -8,7 +8,7 @@ namespace AoeBoardgame
     {
         public List<Player> Players { get; set; }
 
-        private Map _map;
+        private readonly Map _map;
         private readonly TextureLibrary _textureLibrary;
 
         public Game(TextureLibrary textureLibrary, List<Player> players, Map map)
@@ -54,7 +54,7 @@ namespace AoeBoardgame
 
             if (selectedObject.GetType().IsSubclassOf(typeof(Unit)))
             {
-                List<Tile> pathFromSelectedToHovered =
+                IEnumerable<Tile> pathFromSelectedToHovered =
                     FindPath(_map.SelectedTile, _map.HoveredTile);
 
                 if (pathFromSelectedToHovered != null)
@@ -87,7 +87,6 @@ namespace AoeBoardgame
 
                 tile.SetObject(building);
             }
-            _map.Tiles[360].SetObject(new Worker(_textureLibrary, PlaceableObjectType.Villager, Players[0]));
         }
 
         public void ClearCurrentSelection()
@@ -120,7 +119,7 @@ namespace AoeBoardgame
             }
         }
 
-        public List<Tile> FindPath(Tile origin, Tile destination)
+        public IEnumerable<Tile> FindPath(Tile origin, Tile destination)
         {
             return new PathFinder(_map)
                 .GetOptimalPath(_map.Tiles.IndexOf(origin), _map.Tiles.IndexOf(destination));

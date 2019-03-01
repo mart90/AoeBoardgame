@@ -42,7 +42,7 @@ namespace AoeBoardgame
         }
 
         // Breadth-first search
-        public List<Tile> GetOptimalPath(int originTileId, int destinationTileId)
+        public IEnumerable<Tile> GetOptimalPath(int originTileId, int destinationTileId)
         {
             Node originNode = GetNodeByTileId(originTileId);
             Node destinationNode = GetNodeByTileId(destinationTileId);
@@ -53,7 +53,7 @@ namespace AoeBoardgame
             while (_nodeQueue.Count > 0)
             {
                 Node currentNode = _nodeQueue.Dequeue();
-                List<Node> children = GetAccessibleChildren(currentNode);
+                IEnumerable<Node> children = GetAccessibleChildren(currentNode);
 
                 foreach (var child in children)
                 {
@@ -78,7 +78,7 @@ namespace AoeBoardgame
             return null; 
         }
 
-        private List<Tile> ConvertBestPathToTiles()
+        private IEnumerable<Tile> ConvertBestPathToTiles()
         {
             var path = new List<Tile>();
 
@@ -91,7 +91,7 @@ namespace AoeBoardgame
             return path;
         }
 
-        private List<Node> GetAccessibleChildren(Node node)
+        private IEnumerable<Node> GetAccessibleChildren(Node node)
         {
             var accessibleChildren = new List<Node>();
             List<Direction> directionsToGo = node.GetNewDirections();

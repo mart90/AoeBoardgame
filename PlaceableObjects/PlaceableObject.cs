@@ -5,7 +5,7 @@ namespace AoeBoardgame
 {
     abstract class PlaceableObject
     {
-        public PlaceableObjectType Type { get; private set; }
+        public PlaceableObjectType Type { get; protected set; }
         public Player Owner { get; set; }
         public TileColorTexture ColorTexture { get; set; }
 

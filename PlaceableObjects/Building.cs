@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-
-namespace AoeBoardgame
+﻿namespace AoeBoardgame
 {
-    class Unit : PlaceableObject
+    class Building : PlaceableObject, ICanBeAttacked
     {
-        public Unit(TextureLibrary textureLibrary, PlaceableObjectType unitType, Player owner)
+        public int HitPoints { get; set; }
+
+        public Building(TextureLibrary textureLibrary, PlaceableObjectType buildingType, Player owner)
         {
             TextureLibrary = textureLibrary;
 
-            SetType(unitType);
+            SetType(buildingType);
             Owner = owner;
 
             ColorTexture = new TileColorTexture

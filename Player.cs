@@ -13,7 +13,7 @@ namespace AoeBoardgame
         public int Iron { get; set; }
         public int Stone { get; set; }
 
-        public List<Worker> Workers { get; set; }
+        public List<Villager> Workers { get; set; }
         public List<Unit> Units { get; set; }
         public List<Building> Buildings { get; private set; }
 
@@ -21,7 +21,7 @@ namespace AoeBoardgame
         {
             Color = color;
 
-            Workers = new List<Worker>();
+            Workers = new List<Villager>();
             Units = new List<Unit>();
             Buildings = new List<Building>();
         }

@@ -1,5 +1,14 @@
 ﻿namespace AoeBoardgame
 {
+    enum Resource
+    {
+        Food,
+        Wood,
+        Gold,
+        Iron,
+        Stone
+    }
+
     enum TileType
     {
         Dirt,

@@ -1,12 +1,14 @@
 ﻿namespace AoeBoardgame
 {
-    class Building : PlaceableObject
+    class Unit : PlaceableObject, ICanBeAttacked
     {
-        public Building(TextureLibrary textureLibrary, PlaceableObjectType buildingType, Player owner)
+        public int HitPoints { get; set; }
+
+        public Unit(TextureLibrary textureLibrary, PlaceableObjectType unitType, Player owner)
         {
             TextureLibrary = textureLibrary;
 
-            SetType(buildingType);
+            SetType(unitType);
             Owner = owner;
 
             ColorTexture = new TileColorTexture
