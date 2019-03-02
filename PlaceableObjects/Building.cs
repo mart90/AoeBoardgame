@@ -1,6 +1,6 @@
 ﻿namespace AoeBoardgame
 {
-    class Building : PlaceableObject, ICanBeAttacked
+    class Building : PlaceableObject, IAttackable
     {
         public int HitPoints { get; set; }
 

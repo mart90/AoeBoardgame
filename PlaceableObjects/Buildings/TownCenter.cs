@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace AoeBoardgame
 {
     class TownCenter : Building, 
-        ICanAttack,
-        ICanBeGarrisoned, 
+        IAttacker,
+        IGarrisonable, 
         ICanMakeUnits, 
         ICanMakeResearch, 
         IHasRange
@@ -13,14 +13,15 @@ namespace AoeBoardgame
         public int AttackDamage { get; set; }
         public int Range { get; set; }
         public int MaxUnitsGarrisoned { get; set; }
-        public IEnumerable<Type> UnitTypesAllowedToMake { get; set; }
+        public IEnumerable<PlaceableObjectType> UnitTypesAllowedToMake { get; set; }
 
         public TownCenter(TextureLibrary textureLibrary, Player owner) :
             base(textureLibrary, PlaceableObjectType.TownCenter, owner)
         {
+
         }
 
-        public void Attack(ICanBeAttacked defender)
+        public void Attack(IAttackable defender)
         {
             throw new NotImplementedException();
         }

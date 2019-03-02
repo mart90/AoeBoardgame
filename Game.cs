@@ -79,13 +79,13 @@ namespace AoeBoardgame
             for (int i = 0; i < 2; i++)
             {
                 var player = Players[i];
-                var building = new Building(_textureLibrary, PlaceableObjectType.TownCenter, player);
+                var tc = new TownCenter(_textureLibrary, player);
 
                 int tileRow = _map.Height / 2;
                 int tileColumn = i == 0 ? _map.Width / 5 : _map.Width - _map.Width / 5 - 1;
                 var tile = _map.Tiles[tileRow * _map.Width + tileColumn];
 
-                tile.SetObject(building);
+                tile.SetObject(tc);
             }
         }
 

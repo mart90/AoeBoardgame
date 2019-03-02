@@ -1,6 +1,6 @@
 ﻿namespace AoeBoardgame
 {
-    interface ICanBeGarrisoned
+    interface IGarrisonable
     {
         int MaxUnitsGarrisoned { get; set; }
     }

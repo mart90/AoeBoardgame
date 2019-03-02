@@ -1,8 +1,8 @@
 ﻿namespace AoeBoardgame
 {
-    interface ICanAttack
+    interface IAttacker
     {
         int AttackDamage { get; set; }
-        void Attack(ICanBeAttacked defender);
+        void Attack(IAttackable defender);
     }
 }

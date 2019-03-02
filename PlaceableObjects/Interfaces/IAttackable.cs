@@ -1,6 +1,6 @@
 ﻿namespace AoeBoardgame
 {
-    interface ICanBeAttacked
+    interface IAttackable
     {
         int HitPoints { get; set; }
     }

@@ -45,6 +45,9 @@
     <Compile Include="PlaceableObjects\Building.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="PlaceableObjects\Buildings\TownCenter.cs" />
+    <Compile Include="PlaceableObjects\Factories\ObjectFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\TownCenterFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\VillagerFactory.cs" />
     <Compile Include="PlaceableObjects\GaiaObject.cs" />
     <Compile Include="GameFrontEnd.cs" />
     <Compile Include="Maps\Map.cs" />
@@ -52,12 +55,12 @@
     <Compile Include="Pathing\PathFinderNode.cs" />
     <Compile Include="Pathing\PathFinder.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMakeBuildings.cs" />
-    <Compile Include="PlaceableObjects\Interfaces\ICanBeAttacked.cs" />
-    <Compile Include="PlaceableObjects\Interfaces\ICanBeGarrisoned.cs" />
+    <Compile Include="PlaceableObjects\Interfaces\IAttackable.cs" />
+    <Compile Include="PlaceableObjects\Interfaces\IGarrisonable.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMakeResearch.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IProducesResource.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMakeUnits.cs" />
-    <Compile Include="PlaceableObjects\Interfaces\ICanAttack.cs" />
+    <Compile Include="PlaceableObjects\Interfaces\IAttacker.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IHasRange.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMove.cs" />
     <Compile Include="Player.cs" />
