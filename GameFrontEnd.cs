@@ -52,11 +52,11 @@ namespace AoeBoardgame
             Map gameMap = mapGenerator.GenerateMap(25, 22);
             var players = new List<Player>
             {
-                new Player(TileColor.Blue),
-                new Player(TileColor.Red)
+                new Player(new Britons(textureLibrary), TileColor.Blue),
+                new Player(new Britons(textureLibrary), TileColor.Red)
             };
 
-            _game = new Game(textureLibrary, players, gameMap);
+            _game = new Game(players, gameMap);
             _game.PlaceStartingTownCenters();
         }
 

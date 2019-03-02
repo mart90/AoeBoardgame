@@ -48,4 +48,15 @@
         Pink,
         Orange
     }
+
+    enum Direction
+    {
+        Default,
+        NorthWest,
+        NorthEast,
+        East,
+        SouthEast,
+        SouthWest,
+        West
+    }
 }

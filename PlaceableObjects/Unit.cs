@@ -1,8 +1,11 @@
 ﻿namespace AoeBoardgame
 {
-    class Unit : PlaceableObject, IAttackable
+    class Unit : PlaceableObject, 
+        IAttackable,
+        ICanMove
     {
         public int HitPoints { get; set; }
+        public int Speed { get; set; }
 
         public Unit(TextureLibrary textureLibrary, PlaceableObjectType unitType, Player owner)
         {

@@ -9,11 +9,9 @@ namespace AoeBoardgame
         public List<Player> Players { get; set; }
 
         private readonly Map _map;
-        private readonly TextureLibrary _textureLibrary;
 
-        public Game(TextureLibrary textureLibrary, List<Player> players, Map map)
+        public Game(List<Player> players, Map map)
         {
-            _textureLibrary = textureLibrary;
             Players = players;
             _map = map;
         }
@@ -52,7 +50,7 @@ namespace AoeBoardgame
                 return;
             }
 
-            if (selectedObject.GetType().IsSubclassOf(typeof(Unit)))
+            if (selectedObject is ICanMove)
             {
                 IEnumerable<Tile> pathFromSelectedToHovered =
                     FindPath(_map.SelectedTile, _map.HoveredTile);
@@ -79,7 +77,7 @@ namespace AoeBoardgame
             for (int i = 0; i < 2; i++)
             {
                 var player = Players[i];
-                var tc = new TownCenter(_textureLibrary, player);
+                var tc = player.GetPlaceableObject<TownCenter>();
 
                 int tileRow = _map.Height / 2;
                 int tileColumn = i == 0 ? _map.Width / 5 : _map.Width - _map.Width / 5 - 1;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AoeBoardgame
 {
@@ -6,23 +7,11 @@ namespace AoeBoardgame
     {
         private readonly Map _map;
         private readonly Queue<Node> _nodeQueue;
-        private List<Node> _bestPath;
 
         /// <summary>
         /// Lowest number of nodes needed to reach each tile. Updated during search. Used to filter out inefficient paths
         /// </summary>
         private readonly List<List<int>> _nodeScores;
-
-        private enum Direction
-        {
-            Default,
-            NorthWest,
-            NorthEast,
-            East,
-            SouthEast,
-            SouthWest,
-            West
-        }
 
         public PathFinder(Map map)
         {
@@ -39,6 +28,44 @@ namespace AoeBoardgame
                 }
                 _nodeScores.Add(nodeScoreRow);
             }
+        }
+
+        public IEnumerable<Tile> GetAllTilesInRange(int originTileId, int range)
+        {
+            var nodes = new List<Node>();
+            Node originNode = GetNodeByTileId(originTileId);
+
+            _nodeScores[originNode.Y][originNode.X] = 0;
+            _nodeQueue.Enqueue(originNode);
+
+            while (_nodeQueue.Count > 0)
+            {
+                Node currentNode = _nodeQueue.Dequeue();
+
+                if (currentNode.NodesVisited.Count == range)
+                {
+                    return ConvertNodesToTiles(nodes);
+                }
+
+                IEnumerable<Node> children = GetAccessibleChildren(currentNode);
+
+                foreach (var child in children)
+                {
+                    int childScore = _nodeScores[child.Y][child.X];
+                    if (childScore != -1 && childScore <= child.NodesVisited.Count)
+                    {
+                        // There is another path that reached this tile in less (or an equal amount of) steps. Discard
+                        continue;
+                    }
+
+                    nodes.Add(child);
+
+                    _nodeScores[child.Y][child.X] = child.NodesVisited.Count;
+                    _nodeQueue.Enqueue(child);
+                }
+            }
+
+            return null;
         }
 
         // Breadth-first search
@@ -59,8 +86,9 @@ namespace AoeBoardgame
                 {
                     if (child.X == destinationNode.X && child.Y == destinationNode.Y)
                     {
-                        _bestPath = child.NodesVisited;
-                        return ConvertBestPathToTiles();
+                        var bestPath = child.NodesVisited;
+                        bestPath.RemoveAt(0);
+                        return ConvertNodesToTiles(bestPath);
                     }
 
                     int childScore = _nodeScores[child.Y][child.X];
@@ -78,17 +106,9 @@ namespace AoeBoardgame
             return null; 
         }
 
-        private IEnumerable<Tile> ConvertBestPathToTiles()
+        private IEnumerable<Tile> ConvertNodesToTiles(IEnumerable<Node> nodes)
         {
-            var path = new List<Tile>();
-
-            foreach (Node node in _bestPath)
-            {
-                path.Add(_map.Tiles[node.Y * _map.Width + node.X]);
-            }
-
-            path.RemoveAt(0);
-            return path;
+            return nodes.Select(e => _map.GetTileByCoordinates(e.X, e.Y)).ToList();
         }
 
         private IEnumerable<Node> GetAccessibleChildren(Node node)

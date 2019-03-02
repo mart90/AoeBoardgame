@@ -4,11 +4,9 @@ using System.Collections.Generic;
 namespace AoeBoardgame
 {
     class Villager : Unit,
-        ICanMove,
         IAttacker,
         ICanMakeBuildings
     {
-        public int Speed { get; set; }
         public int AttackDamage { get; set; }
         public IEnumerable<PlaceableObjectType> BuildingTypesAllowedToMake { get; set; }
 

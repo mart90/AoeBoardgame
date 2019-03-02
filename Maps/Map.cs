@@ -74,5 +74,19 @@ namespace AoeBoardgame
             var randomTileNumber = _random.Next(0, dirtTiles.Count - 1);
             return Tiles[randomTileNumber];
         }
+
+        public Tile GetTileByCoordinates(int x, int y) => Tiles[y * Width + x];
+
+        public int GetXCoordinate(Tile tile)
+        {
+            var tileId = Tiles.IndexOf(tile);
+            return tileId % Width;
+        }
+
+        public int GetYCoordinate(Tile tile)
+        {
+            var tileId = Tiles.IndexOf(tile);
+            return tileId / Width;
+        }
     }
 }
