@@ -48,12 +48,14 @@ namespace AoeBoardgame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             var textureLibrary = new TextureLibrary(Content);
+            var researchLibrary = new ResearchLibrary();
+
             var mapGenerator = new MapGenerator(textureLibrary, 14);    
             Map gameMap = mapGenerator.GenerateMap(25, 22);
             var players = new List<Player>
             {
-                new Player(new Britons(textureLibrary), TileColor.Blue),
-                new Player(new Britons(textureLibrary), TileColor.Red)
+                new Player(new Britons(textureLibrary), TileColor.Blue, researchLibrary),
+                new Player(new Britons(textureLibrary), TileColor.Red, researchLibrary)
             };
 
             _game = new Game(players, gameMap);

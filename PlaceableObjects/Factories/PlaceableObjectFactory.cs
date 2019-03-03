@@ -4,7 +4,7 @@ namespace AoeBoardgame
 {
     abstract class PlaceableObjectFactory
     {
-        public abstract Type Type { get; }
+        public Type Type { get; protected set; }
         public abstract ResourceCollection Cost { get; protected set; }
 
         protected TextureLibrary TextureLibrary;
@@ -20,8 +20,8 @@ namespace AoeBoardgame
 
         public abstract PlaceableObject Get(Player player);
 
-        public abstract void AdvanceToFeudalAge();
-        public abstract void AdvanceToCastleAge();
-        public abstract void AdvanceToImperialAge();
+        public abstract void UpgradeToFeudalAge();
+        public abstract void UpgradeToCastleAge();
+        public abstract void UpgradeToImperialAge();
     }
 }

@@ -5,18 +5,57 @@ namespace AoeBoardgame
 {
     class VillagerFactory : PlaceableObjectFactory
     {
-        public override Type Type { get; }
         public override ResourceCollection Cost { get; protected set; }
 
         private int _hitPoints;
         private int _speed;
         private int _attackDamage;
-        private List<PlaceableObjectType> _buildingTypesAllowedToMake;
-        
+        private List<Type> _buildingTypesAllowedToMake;
+
+        public const int FeudalAddedHitPoints = 20;
+        public const int CastleAddedHitPoints = 20;
+        public const int ImperialAddedHitPoints = 20;
+
+        public const int FeudalAddedAttackDamage = 1;
+        public const int CastleAddedAttackDamage = 2;
+        public const int ImperialAddedAttackDamage = 3;
+
+        public static readonly List<Type> FeudalAddedBuildings = new List<Type>
+        {
+            typeof(Stable),
+            typeof(Tower),
+            typeof(Farm),
+            typeof(Blacksmith)
+        };
+
+        public static readonly List<Type> CastleAddedBuildings = new List<Type>
+        {
+            typeof(University),
+            typeof(TownCenter),
+            typeof(GuardTower),
+            typeof(Castle),
+            typeof(Church)
+        };
+
         public VillagerFactory(TextureLibrary textureLibrary)
             : base(textureLibrary)
         {
             Type = typeof(Villager);
+        }
+
+        protected override void SetDefaults()
+        {
+            _hitPoints = 50;
+            _speed = 2;
+            _attackDamage = 1;
+            _buildingTypesAllowedToMake = new List<Type>
+            {
+                typeof(LumberCamp),
+                typeof(Mine),
+                typeof(Barracks)
+            };
+
+            Cost = new ResourceCollection(50);
         }
 
         public override PlaceableObject Get(Player player)
@@ -24,60 +63,31 @@ namespace AoeBoardgame
             return new Villager(TextureLibrary, player)
             {
                 HitPoints = _hitPoints,
+                MaxHitPoints = _hitPoints,
                 Speed = _speed,
                 AttackDamage = _attackDamage,
                 BuildingTypesAllowedToMake = _buildingTypesAllowedToMake
             };
         }
 
-        protected override void SetDefaults()
+        public override void UpgradeToFeudalAge()
         {
-            _hitPoints = 50;
-            _speed = 2;
-            _attackDamage = 2;
-            _buildingTypesAllowedToMake = new List<PlaceableObjectType>
-            {
-                PlaceableObjectType.LumberCamp,
-                PlaceableObjectType.Mine,
-                PlaceableObjectType.Barracks
-            };
-
-            Cost = new ResourceCollection(50);
+            _hitPoints += FeudalAddedHitPoints;
+            _attackDamage += FeudalAddedAttackDamage;
+            _buildingTypesAllowedToMake.AddRange(FeudalAddedBuildings);
         }
 
-        public override void AdvanceToFeudalAge()
+        public override void UpgradeToCastleAge()
         {
-            _hitPoints += 20;
-            _attackDamage += 3;
-
-            _buildingTypesAllowedToMake.AddRange(new List<PlaceableObjectType>
-            {
-                PlaceableObjectType.Stable,
-                PlaceableObjectType.Tower,
-                PlaceableObjectType.Farms,
-                PlaceableObjectType.Blacksmith
-            });
+            _hitPoints += CastleAddedHitPoints;
+            _attackDamage += CastleAddedAttackDamage;
+            _buildingTypesAllowedToMake.AddRange(CastleAddedBuildings);
         }
 
-        public override void AdvanceToCastleAge()
+        public override void UpgradeToImperialAge()
         {
-            _hitPoints += 30;
-            _attackDamage += 5;
-
-            _buildingTypesAllowedToMake.AddRange(new List<PlaceableObjectType>
-            {
-                PlaceableObjectType.University,
-                PlaceableObjectType.TownCenter,
-                PlaceableObjectType.GuardTower,
-                PlaceableObjectType.Castle,
-                PlaceableObjectType.Church
-            });
-        }
-
-        public override void AdvanceToImperialAge()
-        {
-            _hitPoints += 50;
-            _attackDamage += 10;
+            _hitPoints += ImperialAddedHitPoints;
+            _attackDamage += ImperialAddedAttackDamage;
         }
     }
 }

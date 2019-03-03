@@ -10,29 +10,31 @@ namespace AoeBoardgame
         public Civilization Civilization { get; set; }
 
         public ResourceCollection ResourceCollection { get; set; }
-        public IEnumerable<Villager> Workers { get; private set; }
-        public IEnumerable<Unit> Units { get; private set; }
-        public IEnumerable<Building> Buildings { get; private set; }
+        public List<PlayerObject> OwnedObjects { get; set; }
 
         public IEnumerable<PlaceableObjectFactory> Factories { get; }
 
-        public Player(Civilization civilization, TileColor color)
+        private ResearchLibrary _researchLibrary;
+
+        public Player(Civilization civilization, TileColor color, ResearchLibrary researchLibrary)
         {
             Color = color;
             Civilization = civilization;
+            _researchLibrary = researchLibrary;
 
-            Workers = new List<Villager>();
-            Units = new List<Unit>();
-            Buildings = new List<Building>();
+            OwnedObjects = new List<PlayerObject>();
 
             ResourceCollection = new ResourceCollection();
             Factories = Civilization.GetFactories();
         }
 
-        public T GetPlaceableObject<T>() where T : PlaceableObject
+        public T AddPlaceableObject<T>() where T : PlayerObject
         {
             var factory = Factories.SingleOrDefault(e => e.Type == typeof(T));
-            return (T)factory.Get(this);
+            var newObj = (T)factory.Get(this);
+
+            OwnedObjects.Add(newObj);
+            return newObj;
         }
     }
 }

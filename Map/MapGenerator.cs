@@ -28,7 +28,7 @@ namespace AoeBoardgame
             AddRandomlyGeneratedTiles(TileType.StoneMine, 0.02);
             AddRandomlyGeneratedTiles(TileType.GoldMine, 0.02);
 
-            AddRandomlyGeneratedGaiaObjects(PlaceableObjectType.Berries, 0.05);
+            AddRandomlyGeneratedGaiaObjects<Berries>(0.05);
 
             return _map;
         }
@@ -43,14 +43,15 @@ namespace AoeBoardgame
             }
         }
 
-        public void AddRandomlyGeneratedGaiaObjects(PlaceableObjectType objectType, double fractionOfDirtTiles)
+        public void AddRandomlyGeneratedGaiaObjects<T>(double fractionOfDirtTiles) 
+            where T : GaiaObject
         {
             List<Tile> dirtTiles = _map.GetTilesByType(TileType.Dirt);
             int amountToAdd = (int)Math.Round(fractionOfDirtTiles * dirtTiles.Count);
 
             for (var i = 0; i < amountToAdd; i++)
             {
-                var obj = new GaiaObject(_textureLibrary, objectType);
+                GaiaObject obj = (T) Activator.CreateInstance(typeof(T), _textureLibrary);
                 _map.GetRandomUnoccupiedTile().SetObject(obj);
             }
         }

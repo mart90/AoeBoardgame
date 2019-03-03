@@ -70,7 +70,7 @@ namespace AoeBoardgame
 
             if (Object != null)
             {
-                if (Object.GetType() != typeof(GaiaObject) && _temporaryColor == TileColor.Default)
+                if (Object.GetType().BaseType != typeof(GaiaObject) && _temporaryColor == TileColor.Default)
                 {
                     spriteBatch.Draw(
                         IsSelected ? _textureLibrary.GetTileColorByType(TileColor.Green) : Object.ColorTexture.Texture,

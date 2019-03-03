@@ -2,10 +2,10 @@
 {
     class GaiaObject : PlaceableObject
     {
-        public GaiaObject(TextureLibrary textureLibrary, PlaceableObjectType objectType)
+        public GaiaObject(TextureLibrary textureLibrary)
         {
             TextureLibrary = textureLibrary;
-            SetType(objectType);
+            Texture = TextureLibrary.GetObjectTextureByType(GetType());
         }
     }
 }

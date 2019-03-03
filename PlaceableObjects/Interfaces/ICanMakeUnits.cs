@@ -5,6 +5,6 @@ namespace AoeBoardgame
 {
     interface ICanMakeUnits
     {
-        IEnumerable<PlaceableObjectType> UnitTypesAllowedToMake { get; set; }
+        IEnumerable<Type> UnitTypesAllowedToMake { get; set; }
     }
 }

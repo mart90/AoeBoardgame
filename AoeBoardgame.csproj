@@ -44,18 +44,29 @@
     <Compile Include="Civilizations\Britons.cs" />
     <Compile Include="Civilizations\Civilization.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="PlaceableObjects\Building.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Farm.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Castle.cs" />
+    <Compile Include="PlaceableObjects\Buildings\LumberCamp.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Church.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Blacksmith.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Stable.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Barracks.cs" />
+    <Compile Include="PlaceableObjects\Buildings\University.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Mine.cs" />
+    <Compile Include="PlaceableObjects\Buildings\GuardTower.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Tower.cs" />
     <Compile Include="PlaceableObjects\Buildings\TownCenter.cs" />
     <Compile Include="PlaceableObjects\Factories\PlaceableObjectFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\TownCenterFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\VillagerFactory.cs" />
     <Compile Include="PlaceableObjects\GaiaObject.cs" />
     <Compile Include="GameFrontEnd.cs" />
-    <Compile Include="Maps\Map.cs" />
-    <Compile Include="Maps\MapGenerator.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\MapGenerator.cs" />
     <Compile Include="Pathing\PathFinderNode.cs" />
     <Compile Include="Pathing\PathFinder.cs" />
+    <Compile Include="PlaceableObjects\GaiaObjects\Berries.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMakeBuildings.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IAttackable.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IGarrisonable.cs" />
@@ -65,7 +76,10 @@
     <Compile Include="PlaceableObjects\Interfaces\IAttacker.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IHasRange.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMove.cs" />
+    <Compile Include="PlaceableObjects\PlayerObject.cs" />
     <Compile Include="Player.cs" />
+    <Compile Include="Research\Research.cs" />
+    <Compile Include="Research\ResearchLibrary.cs" />
     <Compile Include="ResourceCollection.cs" />
     <Compile Include="Tiles\TileColorTexture.cs" />
     <Compile Include="PlaceableObjects\PlaceableObjectTexture.cs" />
@@ -75,7 +89,6 @@
     <Compile Include="TextureLibrary.cs" />
     <Compile Include="PlaceableObjects\PlaceableObject.cs" />
     <Compile Include="Tiles\TileTexture.cs" />
-    <Compile Include="PlaceableObjects\Unit.cs" />
     <Compile Include="PlaceableObjects\Units\Villager.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -5,14 +5,21 @@ namespace AoeBoardgame
 {
     class TownCenterFactory : PlaceableObjectFactory
     {
-        public override Type Type { get; }
         public override ResourceCollection Cost { get; protected set; }
 
         private int _hitPoints;
         private int _attackDamage;
         private int _range;
         private int _maxUnitsGarrisoned;
-        private List<PlaceableObjectType> _unitTypesAllowedToMake;
+        private List<Type> _unitTypesAllowedToMake;
+
+        public const int FeudalAddedHitPoints = 500;
+        public const int CastleAddedHitPoints = 1000;
+        public const int ImperialAddedHitPoints = 1000;
+
+        public const int FeudalAddedAttackDamage = 10;
+        public const int CastleAddedAttackDamage = 20;
+        public const int ImperialAddedAttackDamage = 30;
 
         public TownCenterFactory(TextureLibrary textureLibrary)
             : base(textureLibrary)
@@ -25,6 +32,7 @@ namespace AoeBoardgame
             return new TownCenter(TextureLibrary, player)
             {
                 HitPoints = _hitPoints,
+                MaxHitPoints = _hitPoints,
                 AttackDamage = _attackDamage,
                 Range = _range,
                 MaxUnitsGarrisoned = _maxUnitsGarrisoned,
@@ -36,36 +44,33 @@ namespace AoeBoardgame
         {
             _hitPoints = 1000;
             _attackDamage = 10;
-            _range = 2;
+            _range = 3;
             _maxUnitsGarrisoned = 3;
 
-            _unitTypesAllowedToMake = new List<PlaceableObjectType>
+            _unitTypesAllowedToMake = new List<Type>
             {
-                PlaceableObjectType.Villager
+                typeof(Villager)
             };
 
             Cost = new ResourceCollection(0, 100, 0, 0, 50);
         }
 
-        public override void AdvanceToFeudalAge()
+        public override void UpgradeToFeudalAge()
         {
-            _hitPoints += 500;
-            _attackDamage += 10;
-            _range += 1;
+            _hitPoints += FeudalAddedHitPoints;
+            _attackDamage += FeudalAddedAttackDamage;
         }
 
-        public override void AdvanceToCastleAge()
+        public override void UpgradeToCastleAge()
         {
-            _hitPoints += 1000;
-            _attackDamage += 10;
-            _range += 1;
+            _hitPoints += CastleAddedHitPoints;
+            _attackDamage += CastleAddedAttackDamage;
         }
 
-        public override void AdvanceToImperialAge()
+        public override void UpgradeToImperialAge()
         {
-            _hitPoints += 1000;
-            _attackDamage += 10;
-            _range += 1;
+            _hitPoints += ImperialAddedHitPoints;
+            _attackDamage += ImperialAddedAttackDamage;
         }
     }
 }

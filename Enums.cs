@@ -9,6 +9,14 @@
         Stone
     }
 
+    enum ResearchEnum
+    {
+        FeudalAge,
+        CastleAge,
+        ImperialAge,
+
+    }
+
     enum TileType
     {
         Dirt,
@@ -16,26 +24,6 @@
         StoneMine,
         GoldMine,
         IronMine
-    }
-
-    enum PlaceableObjectType
-    {
-        Berries,
-
-        TownCenter,
-        Tower,
-        GuardTower,
-        Mine,
-        University,
-        Barracks,
-        Stable,
-        Blacksmith,
-        Church,
-        LumberCamp,
-        Castle,
-        Farms,
-        
-        Villager,
     }
 
     enum TileColor

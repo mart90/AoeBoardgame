@@ -5,6 +5,6 @@ namespace AoeBoardgame
 {
     interface ICanMakeBuildings
     {
-        IEnumerable<PlaceableObjectType> BuildingTypesAllowedToMake { get; set; }
+        List<Type> BuildingTypesAllowedToMake { get; set; }
     }
 }
