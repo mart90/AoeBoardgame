@@ -28,7 +28,7 @@ namespace AoeBoardgame
             Factories = Civilization.GetFactories();
         }
 
-        public T AddPlaceableObject<T>() where T : PlayerObject
+        public T AddAndGetPlaceableObject<T>() where T : PlayerObject
         {
             var factory = Factories.SingleOrDefault(e => e.Type == typeof(T));
             var newObj = (T)factory.Get(this);

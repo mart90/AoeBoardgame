@@ -77,7 +77,7 @@ namespace AoeBoardgame
             for (int i = 0; i < 2; i++)
             {
                 var player = Players[i];
-                var tc = player.AddPlaceableObject<TownCenter>();
+                var tc = player.AddAndGetPlaceableObject<TownCenter>();
 
                 int tileRow = _map.Height / 2;
                 int tileColumn = i == 0 ? _map.Width / 5 : _map.Width - _map.Width / 5 - 1;
@@ -86,7 +86,7 @@ namespace AoeBoardgame
                 tile.SetObject(tc);
             }
 
-            _map.Tiles[360].SetObject(Players[0].AddPlaceableObject<Villager>());
+            _map.Tiles[360].SetObject(Players[0].AddAndGetPlaceableObject<Villager>());
         }
 
         public void ClearCurrentSelection()
