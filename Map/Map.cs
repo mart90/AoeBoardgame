@@ -88,5 +88,17 @@ namespace AoeBoardgame
             var tileId = Tiles.IndexOf(tile);
             return tileId / Width;
         }
+
+        public IEnumerable<Tile> FindPathFromSelectedToHovered()
+        {
+            return new PathFinder(this)
+                .GetOptimalPath(Tiles.IndexOf(SelectedTile), Tiles.IndexOf(HoveredTile));
+        }
+
+        public IEnumerable<Tile> FindTilesInRangeOfSelected(int range)
+        {
+            return new PathFinder(this)
+                .GetAllTilesInRange(Tiles.IndexOf(SelectedTile), range);
+        }
     }
 }

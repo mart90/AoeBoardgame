@@ -5,10 +5,10 @@ namespace AoeBoardgame
 {
     class TownCenter : PlayerObject, 
         IAttacker,
+        IHasRange,
         IGarrisonable, 
         ICanMakeUnits, 
-        ICanMakeResearch, 
-        IHasRange
+        ICanMakeResearch
     {
         public int AttackDamage { get; set; }
         public int Range { get; set; }

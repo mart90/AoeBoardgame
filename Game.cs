@@ -23,10 +23,25 @@ namespace AoeBoardgame
         public void SelectTileByLocation(Point location)
         {
             var tile = GetTileByLocation(location);
-            if (tile != null)
+            if (tile == null)
             {
-                ClearCurrentSelection();
-                tile.IsSelected = true;
+                return;
+            }
+
+            ClearCurrentSelection();
+            tile.IsSelected = true;
+
+            if (tile.Object is IHasRange objectWithRange)
+            {
+                IEnumerable<Tile> tilesInRange = _map.FindTilesInRangeOfSelected(objectWithRange.Range);
+
+                if (tilesInRange != null)
+                {
+                    foreach (var tileInRange in tilesInRange)
+                    {
+                        tileInRange.SetTemporaryColor(TileColor.Pink);
+                    }
+                }
             }
         }
 
@@ -52,8 +67,7 @@ namespace AoeBoardgame
 
             if (selectedObject is ICanMove)
             {
-                IEnumerable<Tile> pathFromSelectedToHovered =
-                    FindPath(_map.SelectedTile, _map.HoveredTile);
+                IEnumerable<Tile> pathFromSelectedToHovered = _map.FindPathFromSelectedToHovered();
 
                 if (pathFromSelectedToHovered != null)
                 {
@@ -87,6 +101,7 @@ namespace AoeBoardgame
             }
 
             _map.Tiles[360].SetObject(Players[0].AddAndGetPlaceableObject<Villager>());
+            _map.Tiles[361].SetObject(Players[0].AddAndGetPlaceableObject<Tower>());
         }
 
         public void ClearCurrentSelection()
@@ -107,8 +122,6 @@ namespace AoeBoardgame
             {
                 hoveredTile.IsHovered = false;
             }
-
-            ClearTemporaryTileColors();
         }
 
         private void ClearTemporaryTileColors()
@@ -117,12 +130,6 @@ namespace AoeBoardgame
             {
                 tile.SetTemporaryColor(TileColor.Default);
             }
-        }
-
-        public IEnumerable<Tile> FindPath(Tile origin, Tile destination)
-        {
-            return new PathFinder(_map)
-                .GetOptimalPath(_map.Tiles.IndexOf(origin), _map.Tiles.IndexOf(destination));
         }
     }
 }

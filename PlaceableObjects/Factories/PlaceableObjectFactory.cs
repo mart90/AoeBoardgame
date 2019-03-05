@@ -5,7 +5,7 @@ namespace AoeBoardgame
     abstract class PlaceableObjectFactory
     {
         public Type Type { get; protected set; }
-        public abstract ResourceCollection Cost { get; protected set; }
+        public ResourceCollection Cost { get; protected set; }
 
         protected TextureLibrary TextureLibrary;
         protected Player Player;
@@ -13,10 +13,10 @@ namespace AoeBoardgame
         protected PlaceableObjectFactory(TextureLibrary textureLibrary)
         {
             TextureLibrary = textureLibrary;
-            SetDefaults();
+            SetBaseStats();
         }
 
-        protected abstract void SetDefaults();
+        protected abstract void SetBaseStats();
 
         public abstract PlaceableObject Get(Player player);
 

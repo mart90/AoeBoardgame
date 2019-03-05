@@ -58,6 +58,7 @@
     <Compile Include="PlaceableObjects\Buildings\Tower.cs" />
     <Compile Include="PlaceableObjects\Buildings\TownCenter.cs" />
     <Compile Include="PlaceableObjects\Factories\PlaceableObjectFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\TowerFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\TownCenterFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\VillagerFactory.cs" />
     <Compile Include="PlaceableObjects\GaiaObject.cs" />

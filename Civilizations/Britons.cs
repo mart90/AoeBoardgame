@@ -12,7 +12,11 @@ namespace AoeBoardgame
 
             factories.AddRange(new List<PlaceableObjectFactory>
             {
+                // Buildings
                 new TownCenterFactory(TextureLibrary),
+                new TowerFactory(TextureLibrary),
+
+                // Units
                 new VillagerFactory(TextureLibrary)
             });
 

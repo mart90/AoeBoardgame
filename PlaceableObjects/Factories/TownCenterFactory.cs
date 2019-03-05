@@ -5,8 +5,6 @@ namespace AoeBoardgame
 {
     class TownCenterFactory : PlaceableObjectFactory
     {
-        public override ResourceCollection Cost { get; protected set; }
-
         private int _hitPoints;
         private int _attackDamage;
         private int _range;
@@ -40,7 +38,7 @@ namespace AoeBoardgame
             };
         }
 
-        protected override void SetDefaults()
+        protected override void SetBaseStats()
         {
             _hitPoints = 1000;
             _attackDamage = 10;
@@ -52,7 +50,7 @@ namespace AoeBoardgame
                 typeof(Villager)
             };
 
-            Cost = new ResourceCollection(0, 100, 0, 0, 50);
+            Cost = new ResourceCollection(0, 150, 0, 0, 50);
         }
 
         public override void UpgradeToFeudalAge()

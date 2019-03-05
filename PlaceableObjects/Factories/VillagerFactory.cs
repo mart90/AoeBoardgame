@@ -5,8 +5,6 @@ namespace AoeBoardgame
 {
     class VillagerFactory : PlaceableObjectFactory
     {
-        public override ResourceCollection Cost { get; protected set; }
-
         private int _hitPoints;
         private int _speed;
         private int _attackDamage;
@@ -43,7 +41,7 @@ namespace AoeBoardgame
             Type = typeof(Villager);
         }
 
-        protected override void SetDefaults()
+        protected override void SetBaseStats()
         {
             _hitPoints = 50;
             _speed = 2;

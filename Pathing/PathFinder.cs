@@ -47,7 +47,7 @@ namespace AoeBoardgame
                     return ConvertNodesToTiles(nodes);
                 }
 
-                IEnumerable<Node> children = GetAccessibleChildren(currentNode);
+                IEnumerable<Node> children = GetAccessibleChildren(currentNode, true);
 
                 foreach (var child in children)
                 {
@@ -111,7 +111,7 @@ namespace AoeBoardgame
             return nodes.Select(e => _map.GetTileByCoordinates(e.X, e.Y)).ToList();
         }
 
-        private IEnumerable<Node> GetAccessibleChildren(Node node)
+        private IEnumerable<Node> GetAccessibleChildren(Node node, bool objectsAccessible = false)
         {
             var accessibleChildren = new List<Node>();
             List<Direction> directionsToGo = node.GetNewDirections();
@@ -126,6 +126,10 @@ namespace AoeBoardgame
 
                 int childTileId = child.Y * _map.Width + child.X;
                 if (_map.Tiles[childTileId].IsAccessible())
+                {
+                    accessibleChildren.Add(child);
+                }
+                else if (objectsAccessible && _map.Tiles[childTileId].Type == TileType.Dirt)
                 {
                     accessibleChildren.Add(child);
                 }
