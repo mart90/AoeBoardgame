@@ -72,12 +72,14 @@
     <Compile Include="PlaceableObjects\Interfaces\IAttackable.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IGarrisonable.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMakeResearch.cs" />
+    <Compile Include="PlaceableObjects\Interfaces\IHasObjectQueue.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IProducesResource.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMakeUnits.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IAttacker.cs" />
     <Compile Include="PlaceableObjects\Interfaces\IHasRange.cs" />
     <Compile Include="PlaceableObjects\Interfaces\ICanMove.cs" />
     <Compile Include="PlaceableObjects\PlayerObject.cs" />
+    <Compile Include="PlaceableObjects\QueuedObject.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Research\Research.cs" />
     <Compile Include="Research\ResearchLibrary.cs" />

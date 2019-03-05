@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace AoeBoardgame
@@ -46,8 +47,8 @@ namespace AoeBoardgame
         public void AddRandomlyGeneratedGaiaObjects<T>(double fractionOfDirtTiles) 
             where T : GaiaObject
         {
-            List<Tile> dirtTiles = _map.GetTilesByType(TileType.Dirt);
-            int amountToAdd = (int)Math.Round(fractionOfDirtTiles * dirtTiles.Count);
+            IEnumerable<Tile> dirtTiles = _map.GetTilesByType(TileType.Dirt);
+            int amountToAdd = (int)Math.Round(fractionOfDirtTiles * dirtTiles.Count());
 
             for (var i = 0; i < amountToAdd; i++)
             {

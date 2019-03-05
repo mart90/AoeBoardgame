@@ -1,5 +1,12 @@
 ﻿namespace AoeBoardgame
 {
+    enum GameState
+    {
+        TurnStart,
+        MainPhase,
+        TurnEnd
+    }
+
     enum Resource
     {
         Food,
@@ -14,7 +21,6 @@
         FeudalAge,
         CastleAge,
         ImperialAge,
-
     }
 
     enum TileType

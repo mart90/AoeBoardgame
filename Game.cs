@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,6 +8,7 @@ namespace AoeBoardgame
 {
     class Game
     {
+        public GameState State { get; set; }
         public List<Player> Players { get; set; }
 
         private readonly Map _map;
@@ -14,11 +17,35 @@ namespace AoeBoardgame
         {
             Players = players;
             _map = map;
+
+            players[0].IsActive = true;
+            State = GameState.TurnStart;
         }
 
-        public Player ActivePlayer => Players.Find(e => e.IsActive);
+        public Player ActivePlayer => Players.Single(e => e.IsActive);
 
         public Tile GetTileByLocation(Point location) => _map.GetTileByLocation(location);
+
+        public void StartTurn()
+        {
+            ActivePlayer.EmptyQueues();
+            State = GameState.MainPhase;
+        }
+
+        public void EndMainPhase()
+        {
+            // TODO end main phase logic
+
+            State = GameState.TurnEnd;
+        }
+
+        public void EndTurn()
+        {
+            // TODO end turn logic
+
+            PassTurnToNextPlayer();
+            State = GameState.TurnStart;
+        }
 
         public void SelectTileByLocation(Point location)
         {
@@ -100,8 +127,8 @@ namespace AoeBoardgame
                 tile.SetObject(tc);
             }
 
-            _map.Tiles[360].SetObject(Players[0].AddAndGetPlaceableObject<Villager>());
-            _map.Tiles[361].SetObject(Players[0].AddAndGetPlaceableObject<Tower>());
+            _map.Tiles[360].SetObject(Players[0].AddAndGetPlaceableObject<Villager>()); // Test stuff
+            _map.Tiles[361].SetObject(Players[1].AddAndGetPlaceableObject<Tower>()); // Test stuff
         }
 
         public void ClearCurrentSelection()
@@ -129,6 +156,22 @@ namespace AoeBoardgame
             foreach (var tile in _map.Tiles)
             {
                 tile.SetTemporaryColor(TileColor.Default);
+            }
+        }
+
+        private void PassTurnToNextPlayer()
+        {
+            var activePlayerId = Players.IndexOf(ActivePlayer);
+
+            ActivePlayer.IsActive = false;
+
+            if (activePlayerId == Players.Count - 1)
+            {
+                Players[0].IsActive = true;
+            }
+            else
+            {
+                Players[activePlayerId + 1].IsActive = true;
             }
         }
     }

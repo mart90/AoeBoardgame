@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace AoeBoardgame
 {
@@ -26,6 +28,30 @@ namespace AoeBoardgame
 
             ResourceCollection = new ResourceCollection();
             Factories = Civilization.GetFactories();
+        }
+
+        public void EmptyQueues()
+        {
+            for (var i = 0; i < OwnedObjects.Count; i++)
+            {
+                var playerObject = OwnedObjects[i];
+
+                if (playerObject is IHasObjectQueue objectWithQueue)
+                {
+                    if (objectWithQueue.QueuedObject == null)
+                    {
+                        continue;
+                    }
+
+                    Type objectType = objectWithQueue.QueuedObject.ObjectType;
+                    MethodInfo genericMethod = GetType().GetMethod(nameof(AddAndGetPlaceableObject));
+                    MethodInfo runtimeMethod = genericMethod.MakeGenericMethod(objectType);
+
+                    var newObject = (PlayerObject) runtimeMethod.Invoke(this, new object[] { });
+                    objectWithQueue.QueuedObject.DestinationTile.SetObject(newObject);
+                    objectWithQueue.QueuedObject = null;
+                }
+            }
         }
 
         public T AddAndGetPlaceableObject<T>() where T : PlayerObject

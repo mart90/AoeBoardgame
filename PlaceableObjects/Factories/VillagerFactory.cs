@@ -50,7 +50,8 @@ namespace AoeBoardgame
             {
                 typeof(LumberCamp),
                 typeof(Mine),
-                typeof(Barracks)
+                typeof(Barracks),
+                typeof(Tower) //TODO remove after tests
             };
 
             Cost = new ResourceCollection(50);
