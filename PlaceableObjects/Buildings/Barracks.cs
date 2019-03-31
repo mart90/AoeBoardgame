@@ -7,6 +7,7 @@ namespace AoeBoardgame
     {
         public IEnumerable<Type> UnitTypesAllowedToMake { get; set; }
         public QueuedObject QueuedObject { get; set; }
+        public Tile WayPoint { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Barracks(TextureLibrary textureLibrary, Player owner) :
             base(textureLibrary, owner)

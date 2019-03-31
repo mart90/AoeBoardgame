@@ -16,6 +16,7 @@ namespace AoeBoardgame
         public IEnumerable<Type> UnitTypesAllowedToMake { get; set; }
         public IEnumerable<Research> AllowedResearch { get; set; }
         public QueuedObject QueuedObject { get; set; }
+        public Tile WayPoint { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public TownCenter(TextureLibrary textureLibrary, Player owner) :
             base(textureLibrary, owner)
