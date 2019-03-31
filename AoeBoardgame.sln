@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AoeBoardgame", "AoeBoardgame.csproj", "{F89CC509-6C13-469A-BB62-73952FCF44E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F89CC509-6C13-469A-BB62-73952FCF44E3}.Debug|x86.ActiveCfg = Debug|x86
+		{F89CC509-6C13-469A-BB62-73952FCF44E3}.Debug|x86.Build.0 = Debug|x86
+		{F89CC509-6C13-469A-BB62-73952FCF44E3}.Release|x86.ActiveCfg = Release|x86
+		{F89CC509-6C13-469A-BB62-73952FCF44E3}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A9A04B9-0AE7-43CB-AEBF-4C9DA963FE0F}
+	EndGlobalSection
+EndGlobal
