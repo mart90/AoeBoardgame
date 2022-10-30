@@ -8,6 +8,7 @@ namespace AoeBoardgame
         private int _hitPoints;
         private int _attackDamage;
         private int _range;
+        private int _lineOfSight;
         private int _maxUnitsGarrisoned;
         private List<Type> _unitTypesAllowedToMake;
 
@@ -33,6 +34,7 @@ namespace AoeBoardgame
                 MaxHitPoints = _hitPoints,
                 AttackDamage = _attackDamage,
                 Range = _range,
+                LineOfSight = _lineOfSight,
                 MaxUnitsGarrisoned = _maxUnitsGarrisoned,
                 UnitTypesAllowedToMake = _unitTypesAllowedToMake
             };
@@ -43,6 +45,7 @@ namespace AoeBoardgame
             _hitPoints = 1000;
             _attackDamage = 10;
             _range = 3;
+            _lineOfSight = 4;
             _maxUnitsGarrisoned = 3;
 
             _unitTypesAllowedToMake = new List<Type>

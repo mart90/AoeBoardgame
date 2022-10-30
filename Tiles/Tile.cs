@@ -9,6 +9,7 @@ namespace AoeBoardgame
         public TileType Type { get; private set; }
         public bool IsSelected { get; set; }
         public bool IsHovered { get; set; }
+        public bool HasFogOfWar { get; set; }
         public PlaceableObject Object { get; private set; }
 
         private Texture2D _texture;
@@ -38,9 +39,9 @@ namespace AoeBoardgame
         // If true the point is in this tile's square, but could still be in one of the corners which would overlap with another tile
         public bool LocationSquareIncludesPoint(Point point) => _location.Contains(point);
 
-        public bool IsAccessible() => Object == null && Type == TileType.Dirt;
+        public bool IsAccessible => (Object == null || HasFogOfWar) && Type == TileType.Dirt;
 
-        public Point Center() => _location.Center;
+        public Point Center => _location.Center;
 
         public void SetType(TileType tileType)
         {
@@ -68,17 +69,24 @@ namespace AoeBoardgame
                 spriteBatch.Draw(_textureLibrary.GetTileColorByType(_temporaryColor), _location, Color.White);
             }
 
-            if (Object != null)
+            if (HasFogOfWar)
             {
-                if (Object.GetType().BaseType != typeof(GaiaObject) && _temporaryColor == TileColor.Default)
+                spriteBatch.Draw(_textureLibrary.FogOfWar, _location, Color.White);
+            }
+            else
+            {
+                if (Object != null)
                 {
-                    spriteBatch.Draw(
-                        IsSelected ? _textureLibrary.GetTileColorByType(TileColor.Green) : Object.ColorTexture.Texture,
-                        _location,
-                        Color.White);
-                }
+                    if (Object.GetType().BaseType != typeof(GaiaObject) && _temporaryColor == TileColor.Default)
+                    {
+                        spriteBatch.Draw(
+                            IsSelected ? _textureLibrary.GetTileColorByType(TileColor.Green) : Object.ColorTexture.Texture,
+                            _location,
+                            Color.White);
+                    }
 
-                Object.Draw(spriteBatch, _objectLocation);
+                    Object.Draw(spriteBatch, _objectLocation);
+                }
             }
         }
     }

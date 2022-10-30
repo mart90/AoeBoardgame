@@ -11,6 +11,8 @@ namespace AoeBoardgame
         private readonly List<TileTexture> _tileTextures;
         private readonly List<PlaceableObjectTexture> _objectTextures;
         private readonly List<TileColorTexture> _colorTextures;
+
+        public Texture2D FogOfWar { get; private set; }
         
         public TextureLibrary(ContentManager contentManager)
         {
@@ -21,6 +23,8 @@ namespace AoeBoardgame
             AddTileTextures(contentManager);
             AddObjectTextures(contentManager);
             AddColorTextures(contentManager);
+
+            FogOfWar = contentManager.Load<Texture2D>("Colors/fow");
         }
 
         public Texture2D GetObjectTextureByType(Type tileObjectType)
@@ -174,12 +178,12 @@ namespace AoeBoardgame
             });
             _colorTextures.Add(new TileColorTexture
             {
-                TileColor = TileColor.Pink, // Destination
+                TileColor = TileColor.Pink, // Range
                 Texture = contentManager.Load<Texture2D>("Colors/pink")
             });
             _colorTextures.Add(new TileColorTexture
             {
-                TileColor = TileColor.Orange, // Max range
+                TileColor = TileColor.Orange, // Destination
                 Texture = contentManager.Load<Texture2D>("Colors/orange")
             });
         }

@@ -11,7 +11,8 @@ namespace AoeBoardgame
         public int Speed { get; set; }
         public int AttackDamage { get; set; }
         public List<Type> BuildingTypesAllowedToMake { get; set; }
-        public QueuedObject QueuedObject { get; set; }
+        public Tile DestinationTile { get; set; }
+        public int StepsTakenThisTurn { get; set; }
 
         public Villager(TextureLibrary textureLibrary, Player owner) :
             base(textureLibrary, owner)
@@ -25,16 +26,7 @@ namespace AoeBoardgame
 
         public void MakeBuilding<T>(Tile destinationTile) where T : PlayerObject
         {
-            if (QueuedObject != null)
-            {
-                return;
-            }
 
-            QueuedObject = new QueuedObject
-            {
-                ObjectType = typeof(T),
-                DestinationTile = destinationTile
-            };
         }
 
         public override void UpgradeToFeudalAge()

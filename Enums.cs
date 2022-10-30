@@ -2,9 +2,7 @@
 {
     enum GameState
     {
-        TurnStart,
-        MainPhase,
-        TurnEnd
+        MyTurn
     }
 
     enum Resource

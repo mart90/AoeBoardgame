@@ -8,6 +8,7 @@ namespace AoeBoardgame
         private int _hitPoints;
         private int _speed;
         private int _attackDamage;
+        private int _lineOfSight;
         private List<Type> _buildingTypesAllowedToMake;
 
         public const int FeudalAddedHitPoints = 20;
@@ -46,6 +47,7 @@ namespace AoeBoardgame
             _hitPoints = 50;
             _speed = 2;
             _attackDamage = 1;
+            _lineOfSight = 3;
             _buildingTypesAllowedToMake = new List<Type>
             {
                 typeof(LumberCamp),
@@ -64,6 +66,7 @@ namespace AoeBoardgame
                 HitPoints = _hitPoints,
                 MaxHitPoints = _hitPoints,
                 Speed = _speed,
+                LineOfSight = _lineOfSight,
                 AttackDamage = _attackDamage,
                 BuildingTypesAllowedToMake = _buildingTypesAllowedToMake
             };

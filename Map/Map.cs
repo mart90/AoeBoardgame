@@ -56,8 +56,8 @@ namespace AoeBoardgame
 
             // Matched 2 tiles. This means the point is in one of the tiles' "corners"
             // Find out which tile's center is closer to the point
-            Point tile1Center = tiles.First().Center();
-            Point tile2Center = tiles.Last().Center();
+            Point tile1Center = tiles.First().Center;
+            Point tile2Center = tiles.Last().Center;
 
             double distanceToTile1Center =
                 Math.Sqrt(Math.Pow(Math.Abs(tile1Center.X - point.X), 2) +
@@ -78,6 +78,8 @@ namespace AoeBoardgame
 
         public Tile GetTileByCoordinates(int x, int y) => Tiles[y * Width + x];
 
+        public Tile GetTileByObject(PlaceableObject obj) => Tiles.Single(e => e.Object == obj);
+
         public int GetXCoordinate(Tile tile)
         {
             var tileId = Tiles.IndexOf(tile);
@@ -92,14 +94,41 @@ namespace AoeBoardgame
 
         public IEnumerable<Tile> FindPathFromSelectedToHovered()
         {
-            return new PathFinder(this)
-                .GetOptimalPath(Tiles.IndexOf(SelectedTile), Tiles.IndexOf(HoveredTile));
+            return new PathFinder(this).GetOptimalPath(SelectedTile, HoveredTile);
+        }
+
+        public IEnumerable<Tile> FindPath(Tile source, Tile destination)
+        {
+            return new PathFinder(this).GetOptimalPath(source, destination);
         }
 
         public IEnumerable<Tile> FindTilesInRangeOfSelected(int range)
         {
-            return new PathFinder(this)
-                .GetAllTilesInRange(Tiles.IndexOf(SelectedTile), range);
+            return new PathFinder(this).GetAllTilesInRange(SelectedTile, range);
+        }
+
+        public void MoveObject(Tile source, Tile destination)
+        {
+            destination.SetObject(source.Object);
+            source.SetObject(null);
+
+            if (source.IsSelected)
+            {
+                source.IsSelected = false;
+                destination.IsSelected = true;
+            }
+        }
+
+        public void ProgressOnPath(ICanMove mover, IEnumerable<Tile> path)
+        {
+            int steps = path.Count() >= mover.Speed ? mover.Speed : path.Count();
+            mover.StepsTakenThisTurn += steps;
+            MoveObject(GetTileByObject((PlaceableObject)mover), path.ToList()[-1 + steps]);
+        }
+
+        public void ResetFogOfWar()
+        {
+            Tiles.ForEach(e => e.HasFogOfWar = true);
         }
     }
 }

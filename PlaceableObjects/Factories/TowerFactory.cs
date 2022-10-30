@@ -5,6 +5,7 @@
         private int _hitPoints;
         private int _attackDamage;
         private int _range;
+        private int _lineOfSight;
         private int _maxUnitsGarrisoned;
 
         public const int CastleAddedHitPoints = 100;
@@ -27,6 +28,7 @@
                 MaxHitPoints = _hitPoints,
                 AttackDamage = _attackDamage,
                 Range = _range,
+                LineOfSight = _lineOfSight,
                 MaxUnitsGarrisoned = _maxUnitsGarrisoned
             };
         }
@@ -36,6 +38,7 @@
             _hitPoints = 200;
             _attackDamage = 20;
             _range = 3;
+            _lineOfSight = 4;
             _maxUnitsGarrisoned = 1;
 
             Cost = new ResourceCollection(0, 50, 0, 0, 100);

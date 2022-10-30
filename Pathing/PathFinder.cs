@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AoeBoardgame
@@ -30,8 +32,24 @@ namespace AoeBoardgame
             }
         }
 
-        public IEnumerable<Tile> GetAllTilesInRange(int originTileId, int range)
+        public IEnumerable<Tile> GetAllTilesInRange(Tile originTile, int range)
         {
+            IEnumerable<Tile> tiles = GetAllTilesInRangeIgnoreObstacles(originTile, range);
+
+            var rangeableTiles = new List<Tile>();
+
+            foreach (Tile destinationTile in tiles)
+            {
+                rangeableTiles.AddRange(GetRangeableTilesStraightLine(originTile, destinationTile));
+            }
+
+            return rangeableTiles;
+        }
+
+        private IEnumerable<Tile> GetAllTilesInRangeIgnoreObstacles(Tile originTile, int range)
+        {
+            int originTileId = _map.Tiles.IndexOf(originTile);
+
             var nodes = new List<Node>();
             Node originNode = GetNodeByTileId(originTileId);
 
@@ -47,7 +65,7 @@ namespace AoeBoardgame
                     return ConvertNodesToTiles(nodes);
                 }
 
-                IEnumerable<Node> children = GetAccessibleChildren(currentNode, true);
+                IEnumerable<Node> children = GetAccessibleChildren(currentNode, true, true);
 
                 foreach (var child in children)
                 {
@@ -69,8 +87,11 @@ namespace AoeBoardgame
         }
 
         // Breadth-first search
-        public IEnumerable<Tile> GetOptimalPath(int originTileId, int destinationTileId)
+        public IEnumerable<Tile> GetOptimalPath(Tile originTile, Tile destinationTile)
         {
+            int originTileId = _map.Tiles.IndexOf(originTile);
+            int destinationTileId = _map.Tiles.IndexOf(destinationTile);
+
             Node originNode = GetNodeByTileId(originTileId);
             Node destinationNode = GetNodeByTileId(destinationTileId);
 
@@ -88,6 +109,7 @@ namespace AoeBoardgame
                     {
                         var bestPath = child.NodesVisited;
                         bestPath.RemoveAt(0);
+                        bestPath.Add(destinationNode);
                         return ConvertNodesToTiles(bestPath);
                     }
 
@@ -111,7 +133,7 @@ namespace AoeBoardgame
             return nodes.Select(e => _map.GetTileByCoordinates(e.X, e.Y)).ToList();
         }
 
-        private IEnumerable<Node> GetAccessibleChildren(Node node, bool objectsAccessible = false)
+        private IEnumerable<Node> GetAccessibleChildren(Node node, bool objectsAccessible = false, bool ignoreObstacles = false)
         {
             var accessibleChildren = new List<Node>();
             List<Direction> directionsToGo = node.GetNewDirections();
@@ -125,7 +147,7 @@ namespace AoeBoardgame
                 }
 
                 int childTileId = child.Y * _map.Width + child.X;
-                if (_map.Tiles[childTileId].IsAccessible())
+                if (ignoreObstacles || _map.Tiles[childTileId].IsAccessible)
                 {
                     accessibleChildren.Add(child);
                 }
@@ -185,6 +207,130 @@ namespace AoeBoardgame
             var x = id % _map.Width;
             var y = id / _map.Width;
             return new Node(x, y);
+        }
+
+        // TODO optimize?
+        private IEnumerable<Tile> GetRangeableTilesStraightLine(Tile originTile, Tile destinationTile)
+        {
+            var rangeableTiles = new List<Tile>();
+
+            Point originCenter = originTile.Center;
+            Point destinationCenter = destinationTile.Center;
+
+            int diffX = destinationCenter.X - originCenter.X;
+            int diffY = destinationCenter.Y - originCenter.Y;
+
+            double yPerX;
+
+            if (diffX != 0)
+            {
+                yPerX = (double)diffY / (double)diffX;
+            }
+            else
+            {
+                yPerX = (double)diffY < 0 ? -10 : 10;
+            }
+
+            int y;
+            Point point;
+
+            if (diffX > 0)
+            {
+                for (int x = 1; x < diffX; x++)
+                {
+                    y = (int)Math.Round(x * yPerX) + originCenter.Y;
+
+                    point = new Point(x + originCenter.X, y);
+
+                    Tile tile = _map.GetTileByLocation(point);
+
+                    if (tile == null || rangeableTiles.Contains(tile))
+                    {
+                        continue;
+                    }
+
+                    rangeableTiles.Add(tile);
+
+                    if (tile.Type != TileType.Dirt)
+                    {
+                        break;
+                    }
+                }
+            }
+            else if (diffX < 0)
+            {
+                for (int x = -1; x > diffX; x--)
+                {
+                    y = (int)Math.Round(x * yPerX) + originCenter.Y;
+
+                    point = new Point(x + originCenter.X, y);
+
+                    Tile tile = _map.GetTileByLocation(point);
+
+                    if (tile == null || rangeableTiles.Contains(tile))
+                    {
+                        continue;
+                    }
+
+                    rangeableTiles.Add(tile);
+
+                    if (tile.Type != TileType.Dirt)
+                    {
+                        break;
+                    }
+                }
+            }
+            else // diffX == 0, meaning the destination is straight north or south
+            {
+                if (diffY > 0)
+                {
+                    for (int i = 1; i * yPerX < diffY; i++)
+                    {
+                        y = (int)Math.Round(i * yPerX) + originCenter.Y;
+
+                        point = new Point(originCenter.X, y);
+
+                        Tile tile = _map.GetTileByLocation(point);
+
+                        if (tile == null || rangeableTiles.Contains(tile))
+                        {
+                            continue;
+                        }
+
+                        rangeableTiles.Add(tile);
+
+                        if (tile.Type != TileType.Dirt)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if (diffY < 0)
+                {
+                    for (int i = 1; i * yPerX > diffY; i++)
+                    {
+                        y = (int)Math.Round(i * yPerX) + originCenter.Y;
+
+                        point = new Point(originCenter.X, y);
+
+                        Tile tile = _map.GetTileByLocation(point);
+
+                        if (tile == null || rangeableTiles.Contains(tile))
+                        {
+                            continue;
+                        }
+
+                        rangeableTiles.Add(tile);
+
+                        if (tile.Type != TileType.Dirt)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return rangeableTiles;
         }
     }
 }

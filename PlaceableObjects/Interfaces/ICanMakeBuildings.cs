@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
-    interface ICanMakeBuildings : IHasObjectQueue
+    interface ICanMakeBuildings
     {
         List<Type> BuildingTypesAllowedToMake { get; set; }
 

@@ -4,6 +4,7 @@
     {
         public int HitPoints { get; set; }
         public int MaxHitPoints { get; set; }
+        public int LineOfSight { get; set; }
 
         protected PlayerObject(TextureLibrary textureLibrary, Player owner)
         {

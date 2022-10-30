@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace AoeBoardgame
 {
@@ -30,27 +28,18 @@ namespace AoeBoardgame
             Factories = Civilization.GetFactories();
         }
 
-        public void EmptyQueues()
+        public void MakeBuilding<T>(ICanMakeBuildings builder, Tile destinationTile) where T : PlayerObject
         {
-            for (var i = 0; i < OwnedObjects.Count; i++)
+            if (!builder.BuildingTypesAllowedToMake.Contains(typeof(T)))
             {
-                var playerObject = OwnedObjects[i];
+                return;
+            }
 
-                if (playerObject is IHasObjectQueue objectWithQueue)
-                {
-                    if (objectWithQueue.QueuedObject == null)
-                    {
-                        continue;
-                    }
+            var newBuilding = AddAndGetPlaceableObject<T>();
 
-                    Type objectType = objectWithQueue.QueuedObject.ObjectType;
-                    MethodInfo genericMethod = GetType().GetMethod(nameof(AddAndGetPlaceableObject));
-                    MethodInfo runtimeMethod = genericMethod.MakeGenericMethod(objectType);
-
-                    var newObject = (PlayerObject) runtimeMethod.Invoke(this, new object[] { });
-                    objectWithQueue.QueuedObject.DestinationTile.SetObject(newObject);
-                    objectWithQueue.QueuedObject = null;
-                }
+            if (destinationTile.IsAccessible)
+            {
+                destinationTile.SetObject(newBuilding);
             }
         }
 

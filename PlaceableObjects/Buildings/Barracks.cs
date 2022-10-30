@@ -6,7 +6,6 @@ namespace AoeBoardgame
     class Barracks : PlayerObject, ICanMakeUnits
     {
         public IEnumerable<Type> UnitTypesAllowedToMake { get; set; }
-        public QueuedObject QueuedObject { get; set; }
         public Tile WayPoint { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Barracks(TextureLibrary textureLibrary, Player owner) :
@@ -16,16 +15,7 @@ namespace AoeBoardgame
 
         public void MakeUnit<T>(Tile destinationTile) where T : PlayerObject
         {
-            if (QueuedObject != null)
-            {
-                return;
-            }
 
-            QueuedObject = new QueuedObject
-            {
-                ObjectType = typeof(T),
-                DestinationTile = destinationTile
-            };
         }
 
         public override void UpgradeToFeudalAge()

@@ -1,0 +1,16 @@
+﻿FOG OF WAR
+- LoS upgradeable
+
+ARMIES
+- Max 3 (upgradeable) units per army, have to be of same type
+- When attacked, damage divided evenly
+- When attacking, damage = sum of individual units
+
+GATHERING
+- Max 3 villagers per resource, upgradeable
+- Build mines first on stone, gold, iron
+
+ECONOMY STRUCTURE
+- Units cost gold once
+- Food cost per turn for each unit
+- Need buildings for each unit type to support them (a TC per 5 vills, rax per 5 infantry etc)

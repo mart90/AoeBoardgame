@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AoeBoardgame.Extensions;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AoeBoardgame
 {
@@ -19,32 +20,66 @@ namespace AoeBoardgame
             _map = map;
 
             players[0].IsActive = true;
-            State = GameState.TurnStart;
+            State = GameState.MyTurn;
         }
 
         public Player ActivePlayer => Players.Single(e => e.IsActive);
 
         public Tile GetTileByLocation(Point location) => _map.GetTileByLocation(location);
 
+        private PlaceableObject SelectedObject => _map.SelectedTile?.Object;
+
         public void StartTurn()
         {
-            ActivePlayer.EmptyQueues();
-            State = GameState.MainPhase;
-        }
-
-        public void EndMainPhase()
-        {
-            // TODO end main phase logic
-
-            State = GameState.TurnEnd;
+            SetFogOfWar();
         }
 
         public void EndTurn()
         {
-            // TODO end turn logic
+            MoverTakeSteps();
+
+            // TODO queues, resources
 
             PassTurnToNextPlayer();
-            State = GameState.TurnStart;
+        }
+
+        public void SetFogOfWar()
+        {
+            _map.ResetFogOfWar();
+
+            foreach (PlayerObject obj in ActivePlayer.OwnedObjects)
+            {
+                List<Tile> tiles = new PathFinder(_map).GetAllTilesInRange(_map.GetTileByObject(obj), obj.LineOfSight).ToList();
+                tiles.ForEach(e => e.HasFogOfWar = false);
+            }
+        }
+
+        public void MoverTakeSteps()
+        {
+            foreach (ICanMove mover in ActivePlayer.OwnedObjects.Where(e => e is ICanMove).Cast<ICanMove>())
+            {
+                if (mover.DestinationTile != null && !mover.HasSpentAllMovementPoints())
+                {
+                    Tile sourceTile = _map.GetTileByObject((PlayerObject)mover);
+                    var path = _map.FindPath(sourceTile, mover.DestinationTile);
+
+                    if (path == null)
+                    {
+                        // TODO highlight unit, message "the highlighted unit's destination has become invalid. Its path is reset"
+                        mover.DestinationTile = null;
+                        continue;
+                    }
+
+                    _map.ProgressOnPath(mover, path);
+
+                    if (_map.GetTileByObject((PlayerObject)mover) == mover.DestinationTile)
+                    {
+                        mover.DestinationTile = null;
+                    }
+                }
+
+                mover.StepsTakenThisTurn = 0;
+            }
         }
 
         public void SelectTileByLocation(Point location)
@@ -64,20 +99,79 @@ namespace AoeBoardgame
 
                 if (tilesInRange != null)
                 {
-                    foreach (var tileInRange in tilesInRange)
-                    {
-                        tileInRange.SetTemporaryColor(TileColor.Pink);
-                    }
+                    tilesInRange.Highlight(TileColor.Pink);
+                }
+            }
+
+            if (!ActivePlayer.OwnedObjects.Contains(tile.Object))
+            {
+                tile.IsSelected = false;
+                return;
+            }
+
+            if (tile.Object is ICanMove mover)
+            {
+                if (mover.DestinationTile != null)
+                {
+                    var path = _map.FindPath(_map.GetTileByObject(tile.Object), mover.DestinationTile);
+                    path.Highlight(TileColor.Orange);
+                }
+            }
+            if (tile.Object is ICanMakeBuildings builder)
+            {
+                foreach (var buildingType in builder.BuildingTypesAllowedToMake)
+                {
+
+                }
+            }
+        }
+
+        public void SetDestinationByLocation(Point location)
+        {
+            if (!(SelectedObject is ICanMove mover))
+            {
+                return;
+            }
+
+            var sourceTile = _map.GetTileByObject(SelectedObject);
+            var destinationTile = GetTileByLocation(location);
+
+            if (destinationTile == sourceTile)
+            {
+                mover.DestinationTile = null;
+                return;
+            }
+
+            var path = _map.FindPath(sourceTile, destinationTile);
+
+            if (path == null)
+            {
+                return;
+            }
+
+            mover.DestinationTile = destinationTile;
+
+            path.Highlight(TileColor.Orange);
+
+            if (!mover.HasSpentAllMovementPoints())
+            {
+                _map.ProgressOnPath(mover, path);
+                SetFogOfWar();
+
+                if (_map.GetTileByObject((PlayerObject)mover) == mover.DestinationTile)
+                {
+                    mover.DestinationTile = null;
                 }
             }
         }
 
         public void HoverOverTileByLocation(Point location)
         {
+            ClearCurrentHover();
+
             var tile = GetTileByLocation(location);
             if (tile != null)
             {
-                ClearCurrentHover();
                 tile.IsHovered = true;
                 HandleHover();
             }
@@ -87,29 +181,45 @@ namespace AoeBoardgame
         {
             var selectedObject = _map.SelectedTile?.Object;
 
-            if (_map.HoveredTile == _map.SelectedTile || selectedObject == null)
+            if (selectedObject == null)
             {
                 return;
             }
 
-            if (selectedObject is ICanMove)
+            if (selectedObject is ICanMove mover)
             {
-                IEnumerable<Tile> pathFromSelectedToHovered = _map.FindPathFromSelectedToHovered();
+                ClearTemporaryTileColors();
+                if (mover.DestinationTile != null)
+                {
+                    var path = _map.FindPath(_map.GetTileByObject(selectedObject), mover.DestinationTile);
+                    path.Highlight(TileColor.Orange);
+                }
+
+                if (_map.HoveredTile == _map.SelectedTile)
+                {
+                    return;
+                }
+
+                IEnumerable <Tile> pathFromSelectedToHovered = _map.FindPathFromSelectedToHovered();
 
                 if (pathFromSelectedToHovered != null)
                 {
-                    ClearTemporaryTileColors();
-                    foreach (var tile in pathFromSelectedToHovered)
-                    {
-                        tile.SetTemporaryColor(TileColor.Teal);
-                    }
+                    pathFromSelectedToHovered.Highlight(TileColor.Teal);
                 }
             }
         }
 
-        public void DrawMap(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             _map.Draw(spriteBatch);
+
+            ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
+
+            if (ImGui.Button("End turn", new System.Numerics.Vector2(100, 40)))
+            {
+                EndTurn();
+            }
         }
 
         public void PlaceStartingTownCenters()
@@ -127,8 +237,15 @@ namespace AoeBoardgame
                 tile.SetObject(tc);
             }
 
-            _map.Tiles[360].SetObject(Players[0].AddAndGetPlaceableObject<Villager>()); // Test stuff
-            _map.Tiles[361].SetObject(Players[1].AddAndGetPlaceableObject<Tower>()); // Test stuff
+            _map.Tiles[360].SetObject(Players[0].AddAndGetPlaceableObject<Villager>());
+            _map.Tiles[120].SetObject(Players[1].AddAndGetPlaceableObject<Villager>());
+
+            var builder = (ICanMakeBuildings) Players[0].OwnedObjects.Find(e => e is ICanMakeBuildings);
+
+            if (_map.Tiles[361].IsAccessible)
+            {
+                Players[0].MakeBuilding<Tower>(builder, _map.Tiles[361]);
+            }
         }
 
         public void ClearCurrentSelection()
@@ -148,6 +265,11 @@ namespace AoeBoardgame
             if (hoveredTile != null)
             {
                 hoveredTile.IsHovered = false;
+            }
+
+            if (SelectedObject is ICanMove)
+            {
+                ClearTemporaryTileColors();
             }
         }
 
@@ -173,6 +295,8 @@ namespace AoeBoardgame
             {
                 Players[activePlayerId + 1].IsActive = true;
             }
+
+            StartTurn();
         }
     }
 }
