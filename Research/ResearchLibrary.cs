@@ -20,17 +20,9 @@ namespace AoeBoardgame
                 new Research
                 {
                     ResearchEnum = ResearchEnum.FeudalAge,
-                    Effect = player =>
+                    Effect = player => 
                     {
-                        foreach (var playerObject in player.OwnedObjects)
-                        {
-                            playerObject.UpgradeToFeudalAge();
-                        }
-
-                        foreach (var factory in player.Factories)
-                        {
-                            factory.UpgradeToFeudalAge();
-                        }
+                        player.Age = 2;
                     }
                 },
 
@@ -39,15 +31,7 @@ namespace AoeBoardgame
                     ResearchEnum = ResearchEnum.CastleAge,
                     Effect = player =>
                     {
-                        foreach (var playerObject in player.OwnedObjects)
-                        {
-                            playerObject.UpgradeToCastleAge();
-                        }
-
-                        foreach (var factory in player.Factories)
-                        {
-                            factory.UpgradeToCastleAge();
-                        }
+                        player.Age = 3;
                     }
                 },
 
@@ -56,15 +40,7 @@ namespace AoeBoardgame
                     ResearchEnum = ResearchEnum.ImperialAge,
                     Effect = player =>
                     {
-                        foreach (var playerObject in player.OwnedObjects)
-                        {
-                            playerObject.UpgradeToImperialAge();
-                        }
-
-                        foreach (var factory in player.Factories)
-                        {
-                            factory.UpgradeToImperialAge();
-                        }
+                        player.Age = 4;
                     }
                 }
             };

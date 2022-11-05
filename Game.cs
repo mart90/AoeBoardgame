@@ -1,9 +1,10 @@
-﻿using AoeBoardgame.Extensions;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace AoeBoardgame
 {
@@ -11,16 +12,26 @@ namespace AoeBoardgame
     {
         public GameState State { get; set; }
         public List<Player> Players { get; set; }
+        public List<Move> MoveHistory { get; set; }
 
         private readonly Map _map;
 
-        public Game(List<Player> players, Map map)
+        private TextNotification _textNotification;
+
+        private Type _placingBuildingType;
+
+        private readonly FontLibrary _fontLibrary;
+
+        public Game(List<Player> players, Map map, FontLibrary fontLibrary)
         {
             Players = players;
             _map = map;
+            _fontLibrary = fontLibrary;
 
             players[0].IsActive = true;
             State = GameState.MyTurn;
+
+            MoveHistory = new List<Move>();
         }
 
         public Player ActivePlayer => Players.Single(e => e.IsActive);
@@ -32,18 +43,61 @@ namespace AoeBoardgame
         public void StartTurn()
         {
             SetFogOfWar();
+
+            UpdateQueues();
+
+            if (ActivePlayer.IsPopulationRevolting)
+            {
+                HandleRevolt();
+            }
         }
 
         public void EndTurn()
         {
             MoverTakeSteps();
 
-            // TODO queues, resources
+            ActivePlayer.ResourcesGatheredLastTurnReset();
+            GatherResources();
+            ConsumeFood();
+
+            // TODO queues
 
             PassTurnToNextPlayer();
         }
 
-        public void SetFogOfWar()
+        private void GatherResources()
+        {
+            foreach (ICanGatherResources gatherer in ActivePlayer.OwnedObjects.FilterByType<ICanGatherResources>())
+            {
+                Resource? resource = gatherer.ResourceGathering;
+
+                if (resource == null)
+                {
+                    continue;
+                }
+
+                int gatherRate = ActivePlayer.GatherRates.Single(e => e.Resource == resource).GatherRate;
+
+                ActivePlayer.ResourceCollection.Single(e => e.Resource == resource).Amount += gatherRate;
+                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == resource).Amount += gatherRate;
+            }
+        }
+
+        private void ConsumeFood()
+        {
+            foreach (IConsumesFood consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesFood>())
+            {
+                ActivePlayer.ResourceCollection.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
+                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
+            }
+        }
+
+        private void HandleRevolt()
+        {
+            // TODO
+        }
+
+        private void SetFogOfWar()
         {
             _map.ResetFogOfWar();
 
@@ -54,27 +108,78 @@ namespace AoeBoardgame
             }
         }
 
-        public void MoverTakeSteps()
+        private void UpdateQueues()
         {
-            foreach (ICanMove mover in ActivePlayer.OwnedObjects.Where(e => e is ICanMove).Cast<ICanMove>())
+            int currentOwnedObjectsCount = ActivePlayer.OwnedObjects.Count();
+
+            for (int i = 0; i < currentOwnedObjectsCount; i++)
+            {
+                if (ActivePlayer.OwnedObjects[i] is IHasQueue queuer && queuer.HasSomethingQueued())
+                {
+                    queuer.QueueTurnsLeft--;
+
+                    if (queuer.QueueTurnsLeft == 0)
+                    {
+                        ResolveEndQueue(queuer);
+                    }
+                }
+            }
+        }
+
+        private void ResolveEndQueue(IHasQueue queuer)
+        {
+            if (queuer is ICanMakeBuildings builder && builder.BuildingTypeQueued != null)
+            {
+                PlaceBuilding(builder.BuildingTypeQueued, builder.BuildingDestinationTile);
+
+                builder.BuildingTypeQueued = null;
+                builder.BuildingDestinationTile = null;
+            }
+            else if (queuer is ICanMakeUnits trainer && trainer.UnitTypeQueued != null)
+            {
+                // TODO
+            }
+            else if (queuer is ICanMakeResearch researcher && researcher.ResearchQueued != null)
+            {
+                // TODO
+            }
+        }
+
+        private void PlaceBuilding(Type buildingType, Tile destinationTile)
+        {
+            destinationTile.BuildingUnderConstruction = false;
+
+            PlayerObject building = ActivePlayer.AddAndGetPlaceableObject(buildingType);
+
+            destinationTile.SetObject(building);
+        }
+
+        private void MoverTakeSteps()
+        {
+            foreach (ICanMove mover in ActivePlayer.OwnedObjects.FilterByType<ICanMove>())
             {
                 if (mover.DestinationTile != null && !mover.HasSpentAllMovementPoints())
                 {
                     Tile sourceTile = _map.GetTileByObject((PlayerObject)mover);
-                    var path = _map.FindPath(sourceTile, mover.DestinationTile);
+                    var path = _map.FindPath(sourceTile, mover.DestinationTile, mover);
 
                     if (path == null)
                     {
-                        // TODO highlight unit, message "the highlighted unit's destination has become invalid. Its path is reset"
+                        // TODO highlight unit
+                        _textNotification = new TextNotification
+                        {
+                            Message = "The highlighted units' destination has become invalid. Their paths were reset",
+                            FontColor = Color.Red
+                        };
                         mover.DestinationTile = null;
                         continue;
                     }
 
-                    _map.ProgressOnPath(mover, path);
+                    Tile endTile = _map.ProgressOnPath(mover, path);
 
-                    if (_map.GetTileByObject((PlayerObject)mover) == mover.DestinationTile)
+                    if (endTile == mover.DestinationTile)
                     {
-                        mover.DestinationTile = null;
+                        ResolveReachedDestination(endTile, (PlayerObject)mover);
                     }
                 }
 
@@ -82,15 +187,48 @@ namespace AoeBoardgame
             }
         }
 
-        public void SelectTileByLocation(Point location)
+        public Tile ProgressOnPath(ICanMove mover, Tile originTile, IEnumerable<Tile> path)
         {
-            var tile = GetTileByLocation(location);
+            int steps = path.Count() >= mover.Speed ? mover.Speed : path.Count();
+            mover.StepsTakenThisTurn += steps;
+
+            Tile endTile = path.ToList()[-1 + steps];
+            _map.MoveObject(originTile, endTile);
+
+            return endTile;
+        }
+
+        private void ResolveReachedDestination(Tile endTile, PlayerObject mover)
+        {
+            if (endTile.Object is IEconomicBuilding building && mover is ICanGatherResources gatherer)
+            {
+                building.Gatherers.Add(gatherer);
+                gatherer.ResourceGathering = building.Resource;
+            }
+        }
+
+        public void LeftClickTileByLocation(Point location)
+        {
+            Tile tile = GetTileByLocation(location);
             if (tile == null)
             {
                 return;
             }
 
+            if (State == GameState.PlacingBuilding)
+            {
+                if (tile.TemporaryColor == TileColor.Teal) // Valid destination
+                {
+                    QueueBuilding(_placingBuildingType, (ICanMakeBuildings)SelectedObject, tile);
+                }
+                else
+                {
+                    ClearCurrentSelection();
+                }
+            }
+
             ClearCurrentSelection();
+
             tile.IsSelected = true;
 
             if (tile.Object is IHasRange objectWithRange)
@@ -111,30 +249,48 @@ namespace AoeBoardgame
 
             if (tile.Object is ICanMove mover)
             {
-                if (mover.DestinationTile != null)
+                if (!(tile.Object is ICanMakeBuildings builder && builder.HasBuildingQueued()))
                 {
-                    var path = _map.FindPath(_map.GetTileByObject(tile.Object), mover.DestinationTile);
-                    path.Highlight(TileColor.Orange);
+                    State = GameState.MovingObject;
+
+                    if (mover.DestinationTile != null)
+                    {
+                        var path = _map.FindPath(_map.GetTileByObject(tile.Object), mover.DestinationTile, mover);
+
+                        if (path == null)
+                        {
+                            _textNotification = new TextNotification
+                            {
+                                Message = "The unit's destination has become invalid. Its path was reset",
+                                FontColor = Color.Red
+                            };
+                            mover.DestinationTile = null;
+                        }
+                        else
+                        {
+                            path.Highlight(TileColor.Orange);
+                        }
+                    }
                 }
             }
-            if (tile.Object is ICanMakeBuildings builder)
-            {
-                foreach (var buildingType in builder.BuildingTypesAllowedToMake)
-                {
 
-                }
+            if (tile.Object is ICanMakeBuildings builder2 && builder2.HasBuildingQueued())
+            {
+                _map.Tiles.Single(e => e == builder2.BuildingDestinationTile).SetTemporaryColor(TileColor.Orange);
             }
         }
 
-        public void SetDestinationByLocation(Point location)
+        public void RightClickTileByLocation(Point location)
         {
-            if (!(SelectedObject is ICanMove mover))
+            if (State != GameState.MovingObject)
             {
                 return;
             }
 
-            var sourceTile = _map.GetTileByObject(SelectedObject);
-            var destinationTile = GetTileByLocation(location);
+            ICanMove mover = (ICanMove)SelectedObject;
+
+            Tile sourceTile = _map.GetTileByObject(SelectedObject);
+            Tile destinationTile = GetTileByLocation(location);
 
             if (destinationTile == sourceTile)
             {
@@ -142,7 +298,7 @@ namespace AoeBoardgame
                 return;
             }
 
-            var path = _map.FindPath(sourceTile, destinationTile);
+            var path = _map.FindPath(sourceTile, destinationTile, mover);
 
             if (path == null)
             {
@@ -155,14 +311,37 @@ namespace AoeBoardgame
 
             if (!mover.HasSpentAllMovementPoints())
             {
-                _map.ProgressOnPath(mover, path);
+                Tile endTile = _map.ProgressOnPath(mover, path);
                 SetFogOfWar();
 
-                if (_map.GetTileByObject((PlayerObject)mover) == mover.DestinationTile)
+                if (endTile == mover.DestinationTile)
                 {
-                    mover.DestinationTile = null;
+                    ResolveReachedDestination(endTile, (PlayerObject)mover);
                 }
             }
+
+            MoveHistory.Add(new Move
+            {
+                PlayerName = ActivePlayer.Name,
+                IsMovement = true,
+                SourceTileId = sourceTile.Id,
+                DestinationTileId = destinationTile.Id
+            });
+        }
+
+        public void QueueBuilding(Type buildingType, ICanMakeBuildings builder, Tile tile)
+        {
+            var factory = ActivePlayer.GetFactoryByObjectType(buildingType);
+
+            ActivePlayer.PayCost(factory.Cost);
+
+            builder.QueueTurnsLeft = factory.TurnsToComplete;
+            builder.BuildingTypeQueued = buildingType;
+            builder.BuildingDestinationTile = tile;
+
+            tile.BuildingUnderConstruction = true;
+
+            State = GameState.MyTurn;
         }
 
         public void HoverOverTileByLocation(Point location)
@@ -186,13 +365,27 @@ namespace AoeBoardgame
                 return;
             }
 
-            if (selectedObject is ICanMove mover)
+            if (State == GameState.MovingObject && selectedObject is ICanMove mover)
             {
                 ClearTemporaryTileColors();
+
                 if (mover.DestinationTile != null)
                 {
-                    var path = _map.FindPath(_map.GetTileByObject(selectedObject), mover.DestinationTile);
-                    path.Highlight(TileColor.Orange);
+                    var path = _map.FindPath(_map.GetTileByObject(selectedObject), mover.DestinationTile, mover);
+
+                    if (path == null)
+                    {
+                        _textNotification = new TextNotification
+                        {
+                            Message = "The unit's destination has become invalid. Its path was reset",
+                            FontColor = Color.Red
+                        };
+                        mover.DestinationTile = null;
+                    }
+                    else
+                    {
+                        path.Highlight(TileColor.Orange);
+                    }
                 }
 
                 if (_map.HoveredTile == _map.SelectedTile)
@@ -200,25 +393,12 @@ namespace AoeBoardgame
                     return;
                 }
 
-                IEnumerable <Tile> pathFromSelectedToHovered = _map.FindPathFromSelectedToHovered();
+                IEnumerable <Tile> pathFromSelectedToHovered = _map.FindPathFromSelectedToHovered(mover);
 
                 if (pathFromSelectedToHovered != null)
                 {
                     pathFromSelectedToHovered.Highlight(TileColor.Teal);
                 }
-            }
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            _map.Draw(spriteBatch);
-
-            ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
-            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
-
-            if (ImGui.Button("End turn", new System.Numerics.Vector2(100, 40)))
-            {
-                EndTurn();
             }
         }
 
@@ -242,7 +422,7 @@ namespace AoeBoardgame
 
             var builder = (ICanMakeBuildings) Players[0].OwnedObjects.Find(e => e is ICanMakeBuildings);
 
-            if (_map.Tiles[361].IsAccessible)
+            if (_map.Tiles[361].SeemsAccessible)
             {
                 Players[0].MakeBuilding<Tower>(builder, _map.Tiles[361]);
             }
@@ -257,6 +437,11 @@ namespace AoeBoardgame
             }
 
             ClearTemporaryTileColors();
+
+            State = GameState.MyTurn;
+
+            _placingBuildingType = null;
+            _textNotification = null;
         }
 
         public void ClearCurrentHover()
@@ -267,7 +452,7 @@ namespace AoeBoardgame
                 hoveredTile.IsHovered = false;
             }
 
-            if (SelectedObject is ICanMove)
+            if (State == GameState.MovingObject && SelectedObject is ICanMove)
             {
                 ClearTemporaryTileColors();
             }
@@ -297,6 +482,221 @@ namespace AoeBoardgame
             }
 
             StartTurn();
+        }
+
+        private void ShowValidBuildingDestinations(Type buildingType)
+        {
+            ClearTemporaryTileColors();
+            _textNotification = null;
+
+            PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(buildingType);
+
+            if (!ActivePlayer.CanAfford(factory.Cost))
+            {
+                _textNotification = new TextNotification
+                {
+                    Message = "Not enough resources",
+                    FontColor = Color.Red
+                };
+                return;
+            }
+
+            Tile originTile = _map.GetTileByObject(SelectedObject);
+
+            IEnumerable<Tile> adjacentTiles = new PathFinder(_map).GetAdjacentTiles(originTile);
+            var validPlacementTiles = new List<Tile>();
+
+            if (buildingType == typeof(LumberCamp))
+            {
+                validPlacementTiles = adjacentTiles
+                    .Where(e => e.Type == TileType.Forest && e.Object == null)
+                    .ToList();
+            }
+            else if (buildingType == typeof(Mine))
+            {
+                var mineTypes = new List<TileType>
+                {
+                    TileType.GoldMine,
+                    TileType.IronMine,
+                    TileType.StoneMine
+                };
+
+                validPlacementTiles = adjacentTiles
+                    .Where(e => mineTypes.Contains(e.Type) && e.Object == null)
+                    .ToList();
+            }
+            else
+            {
+                validPlacementTiles = adjacentTiles
+                    .Where(e => e.Type == TileType.Dirt && e.Object == null)
+                    .ToList();
+            }
+
+            if (validPlacementTiles.Count() == 0)
+            {
+                _textNotification = new TextNotification
+                {
+                    Message = "No valid destination tiles for this building",
+                    FontColor = Color.Red
+                };
+            }
+
+            State = GameState.PlacingBuilding;
+            _placingBuildingType = buildingType;
+            validPlacementTiles.ForEach(e => e.SetTemporaryColor(TileColor.Teal));
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            _map.Draw(spriteBatch);
+
+            if (_textNotification != null)
+            {
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(10, _map.Height * 45 + 5), _textNotification.FontColor);
+            }
+
+            ImGui.Begin("UI");
+            ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
+
+            DrawEconomy();
+            DrawActionsTab();
+
+            if (ImGui.Button("End turn", new System.Numerics.Vector2(200, 40)))
+            {
+                MoveHistory.Add(new Move { IsEndOfTurn = true });
+                EndTurn();
+            }
+
+            ImGui.End();
+        }
+
+        private void DrawEconomy()
+        {
+            IEnumerable<ResourceCollection> resources = ActivePlayer.ResourceCollection;
+            IEnumerable<ResourceCollection> resourcesGathered = ActivePlayer.ResourcesGatheredLastTurn;
+
+            ImGui.BeginChild("Resources", new System.Numerics.Vector2(500, 180));
+            ImGui.SetWindowFontScale(2f);
+
+            int foodCount = resources.Single(e => e.Resource == Resource.Food).Amount;
+            int foodGathered = resourcesGathered.Single(e => e.Resource == Resource.Food).Amount;
+            DrawResourceLine("Food", foodCount, foodGathered, new System.Numerics.Vector4(1, 0, 0, 1));
+
+            int woodCount = resources.Single(e => e.Resource == Resource.Wood).Amount;
+            int woodGathered = resourcesGathered.Single(e => e.Resource == Resource.Wood).Amount;
+            DrawResourceLine("Wood", woodCount, woodGathered, new System.Numerics.Vector4(.4f, .2f, .2f, 1));
+
+            int goldCount = resources.Single(e => e.Resource == Resource.Gold).Amount;
+            int goldGathered = resourcesGathered.Single(e => e.Resource == Resource.Gold).Amount;
+            DrawResourceLine("Gold", goldCount, goldGathered, new System.Numerics.Vector4(1, 1, 0, 1));
+
+            int ironCount = resources.Single(e => e.Resource == Resource.Iron).Amount;
+            int ironGathered = resourcesGathered.Single(e => e.Resource == Resource.Iron).Amount;
+            DrawResourceLine("Iron", ironCount, ironGathered, new System.Numerics.Vector4(0, 0, 1, 1));
+
+            int stoneCount = resources.Single(e => e.Resource == Resource.Stone).Amount;
+            int stoneGathered = resourcesGathered.Single(e => e.Resource == Resource.Stone).Amount;
+            DrawResourceLine("Stone", stoneCount, stoneGathered, new System.Numerics.Vector4(.5f, .5f, .5f, 1));
+
+            ImGui.EndChild();
+        }
+
+        private void DrawResourceLine(string resourceName, int resourceCount, int gatheredLastTurn, System.Numerics.Vector4 colorVector)
+        {
+            string text = "";
+            for (int i = resourceCount.ToString().Length; i < 4; i++)
+            {
+                text += " ";
+            }
+            ImGui.Text(text);
+            ImGui.SameLine();
+
+            ImGui.TextColored(colorVector, resourceCount.ToString());
+            ImGui.SameLine();
+
+            text = "(";
+            if (gatheredLastTurn >= 0)
+            {
+                text += "+";
+            }
+            text += gatheredLastTurn.ToString() + ")";
+            ImGui.TextColored(colorVector, text);
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip("Gained or lost last turn");
+            }
+            ImGui.SameLine();
+
+            text = "";
+            for (int i = gatheredLastTurn < 0 ? gatheredLastTurn.ToString().Length - 1 : gatheredLastTurn.ToString().Length; i < 2; i++)
+            {
+                text += " ";
+            }
+            ImGui.Text(text);
+            ImGui.SameLine();
+
+            ImGui.TextColored(colorVector, resourceName);
+        }
+
+        private void DrawActionsTab()
+        {
+            var defaultButtonSize = new System.Numerics.Vector2(80, 40);
+            ImGui.BeginChild("Actions", new System.Numerics.Vector2(500, 300));
+
+            if (SelectedObject is IHasQueue queuer && queuer.HasSomethingQueued())
+            {
+                if (SelectedObject is ICanMakeBuildings builder2 && builder2.HasBuildingQueued())
+                {
+                    string buildingName = ActivePlayer.GetFactoryByObjectType(builder2.BuildingTypeQueued).UiName;
+                    string str = $"Building a {buildingName}";
+                }
+            }
+
+            if (SelectedObject is ICanMakeBuildings builder)
+            {
+                ImGui.Text("Build");
+
+                int i = 1;
+                foreach (Type buildingType in builder.BuildingTypesAllowedToMake)
+                {
+                    PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(buildingType);
+
+                    var buttonSize = defaultButtonSize;
+
+                    if (factory.UiName.Length > 9)
+                    {
+                        buttonSize.X += 4 * (factory.UiName.Length - 9);
+                    }
+
+                    if (ImGui.Button(factory.UiName, buttonSize))
+                    {
+                        ShowValidBuildingDestinations(buildingType);
+                    }
+
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.SetTooltip(factory.TooltipString());
+                    }
+
+                    if (i % 4 != 0)
+                    {
+                        ImGui.SameLine();
+                    }
+                    
+                    i++;
+                }
+            }
+            if (SelectedObject is ICanMakeUnits)
+            {
+
+            }
+            if (SelectedObject is ICanMakeResearch)
+            {
+
+            }
+
+            ImGui.EndChild();
         }
     }
 }

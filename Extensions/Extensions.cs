@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace AoeBoardgame.Extensions
+namespace AoeBoardgame
 {
-    static class Extensions
+    static class TileListExtensions
     {
         public static void Highlight(this IEnumerable<Tile> tiles, TileColor color)
         {
@@ -10,6 +12,14 @@ namespace AoeBoardgame.Extensions
             {
                 tile.SetTemporaryColor(color);
             }
+        }
+    }
+
+    static class PlayerObjectListExtensions 
+    {
+        public static IEnumerable<T> FilterByType<T>(this IEnumerable<PlayerObject> list)
+        {
+            return list.Where(e => e is T).Cast<T>();
         }
     }
 }

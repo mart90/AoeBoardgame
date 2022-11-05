@@ -11,14 +11,6 @@ namespace AoeBoardgame
         private int _lineOfSight;
         private List<Type> _buildingTypesAllowedToMake;
 
-        public const int FeudalAddedHitPoints = 20;
-        public const int CastleAddedHitPoints = 20;
-        public const int ImperialAddedHitPoints = 20;
-
-        public const int FeudalAddedAttackDamage = 1;
-        public const int CastleAddedAttackDamage = 2;
-        public const int ImperialAddedAttackDamage = 3;
-
         public static readonly List<Type> FeudalAddedBuildings = new List<Type>
         {
             typeof(Stable),
@@ -40,10 +32,14 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Villager);
+            TurnsToComplete = 2;
         }
 
-        protected override void SetBaseStats()
+        protected override void SetBaseValues()
         {
+            UiName = "Villager";
+            UiDescription = "Gathers resources and builds buildings";
+
             _hitPoints = 50;
             _speed = 2;
             _attackDamage = 1;
@@ -56,7 +52,10 @@ namespace AoeBoardgame
                 typeof(Tower) //TODO remove after tests
             };
 
-            Cost = new ResourceCollection(50);
+            Cost = new List<ResourceCollection> 
+            { 
+                new ResourceCollection(Resource.Food, 50)
+            };
         }
 
         public override PlaceableObject Get(Player player)
@@ -68,28 +67,9 @@ namespace AoeBoardgame
                 Speed = _speed,
                 LineOfSight = _lineOfSight,
                 AttackDamage = _attackDamage,
-                BuildingTypesAllowedToMake = _buildingTypesAllowedToMake
+                BuildingTypesAllowedToMake = _buildingTypesAllowedToMake,
+                FoodConsumption = 1
             };
-        }
-
-        public override void UpgradeToFeudalAge()
-        {
-            _hitPoints += FeudalAddedHitPoints;
-            _attackDamage += FeudalAddedAttackDamage;
-            _buildingTypesAllowedToMake.AddRange(FeudalAddedBuildings);
-        }
-
-        public override void UpgradeToCastleAge()
-        {
-            _hitPoints += CastleAddedHitPoints;
-            _attackDamage += CastleAddedAttackDamage;
-            _buildingTypesAllowedToMake.AddRange(CastleAddedBuildings);
-        }
-
-        public override void UpgradeToImperialAge()
-        {
-            _hitPoints += ImperialAddedHitPoints;
-            _attackDamage += ImperialAddedAttackDamage;
         }
     }
 }

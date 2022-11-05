@@ -2,8 +2,9 @@
 
 namespace AoeBoardgame
 {
-    interface ICanMakeResearch
+    interface ICanMakeResearch : IHasQueue
     {
+        Research ResearchQueued { get; set; }
         IEnumerable<Research> AllowedResearch { get; set; }
     }
 }

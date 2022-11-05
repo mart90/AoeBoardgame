@@ -1,9 +1,13 @@
-﻿namespace AoeBoardgame
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace AoeBoardgame
 {
     abstract class PlayerObject : PlaceableObject, IAttackable
     {
         public int HitPoints { get; set; }
         public int MaxHitPoints { get; set; }
+        public int Armor { get; set; }
         public int LineOfSight { get; set; }
 
         protected PlayerObject(TextureLibrary textureLibrary, Player owner)
@@ -24,9 +28,5 @@
             HitPoints += hitPoints;
             MaxHitPoints += hitPoints;
         }
-
-        public abstract void UpgradeToFeudalAge();
-        public abstract void UpgradeToCastleAge();
-        public abstract void UpgradeToImperialAge();
     }
 }

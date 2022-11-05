@@ -2,7 +2,9 @@
 {
     enum GameState
     {
-        MyTurn
+        MyTurn,
+        MovingObject,
+        PlacingBuilding,
     }
 
     enum Resource
@@ -38,7 +40,8 @@
         Green,
         Teal,
         Pink,
-        Orange
+        Orange,
+        Purple
     }
 
     enum Direction

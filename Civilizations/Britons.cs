@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AoeBoardgame
 {
@@ -6,19 +7,11 @@ namespace AoeBoardgame
     {
         public Britons(TextureLibrary textureLibrary) : base(textureLibrary) { }
 
-        public override IEnumerable<PlaceableObjectFactory> GetFactories()
+        public override IEnumerable<PlaceableObjectFactory> GetFactories(Player player)
         {
-            var factories = new List<PlaceableObjectFactory>();
+            var factories = base.GetFactories(player).ToList();
 
-            factories.AddRange(new List<PlaceableObjectFactory>
-            {
-                // Buildings
-                new TownCenterFactory(TextureLibrary),
-                new TowerFactory(TextureLibrary),
-
-                // Units
-                new VillagerFactory(TextureLibrary)
-            });
+            // TODO add unique units/buildings
 
             return factories;
         }

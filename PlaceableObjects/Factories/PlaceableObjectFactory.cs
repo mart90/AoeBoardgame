@@ -1,27 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AoeBoardgame
 {
     abstract class PlaceableObjectFactory
     {
         public Type Type { get; protected set; }
-        public ResourceCollection Cost { get; protected set; }
+        public IEnumerable<ResourceCollection> Cost { get; protected set; }
+        public string UiName { get; set; }
+        public string UiDescription { get; set; }
+        public int TurnsToComplete { get; set; }
 
         protected TextureLibrary TextureLibrary;
-        protected Player Player;
 
         protected PlaceableObjectFactory(TextureLibrary textureLibrary)
         {
             TextureLibrary = textureLibrary;
-            SetBaseStats();
+
+            SetBaseValues();
         }
 
-        protected abstract void SetBaseStats();
+        protected abstract void SetBaseValues();
 
         public abstract PlaceableObject Get(Player player);
 
-        public abstract void UpgradeToFeudalAge();
-        public abstract void UpgradeToCastleAge();
-        public abstract void UpgradeToImperialAge();
+        public string TooltipString()
+        {
+            string str = "Cost: ";
+            bool firstResource = true;
+
+            foreach (ResourceCollection resourceCollection in Cost.Where(e => e.Amount > 0))
+            {
+                if (!firstResource)
+                {
+                    str += ", ";
+                }
+                str += $"{resourceCollection.Amount} {resourceCollection.Resource}";
+                firstResource = false;
+            }
+
+            str += $"\nTurns to complete: {TurnsToComplete}";
+            str += $"\n{UiDescription}";
+
+            return str;
+        }
     }
 }

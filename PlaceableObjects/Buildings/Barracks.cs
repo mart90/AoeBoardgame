@@ -3,10 +3,16 @@ using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
-    class Barracks : PlayerObject, ICanMakeUnits
+    class Barracks : PlayerObject, 
+        ICanMakeUnits,
+        ICanMakeResearch
     {
         public IEnumerable<Type> UnitTypesAllowedToMake { get; set; }
-        public Tile WayPoint { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public Tile WayPoint { get; set; }
+        public int QueueTurnsLeft { get; set; }
+        public Type UnitTypeQueued { get; set; }
+        public Research ResearchQueued { get; set; }
+        public IEnumerable<Research> AllowedResearch { get; set; }
 
         public Barracks(TextureLibrary textureLibrary, Player owner) :
             base(textureLibrary, owner)
@@ -16,21 +22,6 @@ namespace AoeBoardgame
         public void MakeUnit<T>(Tile destinationTile) where T : PlayerObject
         {
 
-        }
-
-        public override void UpgradeToFeudalAge()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void UpgradeToCastleAge()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void UpgradeToImperialAge()
-        {
-            throw new NotImplementedException();
         }
     }
 }

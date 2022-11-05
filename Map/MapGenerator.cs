@@ -71,6 +71,7 @@ namespace AoeBoardgame
                     var tileSize = new Point(_tileDimensions, _tileDimensions);
 
                     var tile = new Tile(_textureLibrary, new Rectangle(tileLocation, tileSize));
+                    tile.Id = _map.Tiles.Count;
                     tile.SetType(TileType.Dirt);
 
                     _map.Tiles.Add(tile);

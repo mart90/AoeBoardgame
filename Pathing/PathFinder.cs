@@ -48,10 +48,8 @@ namespace AoeBoardgame
 
         private IEnumerable<Tile> GetAllTilesInRangeIgnoreObstacles(Tile originTile, int range)
         {
-            int originTileId = _map.Tiles.IndexOf(originTile);
-
             var nodes = new List<Node>();
-            Node originNode = GetNodeByTileId(originTileId);
+            Node originNode = GetNodeByTileId(originTile.Id);
 
             _nodeScores[originNode.Y][originNode.X] = 0;
             _nodeQueue.Enqueue(originNode);
@@ -65,7 +63,7 @@ namespace AoeBoardgame
                     return ConvertNodesToTiles(nodes);
                 }
 
-                IEnumerable<Node> children = GetAccessibleChildren(currentNode, true, true);
+                IEnumerable<Node> children = GetAdjacentNodes(currentNode);
 
                 foreach (var child in children)
                 {
@@ -87,13 +85,10 @@ namespace AoeBoardgame
         }
 
         // Breadth-first search
-        public IEnumerable<Tile> GetOptimalPath(Tile originTile, Tile destinationTile)
+        public IEnumerable<Tile> GetOptimalPath(Tile originTile, Tile destinationTile, ICanMove mover)
         {
-            int originTileId = _map.Tiles.IndexOf(originTile);
-            int destinationTileId = _map.Tiles.IndexOf(destinationTile);
-
-            Node originNode = GetNodeByTileId(originTileId);
-            Node destinationNode = GetNodeByTileId(destinationTileId);
+            Node originNode = GetNodeByTileId(originTile.Id);
+            Node destinationNode = GetNodeByTileId(destinationTile.Id);
 
             _nodeScores[originNode.Y][originNode.X] = 0;
             _nodeQueue.Enqueue(originNode);
@@ -101,7 +96,7 @@ namespace AoeBoardgame
             while (_nodeQueue.Count > 0)
             {
                 Node currentNode = _nodeQueue.Dequeue();
-                IEnumerable<Node> children = GetAccessibleChildren(currentNode);
+                IEnumerable<Node> children = GetAdjacentNodesMover(currentNode, mover);
 
                 foreach (var child in children)
                 {
@@ -128,12 +123,19 @@ namespace AoeBoardgame
             return null; 
         }
 
+        public IEnumerable<Tile> GetAdjacentTiles(Tile originTile)
+        {
+            Node originNode = GetNodeByTileId(originTile.Id);
+            IEnumerable<Node> children = GetAdjacentNodes(originNode);
+            return ConvertNodesToTiles(children);
+        }
+
         private IEnumerable<Tile> ConvertNodesToTiles(IEnumerable<Node> nodes)
         {
             return nodes.Select(e => _map.GetTileByCoordinates(e.X, e.Y)).ToList();
         }
 
-        private IEnumerable<Node> GetAccessibleChildren(Node node, bool objectsAccessible = false, bool ignoreObstacles = false)
+        private IEnumerable<Node> GetAdjacentNodes(Node node)
         {
             var accessibleChildren = new List<Node>();
             List<Direction> directionsToGo = node.GetNewDirections();
@@ -146,14 +148,45 @@ namespace AoeBoardgame
                     continue;
                 }
 
-                int childTileId = child.Y * _map.Width + child.X;
-                if (ignoreObstacles || _map.Tiles[childTileId].IsAccessible)
+                accessibleChildren.Add(child);
+            }
+
+            return accessibleChildren;
+        }
+
+        private IEnumerable<Node> GetAdjacentNodesMover(Node node, ICanMove mover)
+        {
+            var accessibleChildren = new List<Node>();
+            List<Direction> directionsToGo = node.GetNewDirections();
+
+            foreach (var direction in directionsToGo)
+            {
+                Node child = TakeStep(node, direction);
+                if (child == null)
+                {
+                    continue;
+                }
+
+                Tile childTile = _map.Tiles[child.Y * _map.Width + child.X];
+
+                if (childTile.SeemsAccessible)
                 {
                     accessibleChildren.Add(child);
                 }
-                else if (objectsAccessible && _map.Tiles[childTileId].Type == TileType.Dirt)
+                else if (childTile.Object != null) 
                 {
-                    accessibleChildren.Add(child);
+                    if (childTile.Object.Owner == ((PlayerObject)mover).Owner
+                        && childTile.Object is IEconomicBuilding
+                        && mover is ICanGatherResources)
+                    {
+                        accessibleChildren.Add(child);
+                    }
+                    //else if (childTile.Object.Owner != ((PlayerObject)mover).Owner
+                    //    && childTile.Object is IAttackable
+                    //    && mover is IAttacker)
+                    //{
+                    //    accessibleChildren.Add(child);
+                    //}
                 }
             }
 

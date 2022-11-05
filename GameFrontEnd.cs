@@ -38,6 +38,7 @@ namespace AoeBoardgame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             var textureLibrary = new TextureLibrary(Content);
+            var fontLibrary = new FontLibrary(Content);
             var researchLibrary = new ResearchLibrary();
 
             var mapGenerator = new MapGenerator(textureLibrary, 14);
@@ -45,11 +46,11 @@ namespace AoeBoardgame
 
             var players = new List<Player>
             {
-                new Player(new Britons(textureLibrary), TileColor.Blue, researchLibrary),
-                new Player(new Britons(textureLibrary), TileColor.Red, researchLibrary)
+                new Player("Blue", new Britons(textureLibrary), TileColor.Blue, researchLibrary),
+                new Player("Red", new Britons(textureLibrary), TileColor.Red, researchLibrary)
             };
 
-            _game = new Game(players, gameMap);
+            _game = new Game(players, gameMap, fontLibrary);
             _game.PlaceStartingTownCenters();
             _game.StartTurn();
         }
@@ -65,11 +66,11 @@ namespace AoeBoardgame
 
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                _game.SelectTileByLocation(mouseState.Position);
+                _game.LeftClickTileByLocation(mouseState.Position);
             }
             else if (mouseState.RightButton == ButtonState.Pressed)
             {
-                _game.SetDestinationByLocation(mouseState.Position);
+                _game.RightClickTileByLocation(mouseState.Position);
             }
             else
             {

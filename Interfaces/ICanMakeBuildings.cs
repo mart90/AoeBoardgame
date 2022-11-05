@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
-    interface ICanMakeBuildings
+    interface ICanMakeBuildings : IHasQueue
     {
         List<Type> BuildingTypesAllowedToMake { get; set; }
-
-        void MakeBuilding<T>(Tile destinationTile) where T : PlayerObject;
+        Type BuildingTypeQueued { get; set; }
+        Tile BuildingDestinationTile { get; set; }
     }
 }

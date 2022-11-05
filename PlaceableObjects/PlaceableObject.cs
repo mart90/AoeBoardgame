@@ -11,7 +11,7 @@ namespace AoeBoardgame
         protected Texture2D Texture;
         protected TextureLibrary TextureLibrary;
 
-        public void Draw(SpriteBatch spriteBatch, Rectangle location)
+        public virtual void Draw(SpriteBatch spriteBatch, Rectangle location)
         {
             spriteBatch.Draw(Texture, location, Color.White);
         }

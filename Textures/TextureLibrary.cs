@@ -13,6 +13,8 @@ namespace AoeBoardgame
         private readonly List<TileColorTexture> _colorTextures;
 
         public Texture2D FogOfWar { get; private set; }
+        public Texture2D TileUnderConstruction { get; private set; }
+        public Texture2D SomethingInQueue { get; private set; }
         
         public TextureLibrary(ContentManager contentManager)
         {
@@ -25,6 +27,8 @@ namespace AoeBoardgame
             AddColorTextures(contentManager);
 
             FogOfWar = contentManager.Load<Texture2D>("Colors/fow");
+            TileUnderConstruction = contentManager.Load<Texture2D>("Misc/hammer");
+            SomethingInQueue = contentManager.Load<Texture2D>("Misc/hourglass");
         }
 
         public Texture2D GetObjectTextureByType(Type tileObjectType)
@@ -47,27 +51,27 @@ namespace AoeBoardgame
             _tileTextures.Add(new TileTexture
             {
                 TileType = TileType.Dirt,
-                Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_06")
+                Texture = contentManager.Load<Texture2D>("Tiles/dirt_06")
             });
             _tileTextures.Add(new TileTexture
             {
                 TileType = TileType.Forest,
-                Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Grass/grass_12")
+                Texture = contentManager.Load<Texture2D>("Tiles/grass_12")
             });
             _tileTextures.Add(new TileTexture
             {
                 TileType = TileType.StoneMine,
-                Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_18")
+                Texture = contentManager.Load<Texture2D>("Tiles/dirt_18")
             });
             _tileTextures.Add(new TileTexture
             {
                 TileType = TileType.GoldMine,
-                Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_20")
+                Texture = contentManager.Load<Texture2D>("Tiles/dirt_20")
             });
             _tileTextures.Add(new TileTexture
             {
                 TileType = TileType.IronMine,
-                Texture = contentManager.Load<Texture2D>("Tiles/Terrain/Dirt/dirt_21")
+                Texture = contentManager.Load<Texture2D>("Tiles/dirt_21")
             });
         }
 
@@ -110,12 +114,12 @@ namespace AoeBoardgame
             _objectTextures.Add(new PlaceableObjectTexture
             {
                 PlaceableObjectType = typeof(Barracks),
-                Texture = contentManager.Load<Texture2D>("Objects/mill_redBrick")
+                Texture = contentManager.Load<Texture2D>("Objects/castle_open")
             });
             _objectTextures.Add(new PlaceableObjectTexture
             {
                 PlaceableObjectType = typeof(Stable),
-                Texture = contentManager.Load<Texture2D>("Objects/house")
+                Texture = contentManager.Load<Texture2D>("Objects/mill_redBrick")
             });
             _objectTextures.Add(new PlaceableObjectTexture
             {
@@ -153,19 +157,16 @@ namespace AoeBoardgame
 
         private void AddColorTextures(ContentManager contentManager)
         {
-            // Player colors
             _colorTextures.Add(new TileColorTexture
             {
-                TileColor = TileColor.Blue,
+                TileColor = TileColor.Blue, // Player 1
                 Texture = contentManager.Load<Texture2D>("Colors/blue")
             });
             _colorTextures.Add(new TileColorTexture
             {
-                TileColor = TileColor.Red,
+                TileColor = TileColor.Red, // Player 2
                 Texture = contentManager.Load<Texture2D>("Colors/red")
             });
-
-            // Misc
             _colorTextures.Add(new TileColorTexture
             {
                 TileColor = TileColor.Green, // Selected
@@ -185,6 +186,11 @@ namespace AoeBoardgame
             {
                 TileColor = TileColor.Orange, // Destination
                 Texture = contentManager.Load<Texture2D>("Colors/orange")
+            });
+            _colorTextures.Add(new TileColorTexture
+            {
+                TileColor = TileColor.Purple,
+                Texture = contentManager.Load<Texture2D>("Colors/purple")
             });
         }
     }

@@ -78,7 +78,19 @@ namespace AoeBoardgame
 
         public Tile GetTileByCoordinates(int x, int y) => Tiles[y * Width + x];
 
-        public Tile GetTileByObject(PlaceableObject obj) => Tiles.Single(e => e.Object == obj);
+        public Tile GetTileByObject(PlaceableObject obj)
+        {
+            Tile tile = Tiles.SingleOrDefault(e => e.Object == obj);
+
+            if (tile == null)
+            {
+                // Object is part of an army or gathering
+
+                return null;
+            }
+
+            return tile;
+        }
 
         public int GetXCoordinate(Tile tile)
         {
@@ -92,14 +104,14 @@ namespace AoeBoardgame
             return tileId / Width;
         }
 
-        public IEnumerable<Tile> FindPathFromSelectedToHovered()
+        public IEnumerable<Tile> FindPathFromSelectedToHovered(ICanMove mover)
         {
-            return new PathFinder(this).GetOptimalPath(SelectedTile, HoveredTile);
+            return new PathFinder(this).GetOptimalPath(SelectedTile, HoveredTile, mover);
         }
 
-        public IEnumerable<Tile> FindPath(Tile source, Tile destination)
+        public IEnumerable<Tile> FindPath(Tile source, Tile destination, ICanMove mover)
         {
-            return new PathFinder(this).GetOptimalPath(source, destination);
+            return new PathFinder(this).GetOptimalPath(source, destination, mover);
         }
 
         public IEnumerable<Tile> FindTilesInRangeOfSelected(int range)
@@ -119,11 +131,15 @@ namespace AoeBoardgame
             }
         }
 
-        public void ProgressOnPath(ICanMove mover, IEnumerable<Tile> path)
+        public Tile ProgressOnPath(ICanMove mover, IEnumerable<Tile> path)
         {
             int steps = path.Count() >= mover.Speed ? mover.Speed : path.Count();
             mover.StepsTakenThisTurn += steps;
-            MoveObject(GetTileByObject((PlaceableObject)mover), path.ToList()[-1 + steps]);
+
+            Tile endTile = path.ToList()[-1 + steps];
+            MoveObject(GetTileByObject((PlaceableObject)mover), endTile);
+
+            return endTile;
         }
 
         public void ResetFogOfWar()
