@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Linq;
-using Microsoft.Xna.Framework;
 
 namespace AoeBoardgame
 {
+    /// <summary>
+    /// For now we are assuming a 25x21 map
+    /// </summary>
     class MapGenerator
     {
         private readonly TextureLibrary _textureLibrary;
@@ -24,36 +26,74 @@ namespace AoeBoardgame
 
             MakeBaseTiles();
 
-            AddRandomlyGeneratedTiles(TileType.Forest, 0.15);
-            AddRandomlyGeneratedTiles(TileType.IronMine, 0.03);
-            AddRandomlyGeneratedTiles(TileType.StoneMine, 0.02);
-            AddRandomlyGeneratedTiles(TileType.GoldMine, 0.02);
+            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(0, 0, 13, 9)); // Top left
+            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(13, 0, 13, 9)); // Top right
 
-            AddRandomlyGeneratedGaiaObjects<Berries>(0.05);
+            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(0, 12, 13, 9)); // Bottom left
+            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(13, 12, 13, 9)); // Bottom right
+
+            AddRandomlyGeneratedTiles(TileType.Forest, 4, new Rectangle(0, 10, 4, 3)); // Left middle
+            AddRandomlyGeneratedTiles(TileType.Forest, 4, new Rectangle(22, 10, 4, 3)); // Right middle
+
+            AddRandomlyGeneratedTiles(TileType.Forest, 8, new Rectangle(8, 9, 10, 3)); // Middle
+
+            AddRandomlyGeneratedTiles(TileType.GoldMine, 2, new Rectangle(0, 3, 10, 5)); // Top left
+            AddRandomlyGeneratedTiles(TileType.GoldMine, 2, new Rectangle(15, 3, 10, 5)); // Top right
+
+            AddRandomlyGeneratedTiles(TileType.GoldMine, 2, new Rectangle(0, 13, 10, 5)); // Bottom left
+            AddRandomlyGeneratedTiles(TileType.GoldMine, 2, new Rectangle(15, 13, 10, 5)); // Bottom right
+
+            AddRandomlyGeneratedTiles(TileType.GoldMine, 3, new Rectangle(11, 0, 3, 21)); // Middle
+
+            AddRandomlyGeneratedTiles(TileType.IronMine, 2, new Rectangle(0, 3, 10, 5)); // Top left
+            AddRandomlyGeneratedTiles(TileType.IronMine, 2, new Rectangle(15, 3, 10, 5)); // Top right
+
+            AddRandomlyGeneratedTiles(TileType.IronMine, 2, new Rectangle(0, 13, 10, 5)); // Bottom left
+            AddRandomlyGeneratedTiles(TileType.IronMine, 2, new Rectangle(15, 13, 10, 5)); // Bottom right
+
+            AddRandomlyGeneratedTiles(TileType.IronMine, 3, new Rectangle(11, 0, 3, 21)); // Middle
+
+            AddRandomlyGeneratedTiles(TileType.StoneMine, 1, new Rectangle(0, 3, 10, 5)); // Top left
+            AddRandomlyGeneratedTiles(TileType.StoneMine, 1, new Rectangle(15, 3, 10, 5)); // Top right
+
+            AddRandomlyGeneratedTiles(TileType.StoneMine, 1, new Rectangle(0, 13, 10, 5)); // Bottom left
+            AddRandomlyGeneratedTiles(TileType.StoneMine, 1, new Rectangle(15, 13, 10, 5)); // Bottom right
+
+            AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(0, 1, 10, 7)); // Top left
+            AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(15, 1, 10, 7)); // Top right
+
+            AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(0, 13, 10, 7)); // Bottom left
+            AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(15, 13, 10, 7)); // Bottom right
+
+            AddRandomlyGeneratedGaiaObjects<Deer>(5, new Rectangle(11, 0, 3, 21)); // Middle
+
+            AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(0, 1, 10, 7)); // Top left
+            AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(15, 1, 10, 7)); // Top right
+
+            AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(0, 13, 10, 7)); // Bottom left
+            AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(15, 13, 10, 7)); // Bottom right
+
+            AddRandomlyGeneratedGaiaObjects<Boar>(3, new Rectangle(11, 0, 3, 21)); // Middle
 
             return _map;
         }
 
-        public void AddRandomlyGeneratedTiles(TileType tileType, double fractionOfMap)
+        public void AddRandomlyGeneratedTiles(TileType tileType, int amount, Rectangle mapLocation)
         {
-            int amountToAdd = (int) Math.Round(fractionOfMap * _map.Tiles.Count);
-
-            for (var i = 0; i < amountToAdd; i++)
+            for (var i = 0; i < amount; i++)
             {
-                _map.GetRandomUnoccupiedTile().SetType(tileType);
+                Tile tile = _map.GetRandomUnoccupiedTileInRange(mapLocation);
+                tile.SetType(tileType);
             }
         }
 
-        public void AddRandomlyGeneratedGaiaObjects<T>(double fractionOfDirtTiles) 
-            where T : GaiaObject
+        public void AddRandomlyGeneratedGaiaObjects<T>(int amount, Rectangle mapLocation) where T : GaiaObject
         {
-            IEnumerable<Tile> dirtTiles = _map.GetTilesByType(TileType.Dirt);
-            int amountToAdd = (int)Math.Round(fractionOfDirtTiles * dirtTiles.Count());
-
-            for (var i = 0; i < amountToAdd; i++)
+            for (var i = 0; i < amount; i++)
             {
-                GaiaObject obj = (T) Activator.CreateInstance(typeof(T), _textureLibrary);
-                _map.GetRandomUnoccupiedTile().SetObject(obj);
+                Tile tile = _map.GetRandomUnoccupiedTileInRange(mapLocation);
+                GaiaObject obj = (T)Activator.CreateInstance(typeof(T), _textureLibrary);
+                tile.SetObject(obj);
             }
         }
 
@@ -72,6 +112,8 @@ namespace AoeBoardgame
 
                     var tile = new Tile(_textureLibrary, new Rectangle(tileLocation, tileSize));
                     tile.Id = _map.Tiles.Count;
+                    tile.X = x;
+                    tile.Y = y;
                     tile.SetType(TileType.Dirt);
 
                     _map.Tiles.Add(tile);

@@ -12,6 +12,8 @@ namespace AoeBoardgame
 
             private readonly Direction _lastDirection;
 
+            public bool PathStopsHere { get; set; }
+
             public Node(int x, int y, Node lastNode = null, Direction lastDirection = Direction.Default)
             {
                 X = x;

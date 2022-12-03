@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace AoeBoardgame
 {
@@ -32,9 +33,14 @@ namespace AoeBoardgame
             }
         }
 
-        public IEnumerable<Tile> GetAllTilesInRange(Tile originTile, int range)
+        public IEnumerable<Tile> GetAllTilesInRange(Tile originTile, int range, bool hasMinimumRange = false)
         {
-            IEnumerable<Tile> tiles = GetAllTilesInRangeIgnoreObstacles(originTile, range);
+            List<Tile> tiles = GetAllTilesInRangeIgnoreObstacles(originTile, range).ToList();
+
+            if (hasMinimumRange)
+            {
+                tiles.RemoveAll(e => GetAdjacentTiles(originTile).Contains(e));
+            }
 
             var rangeableTiles = new List<Tile>();
 
@@ -43,7 +49,156 @@ namespace AoeBoardgame
                 rangeableTiles.AddRange(GetRangeableTilesStraightLine(originTile, destinationTile));
             }
 
-            return rangeableTiles;
+            return rangeableTiles.Distinct();
+        }
+
+        /// <summary>
+        /// Breadth-first search
+        /// </summary>
+        public IEnumerable<Tile> GetOptimalPath(Tile originTile, Tile destinationTile, ICanMove mover)
+        {
+            Node originNode = GetNodeByTileId(originTile.Id);
+            Node destinationNode = GetNodeByTileId(destinationTile.Id);
+
+            _nodeScores[originNode.Y][originNode.X] = 0;
+            _nodeQueue.Enqueue(originNode);
+
+            while (_nodeQueue.Count > 0)
+            {
+                Node currentNode = _nodeQueue.Dequeue();
+                IEnumerable<Node> children = GetAdjacentNodesMover(currentNode, mover);
+
+                foreach (var child in children)
+                {
+                    if (child.X == destinationNode.X && child.Y == destinationNode.Y)
+                    {
+                        var bestPath = child.NodesVisited;
+                        bestPath.RemoveAt(0);
+                        bestPath.Add(destinationNode);
+                        return ConvertNodesToTiles(bestPath);
+                    }
+
+                    int childScore = _nodeScores[child.Y][child.X];
+                    if (childScore != -1 && childScore <= child.NodesVisited.Count) 
+                    {
+                        // There is another path that reached this tile in less (or an equal amount of) steps. Discard
+                        continue;
+                    }
+
+                    _nodeScores[child.Y][child.X] = child.NodesVisited.Count;
+                    
+                    if (!child.PathStopsHere)
+                    {
+                        _nodeQueue.Enqueue(child);
+                    }
+                }
+            }
+
+            // No path found
+            return null; 
+        }
+
+        public IEnumerable<Tile> GetAdjacentTiles(Tile originTile)
+        {
+            Node originNode = GetNodeByTileId(originTile.Id);
+            IEnumerable<Node> children = GetAdjacentNodes(originNode);
+            return ConvertNodesToTiles(children);
+        }
+
+        /// <summary>
+        /// Retreats in the direction opposite to where the attack came from if that tile is free. If it's not free, we check for free tiles going clockwise
+        /// </summary>
+        public Tile GetRetreatingTile(Tile originTile, Tile attackerTile)
+        {
+            Direction retreatDirection;
+
+            Node originNode = GetNodeByTileId(originTile.Id);
+            Node attackerNode = GetNodeByTileId(attackerTile.Id);
+
+            int originTileX = originNode.X;
+            int originTileY = originNode.Y;
+
+            int attackerTileX = attackerNode.X;
+            int attackerTileY = attackerNode.Y;
+
+            bool evenRow = originTileY % 2 == 0;
+
+            if (originTileX < attackerTileX && originTileY == attackerTileY)
+            {
+                retreatDirection = Direction.West;
+            }
+            else if (originTileX < attackerTileX && originTileY > attackerTileY)
+            {
+                retreatDirection = Direction.SouthWest;
+            }
+            else if (originTileX < attackerTileX && originTileY < attackerTileY)
+            {
+                retreatDirection = Direction.NorthWest;
+            }
+            else if (originTileX > attackerTileX && originTileY == attackerTileY)
+            {
+                retreatDirection = Direction.East;
+            }
+            else if (originTileX > attackerTileX && originTileY > attackerTileY)
+            {
+                retreatDirection = Direction.SouthEast;
+            }
+            else if (originTileX > attackerTileX && originTileY < attackerTileY)
+            {
+                retreatDirection = Direction.NorthEast;
+            }
+            else if (originTileX == attackerTileX && originTileY < attackerTileY && evenRow)
+            {
+                retreatDirection = Direction.NorthWest;
+            }
+            else if (originTileX == attackerTileX && originTileY < attackerTileY && !evenRow)
+            {
+                retreatDirection = Direction.NorthEast;
+            }
+            else if (originTileX == attackerTileX && originTileY > attackerTileY && evenRow)
+            {
+                retreatDirection = Direction.SouthWest;
+            }
+            else // originTileX == attackerTileX && originTileY > attackerTileY && !evenRow
+            {
+                retreatDirection = Direction.SouthEast;
+            }
+
+            Tile destinationTile;
+
+            Node destinationNode = TakeStep(originNode, retreatDirection);
+
+            if (destinationNode != null)
+            {
+                destinationTile = NodeToTile(destinationNode);
+
+                if (destinationTile.SeemsAccessibleGaia)
+                {
+                    return destinationTile;
+                }
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                retreatDirection = GetNextDirectionClockwise(retreatDirection);
+
+                destinationNode = TakeStep(originNode, retreatDirection);
+                
+                if (destinationNode == null)
+                {
+                    continue;
+                }
+
+                destinationTile = NodeToTile(destinationNode);
+
+                if (destinationTile.SeemsAccessibleGaia)
+                {
+                    return destinationTile;
+                }
+            }
+
+            // No tiles to retreat to
+            return null;
         }
 
         private IEnumerable<Tile> GetAllTilesInRangeIgnoreObstacles(Tile originTile, int range)
@@ -84,52 +239,6 @@ namespace AoeBoardgame
             return null;
         }
 
-        // Breadth-first search
-        public IEnumerable<Tile> GetOptimalPath(Tile originTile, Tile destinationTile, ICanMove mover)
-        {
-            Node originNode = GetNodeByTileId(originTile.Id);
-            Node destinationNode = GetNodeByTileId(destinationTile.Id);
-
-            _nodeScores[originNode.Y][originNode.X] = 0;
-            _nodeQueue.Enqueue(originNode);
-
-            while (_nodeQueue.Count > 0)
-            {
-                Node currentNode = _nodeQueue.Dequeue();
-                IEnumerable<Node> children = GetAdjacentNodesMover(currentNode, mover);
-
-                foreach (var child in children)
-                {
-                    if (child.X == destinationNode.X && child.Y == destinationNode.Y)
-                    {
-                        var bestPath = child.NodesVisited;
-                        bestPath.RemoveAt(0);
-                        bestPath.Add(destinationNode);
-                        return ConvertNodesToTiles(bestPath);
-                    }
-
-                    int childScore = _nodeScores[child.Y][child.X];
-                    if (childScore != -1 && childScore <= child.NodesVisited.Count) 
-                    {
-                        // There is another path that reached this tile in less (or an equal amount of) steps. Discard
-                        continue;
-                    }
-
-                    _nodeScores[child.Y][child.X] = child.NodesVisited.Count;
-                    _nodeQueue.Enqueue(child);
-                }
-            }
-            // No path found
-            return null; 
-        }
-
-        public IEnumerable<Tile> GetAdjacentTiles(Tile originTile)
-        {
-            Node originNode = GetNodeByTileId(originTile.Id);
-            IEnumerable<Node> children = GetAdjacentNodes(originNode);
-            return ConvertNodesToTiles(children);
-        }
-
         private IEnumerable<Tile> ConvertNodesToTiles(IEnumerable<Node> nodes)
         {
             return nodes.Select(e => _map.GetTileByCoordinates(e.X, e.Y)).ToList();
@@ -167,26 +276,42 @@ namespace AoeBoardgame
                     continue;
                 }
 
-                Tile childTile = _map.Tiles[child.Y * _map.Width + child.X];
+                Tile childTile = NodeToTile(child);
 
                 if (childTile.SeemsAccessible)
                 {
                     accessibleChildren.Add(child);
                 }
-                else if (childTile.Object != null) 
+                else if (childTile.Object != null && childTile.Object is IAttackable attackableObject)
                 {
-                    if (childTile.Object.Owner == ((PlayerObject)mover).Owner
-                        && childTile.Object is IEconomicBuilding
-                        && mover is ICanGatherResources)
+                    child.PathStopsHere = true;
+
+                    if (attackableObject is PlayerObject playerObject && playerObject.Owner == ((PlayerObject)mover).Owner)
+                    {
+                        if (childTile.Object is IEconomicBuilding economicBuilding && mover is ICanGatherResources)
+                        {
+                            if (mover is GathererGroup group && group.Units.Count <= economicBuilding.MaxUnits - economicBuilding.Units.Count)
+                            {
+                                accessibleChildren.Add(child);
+                            }
+                            else if (economicBuilding.Units.Count < economicBuilding.MaxUnits)
+                            {
+                                accessibleChildren.Add(child);
+                            }
+                        }
+                        else if (childTile.Object is Army army && mover.GetType() == army.UnitType && army.Units.Count < army.MaxUnits)
+                        {
+                            accessibleChildren.Add(child);
+                        }
+                        else if (mover is ICanFormGroup && mover.GetType() == childTile.Object.GetType())
+                        {
+                            accessibleChildren.Add(child);
+                        }
+                    }
+                    else if (mover is IAttacker)
                     {
                         accessibleChildren.Add(child);
                     }
-                    //else if (childTile.Object.Owner != ((PlayerObject)mover).Owner
-                    //    && childTile.Object is IAttackable
-                    //    && mover is IAttacker)
-                    //{
-                    //    accessibleChildren.Add(child);
-                    //}
                 }
             }
 
@@ -235,6 +360,11 @@ namespace AoeBoardgame
             return new Node(childNodeX, childNodeY, parentNode, direction);
         }
 
+        private Tile NodeToTile(Node node)
+        {
+            return _map.Tiles[node.Y * _map.Width + node.X];
+        }
+
         private Node GetNodeByTileId(int id)
         {
             var x = id % _map.Width;
@@ -242,7 +372,7 @@ namespace AoeBoardgame
             return new Node(x, y);
         }
 
-        // TODO optimize?
+        // TODO optimize if need?
         private IEnumerable<Tile> GetRangeableTilesStraightLine(Tile originTile, Tile destinationTile)
         {
             var rangeableTiles = new List<Tile>();
@@ -277,7 +407,7 @@ namespace AoeBoardgame
 
                     Tile tile = _map.GetTileByLocation(point);
 
-                    if (tile == null || rangeableTiles.Contains(tile))
+                    if (tile == null || tile == originTile || rangeableTiles.Contains(tile))
                     {
                         continue;
                     }
@@ -300,7 +430,7 @@ namespace AoeBoardgame
 
                     Tile tile = _map.GetTileByLocation(point);
 
-                    if (tile == null || rangeableTiles.Contains(tile))
+                    if (tile == null || tile == originTile || rangeableTiles.Contains(tile))
                     {
                         continue;
                     }
@@ -325,7 +455,7 @@ namespace AoeBoardgame
 
                         Tile tile = _map.GetTileByLocation(point);
 
-                        if (tile == null || rangeableTiles.Contains(tile))
+                        if (tile == null || tile == originTile || rangeableTiles.Contains(tile))
                         {
                             continue;
                         }
@@ -348,7 +478,7 @@ namespace AoeBoardgame
 
                         Tile tile = _map.GetTileByLocation(point);
 
-                        if (tile == null || rangeableTiles.Contains(tile))
+                        if (tile == null || tile == originTile || rangeableTiles.Contains(tile))
                         {
                             continue;
                         }
@@ -364,6 +494,20 @@ namespace AoeBoardgame
             }
 
             return rangeableTiles;
+        }
+
+        private Direction GetNextDirectionClockwise(Direction lastDirection)
+        {
+            switch (lastDirection)
+            {
+                case Direction.NorthEast: return Direction.East;
+                case Direction.East: return Direction.SouthEast;
+                case Direction.SouthEast: return Direction.SouthWest;
+                case Direction.SouthWest: return Direction.West;
+                case Direction.West: return Direction.NorthWest;
+                case Direction.NorthWest: return Direction.NorthEast;
+                default: return Direction.Default;
+            }
         }
     }
 }

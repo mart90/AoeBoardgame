@@ -7,7 +7,7 @@ namespace AoeBoardgame
     abstract class PlaceableObjectFactory
     {
         public Type Type { get; protected set; }
-        public IEnumerable<ResourceCollection> Cost { get; protected set; }
+        public IEnumerable<ResourceCollection> Cost { get; set; }
         public string UiName { get; set; }
         public string UiDescription { get; set; }
         public int TurnsToComplete { get; set; }

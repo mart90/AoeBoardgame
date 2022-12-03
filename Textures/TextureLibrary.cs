@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.ImGui;
 
 namespace AoeBoardgame
 {
     class TextureLibrary
     {
+        private readonly ImGUIRenderer _imGUIRenderer;
+
         private readonly List<TileTexture> _tileTextures;
         private readonly List<PlaceableObjectTexture> _objectTextures;
         private readonly List<TileColorTexture> _colorTextures;
@@ -15,12 +18,15 @@ namespace AoeBoardgame
         public Texture2D FogOfWar { get; private set; }
         public Texture2D TileUnderConstruction { get; private set; }
         public Texture2D SomethingInQueue { get; private set; }
-        
-        public TextureLibrary(ContentManager contentManager)
+        public Texture2D ArmyStar { get; private set; }
+        public Texture2D HpBar { get; private set; }
+
+        public TextureLibrary(ContentManager contentManager, ImGUIRenderer imGUIRenderer)
         {
             _tileTextures = new List<TileTexture>();
             _objectTextures = new List<PlaceableObjectTexture>();
             _colorTextures = new List<TileColorTexture>();
+            _imGUIRenderer = imGUIRenderer;
 
             AddTileTextures(contentManager);
             AddObjectTextures(contentManager);
@@ -29,11 +35,13 @@ namespace AoeBoardgame
             FogOfWar = contentManager.Load<Texture2D>("Colors/fow");
             TileUnderConstruction = contentManager.Load<Texture2D>("Misc/hammer");
             SomethingInQueue = contentManager.Load<Texture2D>("Misc/hourglass");
+            ArmyStar = contentManager.Load<Texture2D>("Misc/star");
+            HpBar = contentManager.Load<Texture2D>("Misc/hp");
         }
 
         public Texture2D GetObjectTextureByType(Type tileObjectType)
         {
-            return _objectTextures.Single(e => e.PlaceableObjectType == tileObjectType).Texture;
+            return _objectTextures.SingleOrDefault(e => e.PlaceableObjectType == tileObjectType)?.Texture;
         }
 
         public Texture2D GetTileTextureByType(TileType tileType)
@@ -44,6 +52,11 @@ namespace AoeBoardgame
         public Texture2D GetTileColorByType(TileColor tileColor)
         {
             return _colorTextures.Single(e => e.TileColor == tileColor).Texture;
+        }
+
+        public IntPtr TextureToIntPtr(Texture2D texture)
+        {
+            return _imGUIRenderer.BindTexture(texture);
         }
 
         private void AddTileTextures(ContentManager contentManager)
@@ -77,13 +90,17 @@ namespace AoeBoardgame
 
         private void AddObjectTextures(ContentManager contentManager)
         {
-            // Resources
+            // Gaia
             _objectTextures.Add(new PlaceableObjectTexture
             {
-                PlaceableObjectType = typeof(Berries),
-                Texture = contentManager.Load<Texture2D>("Objects/berries")
+                PlaceableObjectType = typeof(Deer),
+                Texture = contentManager.Load<Texture2D>("Objects/deer")
             });
-            // TODO Boar
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Boar),
+                Texture = contentManager.Load<Texture2D>("Objects/boar")
+            });
 
             // Buildings
             _objectTextures.Add(new PlaceableObjectTexture
@@ -128,11 +145,6 @@ namespace AoeBoardgame
             });
             _objectTextures.Add(new PlaceableObjectTexture
             {
-                PlaceableObjectType = typeof(Church),
-                Texture = contentManager.Load<Texture2D>("Objects/church")
-            });
-            _objectTextures.Add(new PlaceableObjectTexture
-            {
                 PlaceableObjectType = typeof(LumberCamp),
                 Texture = contentManager.Load<Texture2D>("Objects/housing")
             });
@@ -144,7 +156,12 @@ namespace AoeBoardgame
             _objectTextures.Add(new PlaceableObjectTexture
             {
                 PlaceableObjectType = typeof(Farm),
-                Texture = contentManager.Load<Texture2D>("Objects/hedge")
+                Texture = contentManager.Load<Texture2D>("Objects/farm")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(SiegeWorkshop),
+                Texture = contentManager.Load<Texture2D>("Objects/siege_workshop")
             });
 
             // Units
@@ -152,6 +169,51 @@ namespace AoeBoardgame
             {
                 PlaceableObjectType = typeof(Villager),
                 Texture = contentManager.Load<Texture2D>("Objects/villager2")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Archer),
+                Texture = contentManager.Load<Texture2D>("Objects/archer")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Catapult),
+                Texture = contentManager.Load<Texture2D>("Objects/catapult")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Knight),
+                Texture = contentManager.Load<Texture2D>("Objects/knight")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Longbowman),
+                Texture = contentManager.Load<Texture2D>("Objects/longbowman")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Pikeman),
+                Texture = contentManager.Load<Texture2D>("Objects/pikeman")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Scout),
+                Texture = contentManager.Load<Texture2D>("Objects/scout")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Swordsman),
+                Texture = contentManager.Load<Texture2D>("Objects/swordsman")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(ThrowingAxeman),
+                Texture = contentManager.Load<Texture2D>("Objects/throwing_axeman")
+            });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Trebuchet),
+                Texture = contentManager.Load<Texture2D>("Objects/trebuchet")
             });
         }
 

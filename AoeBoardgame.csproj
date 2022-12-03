@@ -44,22 +44,32 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Civilizations\Britons.cs" />
+    <Compile Include="Civilizations\France.cs" />
+    <Compile Include="Civilizations\England.cs" />
     <Compile Include="Civilizations\Civilization.cs" />
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="Extensions\InterfaceMethods.cs" />
     <Compile Include="FontLibrary.cs" />
-    <Compile Include="Game.cs" />
+    <Compile Include="Game\Game.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Economy\ResourceGatherRate.cs" />
-    <Compile Include="Interfaces\ICanFormArmy.cs" />
-    <Compile Include="Interfaces\IEconomicBuilding.cs" />
-    <Compile Include="Interfaces\IHasQueue.cs" />
-    <Compile Include="Move.cs" />
+    <Compile Include="Attributes\IArcher.cs" />
+    <Compile Include="Attributes\IMilitaryUnit.cs" />
+    <Compile Include="Attributes\IInfantry.cs" />
+    <Compile Include="Attributes\ICavalry.cs" />
+    <Compile Include="Attributes\IAttackable.cs" />
+    <Compile Include="Attributes\ICanFormGroup.cs" />
+    <Compile Include="Attributes\ICanMakeBuildingsFactory.cs" />
+    <Compile Include="Attributes\ICanMakeResearchFactory.cs" />
+    <Compile Include="Attributes\ICanMakeUnitsFactory.cs" />
+    <Compile Include="Attributes\ICanBeUpgraded.cs" />
+    <Compile Include="Attributes\IContainsUnits.cs" />
+    <Compile Include="Attributes\IEconomicBuilding.cs" />
+    <Compile Include="Attributes\IHasQueue.cs" />
+    <Compile Include="Game\Move.cs" />
+    <Compile Include="PlaceableObjects\Buildings\SiegeWorkshop.cs" />
     <Compile Include="PlaceableObjects\Buildings\Farm.cs" />
     <Compile Include="PlaceableObjects\Buildings\Castle.cs" />
     <Compile Include="PlaceableObjects\Buildings\LumberCamp.cs" />
-    <Compile Include="PlaceableObjects\Buildings\Church.cs" />
     <Compile Include="PlaceableObjects\Buildings\Blacksmith.cs" />
     <Compile Include="PlaceableObjects\Buildings\Stable.cs" />
     <Compile Include="PlaceableObjects\Buildings\Barracks.cs" />
@@ -68,32 +78,62 @@
     <Compile Include="PlaceableObjects\Buildings\GuardTower.cs" />
     <Compile Include="PlaceableObjects\Buildings\Tower.cs" />
     <Compile Include="PlaceableObjects\Buildings\TownCenter.cs" />
-    <Compile Include="PlaceableObjects\Factories\MineFactory.cs" />
-    <Compile Include="PlaceableObjects\Factories\LumberCampFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\SiegeWorkshopFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\StableFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\GuardTowerFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\CastleFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\UniversityFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\BlacksmithFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\FarmFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\RangedArmyFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\ThrowingAxemanFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\LongbowmanFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\TrebuchetFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\CatapultFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\PikemanFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\SwordsmanFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\KnightFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\ScoutFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\GathererGroupFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\ArmyFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\MineFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\LumberCampFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\PlaceableObjectFactory.cs" />
-    <Compile Include="PlaceableObjects\Factories\BarracksFactory.cs" />
-    <Compile Include="PlaceableObjects\Factories\TowerFactory.cs" />
-    <Compile Include="PlaceableObjects\Factories\TownCenterFactory.cs" />
-    <Compile Include="PlaceableObjects\Factories\VillagerFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\BarracksFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\TowerFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\TownCenterFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\ArcherFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Units\VillagerFactory.cs" />
     <Compile Include="PlaceableObjects\GaiaObject.cs" />
-    <Compile Include="GameFrontEnd.cs" />
+    <Compile Include="PlaceableObjects\GaiaObjects\Boar.cs" />
+    <Compile Include="PlaceableObjects\Units\RangedArmy.cs" />
+    <Compile Include="PlaceableObjects\Units\ThrowingAxeman.cs" />
+    <Compile Include="PlaceableObjects\Units\Longbowman.cs" />
+    <Compile Include="PlaceableObjects\Units\Pikeman.cs" />
+    <Compile Include="PlaceableObjects\Units\Swordsman.cs" />
+    <Compile Include="PlaceableObjects\Units\Trebuchet.cs" />
+    <Compile Include="PlaceableObjects\Units\Catapult.cs" />
+    <Compile Include="PlaceableObjects\Units\Scout.cs" />
+    <Compile Include="PlaceableObjects\Units\Knight.cs" />
+    <Compile Include="PlaceableObjects\Units\GathererGroup.cs" />
+    <Compile Include="PlaceableObjects\Units\Archer.cs" />
+    <Compile Include="UiController.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\MapGenerator.cs" />
     <Compile Include="Pathing\PathFinderNode.cs" />
     <Compile Include="Pathing\PathFinder.cs" />
-    <Compile Include="PlaceableObjects\GaiaObjects\Berries.cs" />
-    <Compile Include="Interfaces\ICanMakeBuildings.cs" />
-    <Compile Include="Interfaces\IAttackable.cs" />
-    <Compile Include="Interfaces\ICanMakeResearch.cs" />
-    <Compile Include="Interfaces\ICanGatherResources.cs" />
-    <Compile Include="Interfaces\ICanMakeUnits.cs" />
-    <Compile Include="Interfaces\IAttacker.cs" />
-    <Compile Include="Interfaces\IConsumesFood.cs" />
-    <Compile Include="Interfaces\IHasRange.cs" />
-    <Compile Include="Interfaces\ICanMove.cs" />
+    <Compile Include="PlaceableObjects\GaiaObjects\Deer.cs" />
+    <Compile Include="Attributes\ICanMakeBuildings.cs" />
+    <Compile Include="Attributes\ICanMakeResearch.cs" />
+    <Compile Include="Attributes\ICanGatherResources.cs" />
+    <Compile Include="Attributes\ICanMakeUnits.cs" />
+    <Compile Include="Attributes\IAttacker.cs" />
+    <Compile Include="Attributes\IConsumesFood.cs" />
+    <Compile Include="Attributes\IHasRange.cs" />
+    <Compile Include="Attributes\ICanMove.cs" />
     <Compile Include="PlaceableObjects\PlayerObject.cs" />
     <Compile Include="PlaceableObjects\Units\Army.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Game\Player.cs" />
     <Compile Include="Research\Research.cs" />
     <Compile Include="Research\ResearchLibrary.cs" />
     <Compile Include="Economy\ResourceCollection.cs" />
@@ -108,6 +148,11 @@
     <Compile Include="Textures\MiscTexture.cs" />
     <Compile Include="Textures\TileTexture.cs" />
     <Compile Include="PlaceableObjects\Units\Villager.cs" />
+    <Compile Include="UiWindows\IUiWindow.cs" />
+    <Compile Include="UiWindows\Sandbox.cs" />
+    <Compile Include="UiWindows\MultiplayerGame.cs" />
+    <Compile Include="UiWindows\LobbyBrowser.cs" />
+    <Compile Include="UiWindows\MainMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ImGui.NET, Version=1.72.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -134,7 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
-    <Content Include="ideas.txt" />
+    <Content Include="roadmap.txt" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

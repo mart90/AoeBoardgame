@@ -5,10 +5,9 @@ namespace AoeBoardgame
 {
     abstract class PlaceableObject
     {
-        public Player Owner { get; set; }
         public TileColorTexture ColorTexture { get; set; }
 
-        protected Texture2D Texture;
+        public Texture2D Texture;
         protected TextureLibrary TextureLibrary;
 
         public virtual void Draw(SpriteBatch spriteBatch, Rectangle location)

@@ -1,0 +1,16 @@
+﻿IMPORTANT
+
+LESS IMPORTANT
+- "Destination became invalid" after reaching waypoint
+- Game.HandleRevolt()
+- Map generation: Make sure all tiles are reachable
+- Temporary tile color doesn't clear when setting new waypoint
+- Highlight units whose destination became invalid
+
+EVENTUALLY
+- More civs
+- More maps
+
+MAYBE
+- Water
+- New sprites

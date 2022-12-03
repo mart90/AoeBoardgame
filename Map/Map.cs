@@ -8,6 +8,7 @@ namespace AoeBoardgame
 {
     class Map
     {
+        public string Seed { get; set; }
         public List<Tile> Tiles { get; set; }
         public int Width { get; }
         public int Height { get; }
@@ -27,6 +28,8 @@ namespace AoeBoardgame
         public Tile SelectedTile => Tiles.SingleOrDefault(e => e.IsSelected);
 
         public Tile HoveredTile => Tiles.SingleOrDefault(e => e.IsHovered);
+
+        public Tile ViewedTile => Tiles.SingleOrDefault(e => e.IsViewed);
 
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -69,27 +72,43 @@ namespace AoeBoardgame
             return distanceToTile1Center <= distanceToTile2Center ? tiles.First() : tiles.Last();
         }
 
-        public Tile GetRandomUnoccupiedTile()
+        public Tile GetRandomUnoccupiedTileInRange(Rectangle range)
         {
-            var dirtTiles = Tiles.Where(e => e.Type == TileType.Dirt);
+            List<Tile> dirtTiles = Tiles
+                .Where(e => e.Type == TileType.Dirt && e.Object == null)
+                .Where(e => e.X >= range.X
+                    && e.Y >= range.Y
+                    && e.X < range.X + range.Width
+                    && e.Y < range.Y + range.Height)
+                .ToList();
+
             var randomTileNumber = _random.Next(0, dirtTiles.Count() - 1);
-            return Tiles[randomTileNumber];
+            return dirtTiles[randomTileNumber];
         }
 
-        public Tile GetTileByCoordinates(int x, int y) => Tiles[y * Width + x];
+        public Tile GetTileByCoordinates(int x, int y) => Tiles.Single(e => e.X == x && e.Y == y);
 
-        public Tile GetTileByObject(PlaceableObject obj)
+        public Tile FindTileContainingObject(PlaceableObject obj)
         {
-            Tile tile = Tiles.SingleOrDefault(e => e.Object == obj);
+            Tile objectTile = Tiles.SingleOrDefault(e => e.Object == obj);
 
-            if (tile == null)
+            if (objectTile != null)
             {
-                // Object is part of an army or gathering
-
-                return null;
+                return objectTile;
             }
 
-            return tile;
+            foreach (Tile tile in Tiles)
+            {
+                if (obj is ICanFormGroup unit && tile.Object is IContainsUnits unitContainer)
+                {
+                    if (unitContainer.Units.Contains(unit))
+                    {
+                        return tile;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public int GetXCoordinate(Tile tile)
@@ -114,32 +133,49 @@ namespace AoeBoardgame
             return new PathFinder(this).GetOptimalPath(source, destination, mover);
         }
 
-        public IEnumerable<Tile> FindTilesInRangeOfSelected(int range)
+        public IEnumerable<Tile> FindTilesInRangeOfTile(Tile tile, int range, bool hasMinimumRange)
         {
-            return new PathFinder(this).GetAllTilesInRange(SelectedTile, range);
+            return new PathFinder(this).GetAllTilesInRange(tile, range, hasMinimumRange);
         }
 
-        public void MoveObject(Tile source, Tile destination)
+        public void MoveMover(ICanMove mover, Tile destination)
         {
-            destination.SetObject(source.Object);
-            source.SetObject(null);
+            Tile originTile = FindTileContainingObject((PlaceableObject)mover);
 
-            if (source.IsSelected)
+            if (mover is ICanFormGroup grouper && originTile.Object is IContainsUnits unitContainer)
             {
-                source.IsSelected = false;
+                unitContainer.Units.Remove(grouper);
+                destination.SetObject((PlaceableObject)mover);
+
+                if (unitContainer.Units.Count == 1  && !(unitContainer is IEconomicBuilding))
+                {
+                    // Disband group
+                    originTile.SetObject((PlaceableObject)unitContainer.Units[0]);
+                    ((PlayerObject)unitContainer).Owner.OwnedObjects.Remove((PlayerObject)unitContainer);
+                }
+            }
+            else
+            {
+                destination.SetObject(originTile.Object);
+                originTile.SetObject(null);
+            }
+
+            if (mover is IHasRange ranger)
+            {
+                ranger.RangeableTiles = FindTilesInRangeOfTile(destination, ranger.Range, ranger.HasMinimumRange);
+            }
+
+            if (originTile.IsSelected)
+            {
+                originTile.IsSelected = false;
                 destination.IsSelected = true;
             }
         }
 
-        public Tile ProgressOnPath(ICanMove mover, IEnumerable<Tile> path)
+        public void MoveObjectSimple(Tile originTile, Tile destinationTile)
         {
-            int steps = path.Count() >= mover.Speed ? mover.Speed : path.Count();
-            mover.StepsTakenThisTurn += steps;
-
-            Tile endTile = path.ToList()[-1 + steps];
-            MoveObject(GetTileByObject((PlaceableObject)mover), endTile);
-
-            return endTile;
+            destinationTile.SetObject(originTile.Object);
+            originTile.SetObject(null);
         }
 
         public void ResetFogOfWar()

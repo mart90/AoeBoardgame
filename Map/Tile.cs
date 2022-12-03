@@ -1,17 +1,20 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace AoeBoardgame
-{ 
+{
     class Tile
     {
         /// <summary>
         /// Index in the tile array in Map
         /// </summary>
         public int Id { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
         public TileType Type { get; private set; }
+        public bool HasStartingTownCenter { get; set; }
         public bool IsSelected { get; set; }
         public bool IsViewed { get; set; } // Selected but no actions possible (opponent's tile)
         public bool IsHovered { get; set; }
@@ -19,12 +22,14 @@ namespace AoeBoardgame
         public PlaceableObject Object { get; private set; }
         public TileColor TemporaryColor { get; set; }
         public bool BuildingUnderConstruction { get; set; }
+        public bool IsScouted { get; set; }
 
         private Texture2D _texture;
         private readonly Rectangle _location;
         private readonly Rectangle _objectLocation;
         private readonly Rectangle _hourglassLocation;
-        private readonly Rectangle _hitpointsLocation;
+        private readonly Rectangle _leftSideLocation;
+        private readonly Rectangle _rightsideLocation;
 
         private readonly TextureLibrary _textureLibrary;
         
@@ -50,7 +55,13 @@ namespace AoeBoardgame
                 _objectLocation.Width - (_objectLocation.Width / 8),
                 _objectLocation.Height - (_objectLocation.Height / 8));
 
-            _hitpointsLocation = new Rectangle(
+            _rightsideLocation = new Rectangle(
+                _objectLocation.X + _objectLocation.Width - (_objectLocation.Width / 6),
+                _objectLocation.Y - _objectLocation.Height / 3,
+                _objectLocation.Width / 3,
+                _objectLocation.Height);
+
+            _leftSideLocation = new Rectangle(
                 _location.X,
                 _objectLocation.Y,
                 (_location.Width - _objectLocation.Width) / 2,
@@ -59,7 +70,9 @@ namespace AoeBoardgame
 
         public bool LocationSquareIncludesPoint(Point point) => _location.Contains(point);
 
-        public bool SeemsAccessible => (Object == null || HasFogOfWar) && Type == TileType.Dirt;
+        public bool SeemsAccessible => (Object == null || (HasFogOfWar && !IsScouted)) && Type == TileType.Dirt;
+
+        public bool SeemsAccessibleGaia => Object == null && Type == TileType.Dirt;
 
         public Point Center => _location.Center;
 
@@ -73,7 +86,7 @@ namespace AoeBoardgame
         {
             if (obj is GaiaObject)
             {
-                Type = TileType.Dirt;
+                SetType(TileType.Dirt);
             }
 
             Object = obj;
@@ -95,6 +108,16 @@ namespace AoeBoardgame
 
             if (HasFogOfWar)
             {
+                if (Object != null && !(Object is ICanMove) && IsScouted)
+                {
+                    Object.Draw(spriteBatch, _objectLocation);
+
+                    if (!(Object is GaiaObject))
+                    {
+                        spriteBatch.Draw(Object.ColorTexture.Texture, _location, Color.White);
+                    }
+                }
+
                 spriteBatch.Draw(_textureLibrary.FogOfWar, _location, Color.White);
             }
             else
@@ -105,10 +128,10 @@ namespace AoeBoardgame
                 }
                 else if (Object != null)
                 {
-                    if (Object.GetType().BaseType != typeof(GaiaObject) && TemporaryColor == TileColor.Default)
+                    if (!(Object is GaiaObject) && TemporaryColor == TileColor.Default)
                     {
                         spriteBatch.Draw(
-                            IsSelected ? _textureLibrary.GetTileColorByType(TileColor.Green) : Object.ColorTexture.Texture,
+                            IsSelected || IsViewed ? _textureLibrary.GetTileColorByType(TileColor.Green) : Object.ColorTexture.Texture,
                             _location,
                             Color.White);
                     }
@@ -120,9 +143,30 @@ namespace AoeBoardgame
                         spriteBatch.Draw(_textureLibrary.SomethingInQueue, _hourglassLocation, Color.White);
                     }
 
-                    if (Object is IAttackable attackableObject)
+                    if (Object is IContainsUnits army)
                     {
-                        // TODO HP bar
+                        for (int i = 0; i < army.Units.Count; i++)
+                        {
+                            spriteBatch.Draw(_textureLibrary.ArmyStar, new Rectangle(
+                                _rightsideLocation.X,
+                                _rightsideLocation.Y + _objectLocation.Height - (_objectLocation.Height / 4) * i,
+                                _rightsideLocation.Width,
+                                _rightsideLocation.Height / 4), Color.White);
+                        }
+                    }
+
+                    if (Object is PlayerObject playerObject && playerObject.HitPoints < playerObject.MaxHitPoints)
+                    {
+                        int hpBars = (int)Math.Ceiling((double)playerObject.HitPoints / playerObject.MaxHitPoints * 4);
+
+                        for (int i = 0; i < hpBars; i++)
+                        {
+                            spriteBatch.Draw(_textureLibrary.HpBar, new Rectangle(
+                                _leftSideLocation.X + 3,
+                                _leftSideLocation.Y - 8 + _objectLocation.Height - (_objectLocation.Height / 4 - 1) * i,
+                                _leftSideLocation.Width - 2,
+                                _leftSideLocation.Height / 2), Color.White);
+                        }
                     }
                 }
             }

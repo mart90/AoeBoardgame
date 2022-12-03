@@ -1,6 +1,0 @@
-﻿namespace AoeBoardgame
-{
-    class Church
-    {
-    }
-}

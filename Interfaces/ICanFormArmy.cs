@@ -1,6 +1,0 @@
-﻿namespace AoeBoardgame
-{
-    interface ICanFormArmy
-    {
-    }
-}

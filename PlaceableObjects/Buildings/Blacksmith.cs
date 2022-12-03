@@ -5,7 +5,7 @@ namespace AoeBoardgame
 {
     class Blacksmith : PlayerObject, ICanMakeResearch
     {
-        public IEnumerable<Research> AllowedResearch { get; set; }
+        public List<ResearchEnum> ResearchAllowedToMake { get; set; }
         public int QueueTurnsLeft { get; set; }
         public Research ResearchQueued { get; set; }
 
