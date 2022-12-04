@@ -35,7 +35,7 @@ namespace AoeBoardgame
 
             Cost = new List<ResourceCollection> 
             {
-                new ResourceCollection(Resource.Wood, 150),
+                new ResourceCollection(Resource.Wood, 200),
                 new ResourceCollection(Resource.Gold, 50),
                 new ResourceCollection(Resource.Iron, 100)
             };

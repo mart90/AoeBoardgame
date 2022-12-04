@@ -1,4 +1,6 @@
 ﻿IMPORTANT
+- FoW updates to non-local player when ending turn
+- Overhaul GameState.MyTurn/OpponentTurn in MP games
 
 LESS IMPORTANT
 - "Destination became invalid" after reaching waypoint

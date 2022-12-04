@@ -20,7 +20,7 @@ namespace AoeBoardgame
             _tileDimensions = tileRelativeSize * 4;
         }
 
-        public Map GenerateMap(int width, int height)
+        public Map GenerateRandom(int width, int height)
         {
             _map = new Map(width, height);
 
@@ -74,6 +74,60 @@ namespace AoeBoardgame
             AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(15, 13, 10, 7)); // Bottom right
 
             AddRandomlyGeneratedGaiaObjects<Boar>(3, new Rectangle(11, 0, 3, 21)); // Middle
+
+            _map.SetSeed();
+
+            return _map;
+        }
+
+        public Map GenerateFromSeed(string seed)
+        {
+            _map = new Map(25, 21)
+            {
+                Seed = seed
+            };
+
+            MakeBaseTiles();
+
+            int currentTileId = 0;
+
+            foreach (char c in seed.Split('_')[1])
+            {
+                if (int.TryParse(c.ToString(), out int emptyTiles))
+                {
+                    currentTileId += emptyTiles;
+                    continue;
+                }
+
+                Tile currentTile = _map.Tiles.Single(e => e.Id == currentTileId);
+
+                if (c == 'd')
+                {
+                    currentTile.SetObject(new Deer(_textureLibrary));
+                }
+                else if (c == 'b')
+                {
+                    currentTile.SetObject(new Boar(_textureLibrary));
+                }
+                else if (c == 'f')
+                {
+                    currentTile.SetType(TileType.Forest);
+                }
+                else if (c == 'g')
+                {
+                    currentTile.SetType(TileType.GoldMine);
+                }
+                else if (c == 'i')
+                {
+                    currentTile.SetType(TileType.IronMine);
+                }
+                else if (c == 's')
+                {
+                    currentTile.SetType(TileType.StoneMine);
+                }
+
+                currentTileId++;
+            }
 
             return _map;
         }

@@ -21,4 +21,12 @@ namespace AoeBoardgame
             return list.Where(e => e is T).Cast<T>();
         }
     }
+
+    static class ByteArrayExtensions
+    {
+        public static string GetString(this byte[] bytes)
+        {
+            return System.Text.Encoding.Default.GetString(bytes).Replace("\0", string.Empty);
+        }
+    }
 }

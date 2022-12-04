@@ -30,7 +30,6 @@ namespace AoeBoardgame
             Age = 1;
             Color = color;
             Civilization = civilization;
-            IsLocalPlayer = true;
 
             OwnedObjects = new List<PlayerObject>();
 

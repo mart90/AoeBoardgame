@@ -8,6 +8,6 @@ namespace AoeBoardgame
         int WidthPixels { get; set; }
         int HeightPixels { get; set; }
         UiState? NewUiState { get; set; }
-        void Draw(SpriteBatch spriteBatch);
+        void Update(SpriteBatch spriteBatch);
     }
 }

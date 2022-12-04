@@ -17,7 +17,7 @@ namespace AoeBoardgame
             HeightPixels = 500;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Update(SpriteBatch spriteBatch)
         {
             ImGui.Begin("Menu");
 
@@ -25,9 +25,14 @@ namespace AoeBoardgame
             ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels + 60));
             ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
 
-            if (ImGui.Button("Sandbox", new System.Numerics.Vector2(150, 50)))
+            if (ImGui.Button("Sandbox", new System.Numerics.Vector2(200, 50)))
             {
                 NewUiState = UiState.Sandbox;
+            }
+
+            if (ImGui.Button("Multiplayer", new System.Numerics.Vector2(200, 50)))
+            {
+                NewUiState = UiState.LoginScreen;
             }
 
             ImGui.End();

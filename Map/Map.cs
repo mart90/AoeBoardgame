@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -181,6 +182,62 @@ namespace AoeBoardgame
         public void ResetFogOfWar()
         {
             Tiles.ForEach(e => e.HasFogOfWar = true);
+        }
+
+        public void SetSeed()
+        {
+            string seedString = "b_"; //_random.Next() % 2 == 0 ? "b_" : "r_"; // Host color
+
+            int consecutiveEmptySquares = 0;
+
+            foreach (Tile tile in Tiles)
+            {
+                if (tile.Object == null && tile.Type == TileType.Dirt)
+                {
+                    consecutiveEmptySquares++;
+
+                    if (consecutiveEmptySquares == 9)
+                    {
+                        seedString += "9";
+                        consecutiveEmptySquares = 0;
+                    }
+
+                    continue;
+                }
+                else if (consecutiveEmptySquares != 0)
+                {
+                    seedString += consecutiveEmptySquares.ToString();
+                    consecutiveEmptySquares = 0;
+                }
+
+                if (tile.Object != null)
+                {
+                    seedString += tile.Object is Deer ? "d" : "b";
+                }
+                else if (tile.Type == TileType.Forest)
+                {
+                    seedString += "f";
+                }
+                else if (tile.Type == TileType.GoldMine)
+                {
+                    seedString += "g";
+                }
+                else if (tile.Type == TileType.IronMine)
+                {
+                    seedString += "i";
+                }
+                else if (tile.Type == TileType.StoneMine)
+                {
+                    seedString += "s";
+                }
+            }
+
+            if (consecutiveEmptySquares != 0)
+            {
+                seedString += consecutiveEmptySquares.ToString();
+            }
+
+            Seed = seedString;
         }
     }
 }

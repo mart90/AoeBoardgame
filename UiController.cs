@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AoeBoardgame.Multiplayer;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.ImGui;
@@ -24,6 +25,8 @@ namespace AoeBoardgame
         private bool _leftMouseHeld;
         private bool _rightMouseHeld;
 
+        private MultiplayerHttpClient _httpClient;
+
         public UiController()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -34,25 +37,27 @@ namespace AoeBoardgame
 
         protected override void Initialize()
         {
-            _guiRenderer = new ImGUIRenderer(this).Initialize().RebuildFontAtlas();
-
-            _uiWindows = new List<IUiWindow>
-            {
-                new MainMenu(),
-                new LobbyBrowser()
-            };
-
-            ChangeUiWindow(_uiWindows.Single(e => e is MainMenu));
-
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
+            _httpClient = new MultiplayerHttpClient();
+            _guiRenderer = new ImGUIRenderer(this).Initialize().RebuildFontAtlas();
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _textureLibrary = new TextureLibrary(Content, _guiRenderer);
             _fontLibrary = new FontLibrary(Content);
             _researchLibrary = new ResearchLibrary();
+
+            _uiWindows = new List<IUiWindow>
+            {
+                new MainMenu(),
+                new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _httpClient),
+                new LoginScreen(_fontLibrary, _httpClient)
+            };
+
+            ChangeUiWindow(_uiWindows.Single(e => e is MainMenu));
         }
 
         protected override void UnloadContent()
@@ -67,6 +72,11 @@ namespace AoeBoardgame
                 if (_activeWindow.NewUiState == UiState.Sandbox)
                 {
                     _uiWindows.Add(new Sandbox(_textureLibrary, _fontLibrary, _researchLibrary));
+                }
+
+                if (_activeWindow is LobbyBrowser browser && _activeWindow.NewUiState == UiState.MultiplayerGame)
+                {
+                    _uiWindows.Add(browser.CreatedGame);
                 }
 
                 var newWindow = GetUiWindowByState(_activeWindow.NewUiState.Value);
@@ -115,7 +125,7 @@ namespace AoeBoardgame
             _spriteBatch.Begin();
             _guiRenderer.BeginLayout(gameTime);
 
-            _activeWindow.Draw(_spriteBatch);
+            _activeWindow.Update(_spriteBatch);
 
             _guiRenderer.EndLayout();
             _spriteBatch.End();

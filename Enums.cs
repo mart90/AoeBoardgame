@@ -4,6 +4,7 @@
     {
         MainMenu,
         Sandbox,
+        LoginScreen,
         LobbyBrowser,
         MultiplayerGame,
         CreatingLobby
@@ -11,7 +12,8 @@
 
     enum GameState
     {
-        MyTurn,
+        Default,
+        OpponentTurn,
         MovingObject,
         PlacingBuilding
     }
@@ -28,69 +30,69 @@
     enum ResearchEnum
     {
         // Town center
-        FeudalAge,
-        CastleAge,
-        ImperialAge,
+        FeudalAge = 0,
+        CastleAge = 1,
+        ImperialAge = 2,
 
         // Barracks
-        FeudalSwordsmen,
-        VeteranSwordsmen,
-        EliteSwordsmen,
+        FeudalSwordsmen = 3,
+        VeteranSwordsmen = 4,
+        EliteSwordsmen = 5,
 
-        VeteranArchers,
-        EliteArchers,
+        VeteranArchers = 6,
+        EliteArchers = 7,
 
-        VeteranPikemen,
-        ElitePikemen,
+        VeteranPikemen = 8,
+        ElitePikemen = 9,
 
         // Stable
-        EliteKnights,
-        Bloodlines,         // Cavalry HP
-        Husbandry,          // Cavalry Speed
+        EliteKnights = 10,
+        Bloodlines = 11,        // Cavalry HP
+        Husbandry = 12,         // Cavalry Speed
 
         // Siege workshop
-        HeavyCatapults,
-        SiegeEngineers,     // Siege weapons +1 range
+        HeavyCatapults = 13,
+        SiegeEngineers = 14,    // Siege weapons +1 range
 
         // Blacksmith
-        ScaleMailArmor,     // All military units +1 melee armor
-        Fletching,          // Archers +1 attack
-        Forging,            // Melee units +1 attack
+        ScaleMailArmor = 15,    // All military units +1 melee armor
+        Fletching = 16,         // Archers +1 attack
+        Forging = 17,           // Melee units +1 attack
 
-        ChainMailArmor,     // Archers +1/+1 armor
-        IronCasting,        // Melee units +1 attack
-        BodkinArrow,        // Archers +1 attack
+        ChainMailArmor = 18,    // Archers +1/+1 armor
+        IronCasting = 19,       // Melee units +1 attack
+        BodkinArrow = 20,       // Archers +1 attack
 
-        PlateMailArmor,     // Melee units +1/+2 armor
-        BlastFurnace,       // All military units +2 attack
+        PlateMailArmor = 21,    // Melee units +1/+2 armor
+        BlastFurnace = 22,      // All military units +2 attack
 
         // University
         // Feudal age
-        Loom,               // Villager HP
-        Wheelbarrow,        // All gather rates
-        DoubleBitAxe,       // Wood gather rate
-        Housing,            // Gather group size +1
+        Loom = 23,              // Villager HP
+        Wheelbarrow = 24,       // All gather rates
+        DoubleBitAxe = 25,      // Wood gather rate
+        Housing = 26,           // Gather group size +1
 
         // Castle age
-        BowSaw,             // Wood gather rate
-        HandCart,           // Villager speed
-        IronPickaxes,       // Mining gather rates
-        MurderHoles,        // Castle & tower minimum range
-        Masonry,            // Castle, tower & TC HP
+        BowSaw = 27,            // Wood gather rate
+        HandCart = 28,          // Villager speed
+        IronPickaxes = 29,      // Mining gather rates
+        MurderHoles = 30,       // Castle & tower minimum range
+        Masonry = 31,           // Castle, tower & TC HP
 
         // Imperial age
-        CropRotation,       // 2 farmers per farm
-        Conscription,       // Swordsman gold cost and train time reduction
-        SupplyLines,        // Army size +1
+        CropRotation = 32,      // 2 farmers per farm
+        Conscription = 33,      // Swordsman gold cost and train time reduction
+        SupplyLines = 34,       // Army size +1
 
         // Castle
         // England
-        EliteLongbowmen,
-        Agriculture,        // British farmers gather +3
+        EliteLongbowmen = 35,
+        Agriculture = 36,       // British farmers gather +3
 
         // France
-        EliteThrowingAxemen,
-        Chivalry,           // Knights +20 HP
+        EliteThrowingAxemen = 37,
+        Chivalry = 38,          // Knights +20 HP
     }
 
     enum TileType

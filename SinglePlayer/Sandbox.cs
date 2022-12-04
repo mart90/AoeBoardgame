@@ -14,7 +14,7 @@ namespace AoeBoardgame
             CorrespondingUiState = UiState.Sandbox;
 
             var mapGenerator = new MapGenerator(textureLibrary, 14);
-            Map = mapGenerator.GenerateMap(25, 21);
+            Map = mapGenerator.GenerateRandom(25, 21);
 
             Players = new List<Player>
             {
@@ -25,14 +25,22 @@ namespace AoeBoardgame
             Players[0].IsActive = true;
             PlaceStartingUnits();
 
-            State = GameState.MyTurn;
+            State = GameState.Default;
 
             StartTurn();
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        
+
+        public override void Update(SpriteBatch spriteBatch)
         {
-            base.Draw(spriteBatch);
+            base.Update(spriteBatch);
+        }
+
+        protected override void StartTurn()
+        {
+            SetFogOfWar(ActivePlayer);
+            base.StartTurn();
         }
     }
 }

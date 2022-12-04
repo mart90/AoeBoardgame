@@ -32,7 +32,7 @@ namespace AoeBoardgame
 
                         foreach (Scout scout in player.OwnedObjects.Where(e => e is Scout))
                         {
-                            scout.AttackDamage += 2;
+                            scout.AttackDamage += 3;
                         }
 
                         player.Civilization.UnlockFeudalAge(player);

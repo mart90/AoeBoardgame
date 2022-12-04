@@ -27,15 +27,15 @@ namespace AoeBoardgame
             UiDescription = "Cavalry with increased movement points and line of sight";
 
             HitPoints = 30;
-            Speed = 4;
+            Speed = 100;
             AttackDamage = 3;
-            _lineOfSight = 4;
+            _lineOfSight = 10;
             MeleeArmor = 0;
             RangedArmor = 0;
 
             Cost = new List<ResourceCollection> 
             {
-                new ResourceCollection(Resource.Food, 50),
+                new ResourceCollection(Resource.Food, 70),
                 new ResourceCollection(Resource.Gold, 20)
             };
         }
