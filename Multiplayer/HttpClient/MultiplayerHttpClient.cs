@@ -18,8 +18,8 @@ namespace AoeBoardgame.Multiplayer
 
         public MultiplayerHttpClient()
         {
-            //_baseUrl = "http://85.146.99.136:7275/";
-            _baseUrl = "http://localhost:5000/";
+            _baseUrl = "http://85.146.99.136:7275/";
+            //_baseUrl = "http://localhost:5000/";
 
             _client = new HttpClient()
             {
