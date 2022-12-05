@@ -148,7 +148,11 @@ namespace AoeBoardgame
                 unitContainer.Units.Remove(grouper);
                 destination.SetObject((PlaceableObject)mover);
 
-                if (unitContainer.Units.Count == 1  && !(unitContainer is IEconomicBuilding))
+                if (unitContainer is IEconomicBuilding)
+                {
+                    ((ICanGatherResources)mover).ResourceGathering = null;
+                }
+                else if (unitContainer.Units.Count == 1)
                 {
                     // Disband group
                     originTile.SetObject((PlaceableObject)unitContainer.Units[0]);
@@ -186,7 +190,7 @@ namespace AoeBoardgame
 
         public void SetSeed()
         {
-            string seedString = "b_"; //_random.Next() % 2 == 0 ? "b_" : "r_"; // Host color
+            string seedString = _random.Next() % 2 == 0 ? "b_" : "r_"; // Host color
 
             int consecutiveEmptySquares = 0;
 

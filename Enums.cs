@@ -13,7 +13,6 @@
     enum GameState
     {
         Default,
-        OpponentTurn,
         MovingObject,
         PlacingBuilding
     }

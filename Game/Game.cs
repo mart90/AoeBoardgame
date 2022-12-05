@@ -18,6 +18,8 @@ namespace AoeBoardgame
 
         protected Map Map;
 
+        protected bool IsMyTurn;
+
         private TextNotification _textNotification;
 
         private Type _placingBuildingType;
@@ -83,7 +85,7 @@ namespace AoeBoardgame
         {
             ClearCurrentSelection();
 
-            MoverTakeSteps();
+            MoversTakeSteps();
 
             DestroyEmptyArmies();
 
@@ -320,7 +322,7 @@ namespace AoeBoardgame
             mover.DestinationTile = destinationTile;
         }
 
-        private void MoverTakeSteps()
+        private void MoversTakeSteps()
         {
             List<ICanMove> movers = ActivePlayer.OwnedObjects.FilterByType<ICanMove>().ToList();
 
@@ -348,6 +350,11 @@ namespace AoeBoardgame
                 }
 
                 mover.StepsTakenThisTurn = 0;
+
+                if (mover is IContainsUnits group)
+                {
+                    group.Units.ForEach(e => e.StepsTakenThisTurn = 0);
+                }
             }
         }
 
@@ -527,6 +534,21 @@ namespace AoeBoardgame
                 return;
             }
 
+            if (mover.HasSpentAllMovementPoints() && originTile.Object != mover)
+            {
+                // Don't move a unit out of a group unless we can do so immediately
+                return;
+            }
+
+            int? moverHp = null;
+
+            if (originTile.Object != mover)
+            {
+                // Unit is moving out of a group. Set its HP to identify it so the other client or replay viewer will know which unit to move.
+                // (All other unit stats such as attack damage, range etc should be identical within a group)
+                moverHp = ((PlayerObject)mover).HitPoints;
+            }
+
             mover.DestinationTile = destinationTile;
 
             path.Highlight(TileColor.Orange);
@@ -542,7 +564,8 @@ namespace AoeBoardgame
                 PlayerName = ActivePlayer.Name,
                 IsMovement = true,
                 OriginTileId = originTile.Id,
-                DestinationTileId = destinationTile.Id
+                DestinationTileId = destinationTile.Id,
+                SubselectedUnitHitpoints = moverHp
             });
         }
 
@@ -945,7 +968,7 @@ namespace AoeBoardgame
             }
         }
 
-        private void ClearTemporaryTileColors()
+        protected void ClearTemporaryTileColors()
         {
             foreach (var tile in Map.Tiles)
             {
@@ -1229,7 +1252,7 @@ namespace AoeBoardgame
                 ImGui.Dummy(new System.Numerics.Vector2(500, 120));
             }
 
-            if (State != GameState.OpponentTurn)
+            if (IsMyTurn)
             {
                 if (!DrawObjectContents() && !DrawObjectActions())
                 {

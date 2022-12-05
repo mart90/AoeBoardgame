@@ -20,8 +20,6 @@ namespace AoeBoardgame
 
         private DateTime _lastPoll;
 
-        private bool _myTurn;
-
         public string MapSeed => Map.Seed;
 
         private Player _localPlayer => Players.Single(e => e.IsLocalPlayer);
@@ -76,18 +74,17 @@ namespace AoeBoardgame
         protected override void MakeMove(GameMove move)
         {
             move.GameId = Id;
-            move.PlayerId = State == GameState.OpponentTurn ? _opponent.Id : _us.Id;
+            move.PlayerId = IsMyTurn ? _us.Id : _opponent.Id;
 
             base.MakeMove(move);
 
-            if (_myTurn)
+            if (IsMyTurn)
             {
                 _httpClient.MakeMove(move);
 
                 if (move.IsEndOfTurn)
                 {
-                    State = GameState.OpponentTurn;
-                    _myTurn = false;
+                    IsMyTurn = false;
                 }
             }
         }
@@ -104,13 +101,12 @@ namespace AoeBoardgame
             if (blueIsLocal)
             {
                 Players.Single(e => e.Color == TileColor.Blue).IsLocalPlayer = true;
-                _myTurn = true;
+                IsMyTurn = true;
             }
             else
             {
                 Players.Single(e => e.Color == TileColor.Red).IsLocalPlayer = true;
-                State = GameState.OpponentTurn;
-                _myTurn = false;
+                IsMyTurn = false;
             }
 
             SetFogOfWar(_localPlayer);
@@ -125,7 +121,7 @@ namespace AoeBoardgame
             //    return;
             //}
 
-            if (_myTurn)
+            if (IsMyTurn)
             {
                 return;
             }
@@ -146,7 +142,7 @@ namespace AoeBoardgame
 
             SetFogOfWar(ActivePlayer);
 
-            foreach (var newMove in dto.Moves.OrderBy(e => e.MoveNumber))
+            foreach (GameMove newMove in dto.Moves.OrderBy(e => e.MoveNumber))
             {
                 Tile originTile = null;
                 Tile destinationTile = null;
@@ -164,11 +160,25 @@ namespace AoeBoardgame
                 {
                     EndTurn();
                     State = GameState.Default;
-                    _myTurn = true;
+                    IsMyTurn = true;
                 }
                 else if (newMove.IsMovement)
                 {
-                    TryMoveObject(originTile, destinationTile, (ICanMove)originTile.Object);
+                    ICanMove mover;
+
+                    if (newMove.SubselectedUnitHitpoints != null)
+                    {
+                        // Unit is moving out of a group. We know which unit to move out of the group based on this HP parameter set by our opponent's client
+                        mover = ((IContainsUnits)originTile.Object).Units
+                            .Where(e => ((PlayerObject)e).HitPoints == newMove.SubselectedUnitHitpoints)
+                            .First();
+                    }
+                    else
+                    {
+                        mover = (ICanMove)originTile.Object;
+                    }
+
+                    TryMoveObject(originTile, destinationTile, mover);
                 }
                 else if (newMove.IsAttack)
                 {
@@ -204,6 +214,7 @@ namespace AoeBoardgame
             }
 
             SetFogOfWar(_localPlayer);
+            ClearTemporaryTileColors();
         }
     }
 }

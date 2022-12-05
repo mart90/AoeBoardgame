@@ -26,11 +26,10 @@ namespace AoeBoardgame
             PlaceStartingUnits();
 
             State = GameState.Default;
+            IsMyTurn = true;
 
             StartTurn();
         }
-
-        
 
         public override void Update(SpriteBatch spriteBatch)
         {

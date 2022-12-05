@@ -18,6 +18,7 @@
         public bool IsQueueUnit { get; set; }
         public bool IsQueueResearch { get; set; }
 
+        public int? SubselectedUnitHitpoints { get; set; }
         public string BuildingTypeName { get; set; }
         public string UnitTypeName { get; set; }
         public ResearchEnum? ResearchId { get; set; }

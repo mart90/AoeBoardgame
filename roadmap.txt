@@ -1,8 +1,8 @@
 ﻿IMPORTANT
-- FoW updates to non-local player when ending turn
-- Overhaul GameState.MyTurn/OpponentTurn in MP games
 
 LESS IMPORTANT
+- Time control
+- Map from seed
 - "Destination became invalid" after reaching waypoint
 - Game.HandleRevolt()
 - Map generation: Make sure all tiles are reachable
@@ -10,6 +10,7 @@ LESS IMPORTANT
 - Highlight units whose destination became invalid
 
 EVENTUALLY
+- Replay viewer
 - More civs
 - More maps
 

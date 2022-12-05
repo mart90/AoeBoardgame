@@ -260,6 +260,7 @@ namespace AoeBoardgame.Multiplayer
                 isQueueBuilding = dto.IsQueueBuilding,
                 isQueueUnit = dto.IsQueueUnit,
                 isQueueResearch = dto.IsQueueResearch,
+                subselectedUnitHitpoints = dto.SubselectedUnitHitpoints,
                 buildingTypeName = dto.BuildingTypeName,
                 unitTypeName = dto.UnitTypeName,
                 researchId = dto.ResearchId,
