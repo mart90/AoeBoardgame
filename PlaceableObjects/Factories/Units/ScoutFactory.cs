@@ -27,9 +27,9 @@ namespace AoeBoardgame
             UiDescription = "Cavalry with increased movement points and line of sight";
 
             HitPoints = 30;
-            Speed = 100;
+            Speed = 4;
             AttackDamage = 3;
-            _lineOfSight = 10;
+            _lineOfSight = 4;
             MeleeArmor = 0;
             RangedArmor = 0;
 
