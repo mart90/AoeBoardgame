@@ -29,7 +29,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.1.0.0</ApplicationVersion>
+    <ApplicationVersion>0.2.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -187,6 +187,7 @@
     <Compile Include="Multiplayer\MultiplayerGame.cs" />
     <Compile Include="Multiplayer\LobbyBrowser.cs" />
     <Compile Include="MainMenu.cs" />
+    <Compile Include="WindowUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ImGui.NET, Version=1.72.0.0, Culture=neutral, processorArchitecture=MSIL">

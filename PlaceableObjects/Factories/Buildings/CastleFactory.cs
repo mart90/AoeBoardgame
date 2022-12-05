@@ -53,7 +53,7 @@ namespace AoeBoardgame
 
             Cost = new List<ResourceCollection>
             {
-                new ResourceCollection(Resource.Stone, 700)
+                new ResourceCollection(Resource.Stone, 500)
             };
 
             UnitTypesAllowedToMake = new List<Type>();

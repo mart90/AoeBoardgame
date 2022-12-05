@@ -290,9 +290,12 @@ namespace AoeBoardgame
                     {
                         if (childTile.Object is IEconomicBuilding economicBuilding && mover is ICanGatherResources)
                         {
-                            if (mover is GathererGroup group && group.Units.Count <= economicBuilding.MaxUnits - economicBuilding.Units.Count)
+                            if (mover is GathererGroup group)
                             {
-                                accessibleChildren.Add(child);
+                                if (group.Units.Count <= economicBuilding.MaxUnits - economicBuilding.Units.Count)
+                                {
+                                    accessibleChildren.Add(child);
+                                }
                             }
                             else if (economicBuilding.Units.Count < economicBuilding.MaxUnits)
                             {

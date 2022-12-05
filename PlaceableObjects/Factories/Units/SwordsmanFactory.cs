@@ -29,14 +29,14 @@ namespace AoeBoardgame
 
             HitPoints = 20;
             _speed = 2;
-            AttackDamage = 4;
+            AttackDamage = 3;
             _lineOfSight = 3;
             MeleeArmor = 1;
             RangedArmor = 1;
 
             Cost = new List<ResourceCollection> 
             {
-                new ResourceCollection(Resource.Food, 40),
+                new ResourceCollection(Resource.Food, 30),
                 new ResourceCollection(Resource.Gold, 20),
                 new ResourceCollection(Resource.Iron, 20)
             };

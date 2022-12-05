@@ -85,7 +85,7 @@ namespace AoeBoardgame
                 ChangeUiWindow(newWindow);
             }
 
-            if (_activeWindow is Game game)
+            if (_activeWindow is Game game && IsActive)
             {
                 MouseState mouseState = Mouse.GetState();
 

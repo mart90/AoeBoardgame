@@ -47,25 +47,6 @@ namespace AoeBoardgame
             Lobbies = new List<Lobby>();
         }
 
-        private void SelectLobbyByLocation(Point location)
-        {
-            int lobbyIndex = (int)Math.Floor((double)(location.Y - 50) / 30);
-
-            if (lobbyIndex < 0 || Lobbies.Count <= lobbyIndex)
-            {
-                return;
-            }
-
-            var lobby = Lobbies[lobbyIndex];
-
-            if (lobby.Id == CreatedLobby?.Id)
-            {
-                return;
-            }
-
-            Lobbies[lobbyIndex].IsSelected = true;
-        }
-
         private void Refresh()
         {
             Lobby selectedLobby = Lobbies.SingleOrDefault(e => e.IsSelected);
@@ -157,6 +138,11 @@ namespace AoeBoardgame
                     HandlePlayerJoined();
                     return;
                 }
+            }
+
+            if (!WindowUtils.ApplicationIsActivated())
+            {
+                return;
             }
 
             ImGui.Begin("LobbyBrowser");

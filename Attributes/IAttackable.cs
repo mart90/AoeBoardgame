@@ -19,11 +19,6 @@ namespace AoeBoardgame
         {
             if (defender is Army army)
             {
-                if (army.Units[0] is Scout || army.Units[0] is Knight && attacker is Pikeman)
-                {
-                    damage *= 3;
-                }
-
                 int damagePerUnit = damage / army.Units.Count;
 
                 foreach (PlayerObject unit in army.Units)

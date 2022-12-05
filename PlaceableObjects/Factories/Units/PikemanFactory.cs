@@ -27,7 +27,7 @@ namespace AoeBoardgame
             UiName = "Pikeman";
             UiDescription = "Anti-cavalry unit";
 
-            HitPoints = 40;
+            HitPoints = 30;
             _speed = 2;
             AttackDamage = 3;
             _lineOfSight = 3;
@@ -36,9 +36,9 @@ namespace AoeBoardgame
 
             Cost = new List<ResourceCollection> 
             {
-                new ResourceCollection(Resource.Food, 40),
-                new ResourceCollection(Resource.Gold, 20),
-                new ResourceCollection(Resource.Iron, 20)
+                new ResourceCollection(Resource.Food, 30),
+                new ResourceCollection(Resource.Gold, 10),
+                new ResourceCollection(Resource.Iron, 10)
             };
         }
 

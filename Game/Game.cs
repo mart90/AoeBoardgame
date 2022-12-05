@@ -291,6 +291,17 @@ namespace AoeBoardgame
                     path.First().SetObject((PlayerObject)mover);
                     mover.DestinationTile = destinationTile;
                 }
+                else if (path.First().Object is PlayerObject playerObject && playerObject.Owner != ActivePlayer)
+                {
+                    _textNotification = new TextNotification
+                    {
+                        FontColor = Color.Red,
+                        Message = "A waypoint became invalid"
+                    };
+
+                    destinationTile = null;
+                    trainer.WayPoint = null;
+                }
                 else
                 {
                     MergeMoverWithDestination(originTile, destinationTile, mover);
@@ -625,6 +636,11 @@ namespace AoeBoardgame
                 return;
             }
 
+            if (attacker is Pikeman && (defender is ICavalry || (defender is Army army && army.Units[0] is ICavalry)))
+            {
+                damage *= 3;
+            }
+
             if (damage < 0)
             {
                 damage = 0;
@@ -847,6 +863,14 @@ namespace AoeBoardgame
 
             researcher.ResearchQueued = research;
             researcher.QueueTurnsLeft = research.TurnsToComplete;
+
+            MakeMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                OriginTileId = Map.FindTileContainingObject((PlaceableObject)researcher).Id,
+                IsQueueResearch = true,
+                ResearchId = research.ResearchEnum
+            });
         }
 
         public void HoverOverTileByLocation(Point location)
@@ -1166,6 +1190,10 @@ namespace AoeBoardgame
                 {
                     originTile.SetObject(null);
                 }
+                else
+                {
+                    ((IContainsUnits)originTile.Object).Units.Remove((ICanFormGroup)mover);
+                }
 
                 originTile.IsSelected = false;
             }
@@ -1240,6 +1268,11 @@ namespace AoeBoardgame
             if (_textNotification != null)
             {
                 spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(10, Map.Height * 45 + 5), _textNotification.FontColor);
+            }
+
+            if (!WindowUtils.ApplicationIsActivated())
+            {
+                return;
             }
 
             ImGui.Begin("UI");

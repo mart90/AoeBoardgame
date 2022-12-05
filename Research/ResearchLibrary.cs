@@ -93,7 +93,7 @@ namespace AoeBoardgame
 
                         factory.UpgradeLevel = 1;
                         factory.HitPoints += 15;
-                        factory.AttackDamage += 3;
+                        factory.AttackDamage += 2;
                         factory.RangedArmor += 1;
 
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
@@ -101,7 +101,7 @@ namespace AoeBoardgame
                             unit.UpgradeLevel = 1;
                             unit.MaxHitPoints += 15;
                             unit.HitPoints += 15;
-                            unit.AttackDamage += 3;
+                            unit.AttackDamage += 2;
                             unit.RangedArmor += 1;
                         }
 
@@ -132,7 +132,7 @@ namespace AoeBoardgame
 
                         factory.UpgradeLevel = 2;
                         factory.HitPoints += 15;
-                        factory.AttackDamage += 3;
+                        factory.AttackDamage += 2;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 1;
 
@@ -141,7 +141,7 @@ namespace AoeBoardgame
                             unit.UpgradeLevel = 2;
                             unit.MaxHitPoints += 15;
                             unit.HitPoints += 15;
-                            unit.AttackDamage += 3;
+                            unit.AttackDamage += 2;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 1;
                         }
@@ -173,7 +173,7 @@ namespace AoeBoardgame
 
                         factory.UpgradeLevel = 3;
                         factory.HitPoints += 15;
-                        factory.AttackDamage += 3;
+                        factory.AttackDamage += 2;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 1;
 
@@ -182,7 +182,7 @@ namespace AoeBoardgame
                             unit.UpgradeLevel = 3;
                             unit.MaxHitPoints += 15;
                             unit.HitPoints += 15;
-                            unit.AttackDamage += 3;
+                            unit.AttackDamage += 2;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 1;
                         }

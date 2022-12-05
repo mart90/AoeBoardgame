@@ -57,7 +57,7 @@ namespace AoeBoardgame
         {
             return new List<ResourceGatherRate>
             {
-                new ResourceGatherRate(Resource.Food, 10),
+                new ResourceGatherRate(Resource.Food, 8),
                 new ResourceGatherRate(Resource.Wood, 5),
                 new ResourceGatherRate(Resource.Gold, 5),
                 new ResourceGatherRate(Resource.Iron, 5),
@@ -69,11 +69,11 @@ namespace AoeBoardgame
         {
             return new List<ResourceCollection>
             {
-                new ResourceCollection(Resource.Food, 200),
-                new ResourceCollection(Resource.Wood, 100),
-                new ResourceCollection(Resource.Gold, 0),
-                new ResourceCollection(Resource.Iron, 0),
-                new ResourceCollection(Resource.Stone, 0)
+                new ResourceCollection(Resource.Food, 9999),
+                new ResourceCollection(Resource.Wood, 9999),
+                new ResourceCollection(Resource.Gold, 9999),
+                new ResourceCollection(Resource.Iron, 9999),
+                new ResourceCollection(Resource.Stone, 9999)
             };
         }
 
@@ -149,6 +149,11 @@ namespace AoeBoardgame
                     ResearchEnum.VeteranSwordsmen
                 });
             }
+
+            player.AddAllowedUnits<Stable>(new List<Type>
+            {
+                typeof(Knight)
+            });
 
             player.AddAllowedResearch<Stable>(new List<ResearchEnum>
             {

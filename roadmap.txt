@@ -1,16 +1,24 @@
 ﻿IMPORTANT
+- Blue can see red stuff
+- Out of range: https://i.imgur.com/wbBvfjK.png
+- Armies 0 armor?
+- No vet swordsmen?
+- Show range of own units broken (sometimes crash)
+- Catapult didn't spawn correctly on the enemy's client (player did own the object)
 
 LESS IMPORTANT
-- Time control
-- Map from seed
-- "Destination became invalid" after reaching waypoint
-- Game.HandleRevolt()
-- Map generation: Make sure all tiles are reachable
+- Opponent sees attacks on animals
+- Can click on stuff in FoW
+- "Destination became invalid" after reaching waypoint?
 - Temporary tile color doesn't clear when setting new waypoint
 - Highlight units whose destination became invalid
 
 EVENTUALLY
 - Replay viewer
+- Map from seed
+- Game.HandleRevolt()
+- Map generation: Make sure all tiles are reachable
+- Time control
 - More civs
 - More maps
 

@@ -29,7 +29,7 @@ namespace AoeBoardgame
             UiDescription = "Siege weapon. Good against infantry and buildings";
 
             HitPoints = 30;
-            AttackDamage = 20;
+            AttackDamage = 25;
             _speed = 1;
             Range = 3;
             _lineOfSight = 3;

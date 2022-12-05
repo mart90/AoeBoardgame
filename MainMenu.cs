@@ -19,6 +19,11 @@ namespace AoeBoardgame
 
         public void Update(SpriteBatch spriteBatch)
         {
+            if (!WindowUtils.ApplicationIsActivated())
+            {
+                return;
+            }
+
             ImGui.Begin("Menu");
 
             ImGui.SetWindowFontScale(2f);

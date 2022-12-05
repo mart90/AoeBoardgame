@@ -88,8 +88,13 @@ namespace AoeBoardgame.Multiplayer
 
         public void Update(SpriteBatch spriteBatch)
         {
+            if (!WindowUtils.ApplicationIsActivated())
+            {
+                return;
+            }
+
             ImGui.Begin("LoginScreen");
-            
+
             ImGui.SetWindowFontScale(2f);
             ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels + 60));
             ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
