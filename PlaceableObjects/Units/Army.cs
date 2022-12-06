@@ -27,6 +27,18 @@ namespace AoeBoardgame
             set { }
         }
 
+        public override int MeleeArmor
+        {
+            get => Units.Sum(e => ((PlayerObject)e).MeleeArmor);
+            set { }
+        }
+
+        public override int RangedArmor
+        {
+            get => Units.Sum(e => ((PlayerObject)e).RangedArmor);
+            set { }
+        }
+
         public Type UnitType
         { 
             get => Units.Any() ? Units[0].GetType() : null;

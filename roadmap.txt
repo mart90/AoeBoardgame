@@ -1,10 +1,11 @@
 ﻿IMPORTANT
+- TEST the new CanMergeWith and CanAttack
+- Restoring multiplayer games from a given move number
 - Blue can see red stuff
 - Out of range: https://i.imgur.com/wbBvfjK.png
-- Armies 0 armor?
-- No vet swordsmen?
 - Show range of own units broken (sometimes crash)
-- Catapult didn't spawn correctly on the enemy's client (player did own the object)
+- Minimum range no work
+- Can start the same research again in another building if not yet finished
 
 LESS IMPORTANT
 - Opponent sees attacks on animals

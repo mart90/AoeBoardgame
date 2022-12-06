@@ -291,7 +291,7 @@ namespace AoeBoardgame
                     path.First().SetObject((PlayerObject)mover);
                     mover.DestinationTile = destinationTile;
                 }
-                else if (path.First().Object is PlayerObject playerObject && playerObject.Owner != ActivePlayer)
+                else if (!unit.CanMergeWith(path.First().Object))
                 {
                     _textNotification = new TextNotification
                     {
@@ -313,24 +313,31 @@ namespace AoeBoardgame
                 var pathFinder = new PathFinder(Map);
                 IEnumerable<Tile> adjacentTiles = pathFinder.GetAdjacentTiles(originTile);
 
-                if (!adjacentTiles.Any())
+                destinationTile = adjacentTiles
+                    .Where(e => e.IsEmpty || (e.Object != null && unit.CanMergeWith(e.Object)))
+                    .FirstOrDefault();
+
+                if (destinationTile == null)
                 {
                     _textNotification = new TextNotification
                     {
                         FontColor = Color.Red,
-                        Message = "A trained unit had no possible tiles to be placed on"
+                        Message = "A created unit had no possible tiles to spawn on"
                     };
+
                     ActivePlayer.OwnedObjects.Remove(unit);
+                }
+                else if (destinationTile.IsEmpty)
+                {
+                    destinationTile.SetObject(unit);
                 }
                 else
                 {
-                    adjacentTiles.Where(e => e.SeemsAccessible).First().SetObject(unit);
+                    ((IContainsUnits)destinationTile.Object).Units.Add((ICanFormGroup)unit);
                 }
             }
 
             UpdateVisibleTilesForObject(unit);
-
-            mover.DestinationTile = destinationTile;
         }
 
         private void MoversTakeSteps()
@@ -484,15 +491,9 @@ namespace AoeBoardgame
 
             Tile originTile = Map.FindTileContainingObject(SelectedObject);
 
-            if (SelectedObject is IAttacker attacker 
-                && !destinationTile.HasFogOfWar
-                && destinationTile.Object != null
-                && (
-                    (destinationTile.Object is PlayerObject defender && defender.Owner != ActivePlayer)
-                    || destinationTile.Object is GaiaObject
-                ))
+            if (!destinationTile.HasFogOfWar && destinationTile.Object != null && ((PlayerObject)SelectedObject).CanAttack(destinationTile.Object))
             {
-                TryAttackObject(originTile, destinationTile, attacker, (IAttackable)destinationTile.Object);
+                TryAttackObject(originTile, destinationTile, (IAttacker)SelectedObject, (IAttackable)destinationTile.Object);
                 return;
             }
 
@@ -1131,7 +1132,15 @@ namespace AoeBoardgame
                     return null;
                 }
 
-                MergeMoverWithDestination(originTile, endTile, mover);
+                if (((PlayerObject)mover).CanMergeWith(endTile.Object))
+                {
+                    MergeMoverWithDestination(originTile, endTile, mover);
+                }
+                else
+                {
+                    HandleDestinationInvalid(mover);
+                    return null;
+                }
             }
             else
             {
@@ -1164,76 +1173,55 @@ namespace AoeBoardgame
             mover.DestinationTile = null;
         }
 
+        /// <summary>
+        /// Does not check merge legality, that is up to the caller
+        /// </summary>
         private void MergeMoverWithDestination(Tile originTile, Tile endTile, ICanMove mover)
         {
-            if (endTile.Object is IEconomicBuilding economicBuilding
-                && mover is ICanGatherResources gatherer
-                && economicBuilding.Units.Count < economicBuilding.MaxUnits)
+            if (endTile.Object is IEconomicBuilding economicBuilding)
             {
-                if (gatherer is GathererGroup group)
+                if (mover is GathererGroup group)
                 {
-                    if (group.Units.Count > economicBuilding.MaxUnits - economicBuilding.Units.Count)
-                    {
-                        throw new Exception($"Bug in pathfinding. Gatherer group is trying to merge with economic building but there's not enough space");
-                    }
-
                     group.ResourceGathering = economicBuilding.Resource;
                     economicBuilding.Units.AddRange(group.Units);
                 }
                 else
                 {
-                    gatherer.ResourceGathering = economicBuilding.Resource;
-                    economicBuilding.Units.Add((ICanFormGroup)gatherer);
+                    ((ICanGatherResources)mover).ResourceGathering = economicBuilding.Resource;
+                    economicBuilding.Units.Add((ICanFormGroup)mover);
                 }
-
-                if (originTile.Object == mover)
-                {
-                    originTile.SetObject(null);
-                }
-                else
-                {
-                    ((IContainsUnits)originTile.Object).Units.Remove((ICanFormGroup)mover);
-                }
-
-                originTile.IsSelected = false;
             }
-            else if (endTile.Object is Army group
-                && mover.GetType() == group.UnitType
-                && group.Units.Count < group.MaxUnits)
+            else if (endTile.Object is Army army)
             {
-                group.Units.Add((ICanFormGroup)mover);
-                group.StepsTakenThisTurn = group.Units.Max(e => e.StepsTakenThisTurn);
-
-                if (originTile.Object == mover)
+                if (mover is ICanFormGroup)
                 {
-                    originTile.SetObject(null);
+                    army.Units.Add((ICanFormGroup)mover);
+                    army.StepsTakenThisTurn = army.Units.Max(e => e.StepsTakenThisTurn);
                 }
-                else
+                else if (mover is Army army2)
                 {
-                    ((IContainsUnits)originTile.Object).Units.Remove((ICanFormGroup)mover);
+                    army.Units.AddRange(army2.Units);
+                    army2.Units.Clear();
+                    army.StepsTakenThisTurn = army.Units.Max(e => e.StepsTakenThisTurn);
                 }
-
-                originTile.IsSelected = false;
             }
-            else if (mover is ICanFormGroup grouper
-                && endTile.Object.GetType() == mover.GetType()
-                && !(endTile.Object is ICanMakeBuildings builder && builder.HasBuildingQueued()))
+            else if (mover is ICanFormGroup grouper)
             {
                 IContainsUnits newGroup = CreateNewGroup(grouper, endTile);
 
                 endTile.SetObject((PlaceableObject)newGroup);
-
-                if (originTile.Object == mover)
-                {
-                    originTile.SetObject(null);
-                }
-
-                originTile.IsSelected = false;
             }
-            else
+
+            if (originTile.Object == mover)
             {
-                throw new Exception($"Bug in pathfinding. Mover is trying to illegally merge with another object. Mover type is {mover.GetType().Name} and destination object type is {endTile.Object.GetType().Name}");
+                originTile.SetObject(null);
             }
+            else if (originTile.Object is IContainsUnits unitContainer && unitContainer.Units.Contains((ICanFormGroup)mover))
+            {
+                ((IContainsUnits)originTile.Object).Units.Remove((ICanFormGroup)mover);
+            }
+
+            originTile.IsSelected = false;
         }
 
         private IContainsUnits CreateNewGroup(ICanFormGroup mover, Tile destinationTile)

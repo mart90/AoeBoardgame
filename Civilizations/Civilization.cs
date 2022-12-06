@@ -142,7 +142,7 @@ namespace AoeBoardgame
 
             SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
-            if (factory.UpgradeLevel == 2)
+            if (factory.UpgradeLevel == 1)
             {
                 player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                 {
@@ -182,6 +182,7 @@ namespace AoeBoardgame
             });
             player.AddAllowedResearch<SiegeWorkshop>(new List<ResearchEnum>
             {
+                ResearchEnum.HeavyCatapults,
                 ResearchEnum.SiegeEngineers
             });
 
@@ -194,21 +195,21 @@ namespace AoeBoardgame
             ArcherFactory archerFactory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
             PikemanFactory pikemanFactory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
 
-            if (swordsmanFactory.UpgradeLevel == 3)
+            if (swordsmanFactory.UpgradeLevel == 2)
             {
                 player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                 {
                     ResearchEnum.EliteSwordsmen
                 });
             }
-            if (archerFactory.UpgradeLevel == 3)
+            if (archerFactory.UpgradeLevel == 2)
             {
                 player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                 {
                     ResearchEnum.EliteArchers
                 });
             }
-            if (pikemanFactory.UpgradeLevel == 3)
+            if (pikemanFactory.UpgradeLevel == 2)
             {
                 player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                 {

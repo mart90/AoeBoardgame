@@ -172,7 +172,7 @@ namespace AoeBoardgame
             {
                 destinationTile = NodeToTile(destinationNode);
 
-                if (destinationTile.SeemsAccessibleGaia)
+                if (destinationTile.IsEmpty)
                 {
                     return destinationTile;
                 }
@@ -191,7 +191,7 @@ namespace AoeBoardgame
 
                 destinationTile = NodeToTile(destinationNode);
 
-                if (destinationTile.SeemsAccessibleGaia)
+                if (destinationTile.IsEmpty)
                 {
                     return destinationTile;
                 }
@@ -282,36 +282,15 @@ namespace AoeBoardgame
                 {
                     accessibleChildren.Add(child);
                 }
-                else if (childTile.Object != null && childTile.Object is IAttackable attackableObject)
+                else if (childTile.Object != null)
                 {
                     child.PathStopsHere = true;
 
-                    if (attackableObject is PlayerObject playerObject && playerObject.Owner == ((PlayerObject)mover).Owner)
+                    if (((PlayerObject)mover).CanAttack(childTile.Object))
                     {
-                        if (childTile.Object is IEconomicBuilding economicBuilding && mover is ICanGatherResources)
-                        {
-                            if (mover is GathererGroup group)
-                            {
-                                if (group.Units.Count <= economicBuilding.MaxUnits - economicBuilding.Units.Count)
-                                {
-                                    accessibleChildren.Add(child);
-                                }
-                            }
-                            else if (economicBuilding.Units.Count < economicBuilding.MaxUnits)
-                            {
-                                accessibleChildren.Add(child);
-                            }
-                        }
-                        else if (childTile.Object is Army army && mover.GetType() == army.UnitType && army.Units.Count < army.MaxUnits)
-                        {
-                            accessibleChildren.Add(child);
-                        }
-                        else if (mover is ICanFormGroup && mover.GetType() == childTile.Object.GetType())
-                        {
-                            accessibleChildren.Add(child);
-                        }
+                        accessibleChildren.Add(child);
                     }
-                    else if (mover is IAttacker)
+                    else if (((PlayerObject)mover).CanMergeWith(childTile.Object))
                     {
                         accessibleChildren.Add(child);
                     }

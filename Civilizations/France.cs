@@ -29,7 +29,7 @@ namespace AoeBoardgame
             {
                 UnitTypesAllowedToMake = new List<Type>
                 {
-                    typeof(Longbowman)
+                    typeof(ThrowingAxeman)
                 }
             };
         }
@@ -40,8 +40,8 @@ namespace AoeBoardgame
 
             player.AddAllowedResearch<Castle>(new List<ResearchEnum>
             {
-                ResearchEnum.EliteLongbowmen,
-                ResearchEnum.Agriculture
+                ResearchEnum.EliteThrowingAxemen,
+                ResearchEnum.Chivalry
             });
         }
 
