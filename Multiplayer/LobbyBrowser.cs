@@ -90,13 +90,21 @@ namespace AoeBoardgame
                 Id = _httpClient.GetGameId(CreatedLobby.Id)
             };
 
-            CreatedGame.SetLocalPlayer(CreatedLobby.Settings.MapSeed[0] == 'b');
+            CreatedGame.StartTurn();
+
+            CreatedGame.SetLocalPlayer(CreatedLobby.Settings.HostPlaysBlue);
 
             CreatedLobby.Settings.MapSeed = null; // Also sets it to null on the create lobby form (for next game)
 
             Thread.Sleep(1000);
 
             CreatedGame.SetOpponent();
+
+            if (CreatedLobby.Settings.RestoreGameId != null)
+            {
+                List<GameMove> moveList = _httpClient.LatestMoves(CreatedGame.Id, 0).Moves;
+                CreatedGame.ApplyMoveList(moveList);
+            }
 
             NewUiState = UiState.MultiplayerGame;
 
@@ -107,24 +115,26 @@ namespace AoeBoardgame
         {
             CreatedGame = new MultiplayerGame(lobby.Settings, _textureLibrary, _fontLibrary, _researchLibrary, _httpClient);
 
-            lobby.Settings.MapSeed = CreatedGame.MapSeed;
+            CreatedGame.StartTurn();
+
+            if (lobby.Settings.MapSeed == null)
+            {
+                // We generated the map
+                lobby.Settings.MapSeed = CreatedGame.MapSeed;
+            }
 
             CreatedGame.Id = _httpClient.JoinLobby(lobby);
 
-            CreatedGame.SetLocalPlayer(lobby.Settings.MapSeed[0] != 'b');
+            CreatedGame.SetLocalPlayer(!lobby.Settings.HostPlaysBlue);
             CreatedGame.SetOpponent();
 
-            NewUiState = UiState.MultiplayerGame;
-        }
+            if (lobby.Settings.RestoreGameId != null)
+            {
+                List<GameMove> moveList = _httpClient.LatestMoves(CreatedGame.Id, 0).Moves;
+                CreatedGame.ApplyMoveList(moveList);
+            }
 
-        private void CreateLobby()
-        {
-            var settings = new MultiplayerGameSettings();
-            CreatedLobby = new Lobby 
-            { 
-                Id = _httpClient.CreateLobby(settings),
-                Settings = settings
-            };
+            NewUiState = UiState.MultiplayerGame;
         }
 
         public void Update(SpriteBatch spriteBatch)
@@ -172,6 +182,11 @@ namespace AoeBoardgame
 
             if (ImGui.Button("Back"))
             {
+                if (CreatedLobby != null)
+                {
+                    CancelLobby();
+                }
+
                 NewUiState = UiState.MainMenu;
             }
 
@@ -181,7 +196,7 @@ namespace AoeBoardgame
             {
                 if (ImGui.Button("Create"))
                 {
-                    CreateLobby();
+                    NewUiState = UiState.CreatingLobby;
                 }
             }
 

@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace AoeBoardgame
 {
@@ -190,7 +189,7 @@ namespace AoeBoardgame
 
         public void SetSeed()
         {
-            string seedString = _random.Next() % 2 == 0 ? "b_" : "r_"; // Host color
+            string seedString = _random.Next() % 2 == 0 ? "b_" : "r_"; // Host color (No longer used)
 
             int consecutiveEmptySquares = 0;
 

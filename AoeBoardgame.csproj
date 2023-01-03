@@ -97,6 +97,7 @@
     <Compile Include="Multiplayer\HttpClient\PollLastMovesDto.cs" />
     <Compile Include="Multiplayer\HttpClient\UserDto.cs" />
     <Compile Include="Multiplayer\Lobby.cs" />
+    <Compile Include="Multiplayer\CreateLobbyForm.cs" />
     <Compile Include="Multiplayer\LoginScreen.cs" />
     <Compile Include="Multiplayer\MultiplayerGameSettings.cs" />
     <Compile Include="Multiplayer\User.cs" />

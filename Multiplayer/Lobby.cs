@@ -16,7 +16,20 @@ namespace AoeBoardgame.Multiplayer
 
         public string Title()
         {
-            string title = Settings.MapSeed != null ? "Seeded - " : "Generated - ";
+            string title;
+
+            if (Settings.RestoreGameId != null)
+            {
+                title = $"Restored - ";
+            }
+            else if (Settings.MapSeed != null)
+            {
+                title = "Seeded - ";
+            }
+            else
+            {
+                title = "Generated - ";
+            }
 
             if (Settings.TimeControlEnabled)
             {

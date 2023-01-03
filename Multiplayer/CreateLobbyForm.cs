@@ -1,0 +1,152 @@
+﻿using AoeBoardgame.Multiplayer;
+using ImGuiNET;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace AoeBoardgame
+{
+    class CreateLobbyForm : IUiWindow
+    {
+        public UiState CorrespondingUiState { get; set; }
+        public UiState? NewUiState { get; set; }
+        public int WidthPixels { get; set; }
+        public int HeightPixels { get; set; }
+
+        public TextNotification TextNotification { get; private set; }
+
+        private readonly FontLibrary _fontLibrary;
+        private readonly MultiplayerHttpClient _httpClient;
+
+        private readonly byte[] _restoreGameIdBuffer;
+        private readonly byte[] _restoreMoveNumberBuffer;
+
+        private bool hostPlaysBlue;
+
+        public Lobby CreatedLobby { get; set; }
+
+        public CreateLobbyForm(
+            FontLibrary fontLibrary,
+            MultiplayerHttpClient httpClient)
+        {
+            CorrespondingUiState = UiState.CreatingLobby;
+            WidthPixels = 800;
+            HeightPixels = 500;
+
+            _restoreGameIdBuffer = new byte[10];
+            _restoreMoveNumberBuffer = new byte[10];
+
+            _httpClient = httpClient;
+            _fontLibrary = fontLibrary;
+        }
+        
+        private void CreateLobby()
+        {
+            var settings = new MultiplayerGameSettings();
+
+            string restoreGameIdStr = _restoreGameIdBuffer.GetString();
+
+            if (restoreGameIdStr != "")
+            {
+                if (int.TryParse(restoreGameIdStr, out int restoreGameId))
+                {
+                    settings.RestoreGameId = restoreGameId;
+                }
+                else
+                {
+                    TextNotification = new TextNotification
+                    {
+                        FontColor = Color.Red,
+                        Message = "Game id to restore must be a number"
+                    };
+
+                    return;
+                }
+
+                string restoreGameMoveNumberStr = _restoreMoveNumberBuffer.GetString();
+
+                if (restoreGameMoveNumberStr == "")
+                {
+                    settings.RestoreMoveNumber = null;
+                }
+                else
+                {
+                    if (int.TryParse(restoreGameMoveNumberStr, out int restoreGameMoveNumber))
+                    {
+                        settings.RestoreMoveNumber = restoreGameMoveNumber;
+                    }
+                    else
+                    {
+                        TextNotification = new TextNotification
+                        {
+                            FontColor = Color.Red,
+                            Message = "Move number to restore to must be a number"
+                        };
+
+                        return;
+                    }
+                }
+
+                settings.MapSeed = _httpClient.GetMapSeedByGameId(restoreGameId);
+            }
+
+            settings.HostPlaysBlue = hostPlaysBlue;
+
+            CreatedLobby = new Lobby 
+            { 
+                Id = _httpClient.CreateLobby(settings),
+                Settings = settings
+            };
+        }
+
+        public void Update(SpriteBatch spriteBatch)
+        {
+            if (!WindowUtils.ApplicationIsActivated())
+            {
+                return;
+            }
+
+            ImGui.Begin("Create lobby");
+
+            ImGui.SetWindowFontScale(2f);
+            ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels + 60));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
+
+            ImGui.BeginChild("Form", new System.Numerics.Vector2(800, 400));
+
+            ImGui.Checkbox("Host plays blue", ref hostPlaysBlue);
+
+            ImGui.NewLine();
+
+            ImGui.SetNextItemWidth(70);
+            ImGui.InputText("Restore - Game id", _restoreGameIdBuffer, (uint)_restoreGameIdBuffer.Length);
+
+            ImGui.SetNextItemWidth(70);
+            ImGui.InputText("Restore - To move number", _restoreMoveNumberBuffer, (uint)_restoreMoveNumberBuffer.Length);
+
+            ImGui.EndChild();
+
+            if (ImGui.Button("Back"))
+            {
+                NewUiState = UiState.LobbyBrowser;
+            }
+
+            ImGui.SameLine();
+
+            if (CreatedLobby == null)
+            {
+                if (ImGui.Button("Create"))
+                {
+                    CreateLobby();
+                    NewUiState = UiState.LobbyBrowser;
+                }
+            }
+
+            ImGui.End();
+
+            if (TextNotification != null)
+            {
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, TextNotification.Message, new Vector2(20, HeightPixels - 60), TextNotification.FontColor);
+            }
+        }
+    }
+}

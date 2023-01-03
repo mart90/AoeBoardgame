@@ -98,7 +98,10 @@ namespace AoeBoardgame.Multiplayer
                 timeIncrementSeconds = settings.TimeIncrementSeconds,
                 minRating = settings.MinRating,
                 maxRating = settings.MaxRating,
-                mapSeed = settings.MapSeed
+                mapSeed = settings.MapSeed,
+                restoreGameId = settings.RestoreGameId,
+                restoreMoveNumber = settings.RestoreMoveNumber,
+                hostIsBlue = settings.HostPlaysBlue
             });
 
             return int.Parse(result);
@@ -134,6 +137,16 @@ namespace AoeBoardgame.Multiplayer
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password,
                 lobbyId
+            });
+        }
+
+        public string GetMapSeedByGameId(int gameId)
+        {
+            return Post("get_map_seed_by_game_id", new
+            {
+                username = AuthenticatedUser.Username,
+                password = AuthenticatedUser.Password,
+                gameId
             });
         }
 

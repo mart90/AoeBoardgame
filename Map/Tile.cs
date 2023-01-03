@@ -70,9 +70,9 @@ namespace AoeBoardgame
 
         public bool LocationSquareIncludesPoint(Point point) => _location.Contains(point);
 
-        public bool IsEmpty => Object == null && Type == TileType.Dirt;
+        public bool IsEmpty => Type == TileType.Dirt && Object == null && !BuildingUnderConstruction;
 
-        public bool SeemsAccessible => (Object == null || (HasFogOfWar && !IsScouted)) && Type == TileType.Dirt;
+        public bool SeemsAccessible => Type == TileType.Dirt && ((Object == null && !BuildingUnderConstruction) || (HasFogOfWar && !IsScouted));
 
         public Point Center => _location.Center;
 

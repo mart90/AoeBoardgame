@@ -15,6 +15,9 @@ namespace AoeBoardgame.Multiplayer
         public string MapSeed { get; set; }
         public int MinRating { get; set; }
         public int MaxRating { get; set; }
+        public int? RestoreGameId { get; set; }
+        public int? RestoreMoveNumber { get; set; }
+        public bool HostIsBlue { get; set; }
 
         public Lobby ToLobby()
         {
@@ -32,7 +35,10 @@ namespace AoeBoardgame.Multiplayer
                     TimeIncrementSeconds = TimeIncrementSeconds,
                     MapSeed = MapSeed,
                     MinRating = MinRating,
-                    MaxRating = MaxRating
+                    MaxRating = MaxRating,
+                    RestoreGameId = RestoreGameId,
+                    RestoreMoveNumber = RestoreMoveNumber,
+                    HostPlaysBlue = HostIsBlue
                 }
             };
         }

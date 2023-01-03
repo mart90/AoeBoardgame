@@ -18,7 +18,7 @@ namespace AoeBoardgame
         {
             var factories = base.GetFactories(player).ToList();
 
-            factories.Add(new LongbowmanFactory(TextureLibrary));
+            factories.Add(new ThrowingAxemanFactory(TextureLibrary));
 
             return factories;
         }

@@ -18,15 +18,20 @@ namespace AoeBoardgame
 
             Players = new List<Player>
             {
-                new Player("Blue", new England(textureLibrary, researchLibrary), TileColor.Blue),
+                new Player("Blue", new England(textureLibrary, researchLibrary), TileColor.Blue) 
+                { 
+                    IsActive = true,
+                    IsLocalPlayer = true
+                },
                 new Player("Red", new France(textureLibrary, researchLibrary), TileColor.Red)
+                {
+                    IsLocalPlayer = true
+                }
             };
 
-            Players[0].IsActive = true;
             PlaceStartingUnits();
 
             State = GameState.Default;
-            IsMyTurn = true;
 
             StartTurn();
         }
@@ -36,7 +41,7 @@ namespace AoeBoardgame
             base.Update(spriteBatch);
         }
 
-        protected override void StartTurn()
+        public override void StartTurn()
         {
             SetFogOfWar(ActivePlayer);
             base.StartTurn();

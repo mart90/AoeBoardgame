@@ -15,6 +15,7 @@ namespace AoeBoardgame
 
         private readonly User _us;
         private User _opponent;
+        private bool _restoringGame;
 
         private readonly MultiplayerHttpClient _httpClient;
 
@@ -22,9 +23,7 @@ namespace AoeBoardgame
 
         public string MapSeed => Map.Seed;
 
-        private Player _localPlayer => Players.Single(e => e.IsLocalPlayer);
-
-        protected override Player VisiblePlayer => _localPlayer;
+        protected override Player VisiblePlayer => LocalPlayer;
 
         public MultiplayerGame(
             MultiplayerGameSettings settings,
@@ -62,8 +61,6 @@ namespace AoeBoardgame
             PlaceStartingUnits();
 
             _lastPoll = DateTime.Now.AddMinutes(-1);
-
-            StartTurn();
         }
 
         public void SetOpponent()
@@ -71,21 +68,16 @@ namespace AoeBoardgame
             _opponent = _httpClient.GetOpponent(Id);
         }
 
-        protected override void MakeMove(GameMove move)
+        protected override void AddMove(GameMove move)
         {
             move.GameId = Id;
-            move.PlayerId = IsMyTurn ? _us.Id : _opponent.Id;
+            move.PlayerId = ActivePlayer == LocalPlayer ? _us.Id : _opponent.Id;
 
-            base.MakeMove(move);
+            base.AddMove(move);
 
-            if (IsMyTurn)
+            if (IsMyTurn && !_restoringGame)
             {
                 _httpClient.MakeMove(move);
-
-                if (move.IsEndOfTurn)
-                {
-                    IsMyTurn = false;
-                }
             }
         }
 
@@ -93,7 +85,7 @@ namespace AoeBoardgame
         {
             base.EndTurn();
 
-            SetFogOfWar(_localPlayer); // TODO Make this not needed
+            SetFogOfWar(LocalPlayer); // TODO Make this not needed
         }
 
         public void SetLocalPlayer(bool blueIsLocal)
@@ -101,15 +93,13 @@ namespace AoeBoardgame
             if (blueIsLocal)
             {
                 Players.Single(e => e.Color == TileColor.Blue).IsLocalPlayer = true;
-                IsMyTurn = true;
             }
             else
             {
                 Players.Single(e => e.Color == TileColor.Red).IsLocalPlayer = true;
-                IsMyTurn = false;
             }
 
-            SetFogOfWar(_localPlayer);
+            SetFogOfWar(LocalPlayer);
         }
 
         public override void Update(SpriteBatch spriteBatch)
@@ -144,77 +134,95 @@ namespace AoeBoardgame
 
             foreach (GameMove newMove in dto.Moves.OrderBy(e => e.MoveNumber))
             {
-                Tile originTile = null;
-                Tile destinationTile = null;
-
-                if (newMove.OriginTileId != null)
-                {
-                    originTile = Map.Tiles[newMove.OriginTileId.Value];
-                }
-                if (newMove.DestinationTileId != null)
-                {
-                    destinationTile = Map.Tiles[newMove.DestinationTileId.Value];
-                }
-
-                if (newMove.IsEndOfTurn)
-                {
-                    EndTurn();
-                    State = GameState.Default;
-                    IsMyTurn = true;
-                }
-                else if (newMove.IsMovement)
-                {
-                    ICanMove mover;
-
-                    if (newMove.SubselectedUnitHitpoints != null)
-                    {
-                        // Unit is moving out of a group. We know which unit to move out of the group based on this HP parameter set by our opponent's client
-                        mover = ((IContainsUnits)originTile.Object).Units
-                            .Where(e => ((PlayerObject)e).HitPoints == newMove.SubselectedUnitHitpoints)
-                            .First();
-                    }
-                    else
-                    {
-                        mover = (ICanMove)originTile.Object;
-                    }
-
-                    TryMoveObject(originTile, destinationTile, mover);
-                }
-                else if (newMove.IsAttack)
-                {
-                    TryAttackObject(originTile, destinationTile, (IAttacker)originTile.Object, (IAttackable)destinationTile.Object);
-                }
-                else if (newMove.IsWaypoint)
-                {
-                    SetWaypoint((ICanMakeUnits)originTile.Object, originTile, destinationTile);
-                }
-                else if (newMove.IsQueueBuilding)
-                {
-                    Type buildingType = ActivePlayer.Factories
-                        .Where(e => e.Type.Name == newMove.BuildingTypeName)
-                        .Select(e => e.Type)
-                        .Single();
-
-                    QueueBuilding(buildingType, (ICanMakeBuildings)originTile.Object, destinationTile);
-                }
-                else if (newMove.IsQueueUnit)
-                {
-                    Type unitType = ActivePlayer.Factories
-                        .Where(e => e.Type.Name == newMove.UnitTypeName)
-                        .Select(e => e.Type)
-                        .Single();
-
-                    TryQueueUnit(unitType, (ICanMakeUnits)originTile.Object);
-                }
-                else if (newMove.IsQueueResearch)
-                {
-                    Research research = ResearchLibrary.GetByResearchEnum(newMove.ResearchId.Value);
-                    TryResearch(research, (ICanMakeResearch)originTile.Object);
-                }
+                ApplyMove(newMove);
             }
 
-            SetFogOfWar(_localPlayer);
-            ClearTemporaryTileColors();
+            SetFogOfWar(LocalPlayer);
+            ClearTemporaryTileColorsExceptPink();
+        }
+
+        public void ApplyMoveList(List<GameMove> moveList)
+        {
+            _restoringGame = true;
+
+            foreach (GameMove move in moveList.OrderBy(e => e.MoveNumber))
+            {
+                SetFogOfWar(ActivePlayer);
+                ApplyMove(move);
+            }
+
+            _restoringGame = false;
+        }
+
+        private void ApplyMove(GameMove newMove)
+        {
+            Tile originTile = null;
+            Tile destinationTile = null;
+
+            if (newMove.OriginTileId != null)
+            {
+                originTile = Map.Tiles[newMove.OriginTileId.Value];
+            }
+            if (newMove.DestinationTileId != null)
+            {
+                destinationTile = Map.Tiles[newMove.DestinationTileId.Value];
+            }
+
+            if (newMove.IsEndOfTurn)
+            {
+                EndTurn();
+                State = GameState.Default;
+            }
+            else if (newMove.IsMovement)
+            {
+                ICanMove mover;
+
+                if (newMove.SubselectedUnitHitpoints != null)
+                {
+                    // Unit is moving out of a group. We know which unit to move out of the group based on the HP parameter.
+                    // If there are multiple units with the same HP, it doesn't matter which we move because they are effectively identical
+                    mover = ((IContainsUnits)originTile.Object).Units
+                        .Where(e => ((PlayerObject)e).HitPoints == newMove.SubselectedUnitHitpoints)
+                        .First();
+                }
+                else
+                {
+                    mover = (ICanMove)originTile.Object;
+                }
+
+                TryMoveObject(originTile, destinationTile, mover);
+            }
+            else if (newMove.IsAttack)
+            {
+                TryAttackObject(originTile, destinationTile, (IAttacker)originTile.Object, (IAttackable)destinationTile.Object);
+            }
+            else if (newMove.IsWaypoint)
+            {
+                SetWaypoint((ICanMakeUnits)originTile.Object, originTile, destinationTile);
+            }
+            else if (newMove.IsQueueBuilding)
+            {
+                Type buildingType = ActivePlayer.Factories
+                    .Where(e => e.Type.Name == newMove.BuildingTypeName)
+                    .Select(e => e.Type)
+                    .Single();
+
+                QueueBuilding(buildingType, (ICanMakeBuildings)originTile.Object, destinationTile);
+            }
+            else if (newMove.IsQueueUnit)
+            {
+                Type unitType = ActivePlayer.Factories
+                    .Where(e => e.Type.Name == newMove.UnitTypeName)
+                    .Select(e => e.Type)
+                    .Single();
+
+                TryQueueUnit(unitType, (ICanMakeUnits)originTile.Object);
+            }
+            else if (newMove.IsQueueResearch)
+            {
+                Research research = ResearchLibrary.GetByResearchEnum(newMove.ResearchId.Value);
+                TryResearch(research, (ICanMakeResearch)originTile.Object);
+            }
         }
     }
 }

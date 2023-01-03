@@ -37,16 +37,16 @@ namespace AoeBoardgame
         {
             List<Tile> tiles = GetAllTilesInRangeIgnoreObstacles(originTile, range).ToList();
 
-            if (hasMinimumRange)
-            {
-                tiles.RemoveAll(e => GetAdjacentTiles(originTile).Contains(e));
-            }
-
             var rangeableTiles = new List<Tile>();
 
             foreach (Tile destinationTile in tiles)
             {
                 rangeableTiles.AddRange(GetRangeableTilesStraightLine(originTile, destinationTile));
+            }
+
+            if (hasMinimumRange)
+            {
+                rangeableTiles.RemoveAll(e => GetAdjacentTiles(originTile).Contains(e));
             }
 
             return rangeableTiles.Distinct();

@@ -18,8 +18,6 @@ namespace AoeBoardgame
 
         protected Map Map;
 
-        protected bool IsMyTurn;
-
         private TextNotification _textNotification;
 
         private Type _placingBuildingType;
@@ -40,9 +38,10 @@ namespace AoeBoardgame
             MoveHistory = new List<GameMove>();
         }
 
+        protected Player LocalPlayer => Players.Single(e => e.IsLocalPlayer);
         protected Player ActivePlayer => Players.Single(e => e.IsActive);
-
         protected virtual Player VisiblePlayer => ActivePlayer;
+        protected bool IsMyTurn => ActivePlayer.IsLocalPlayer;
 
         private Tile GetTileByLocation(Point location) => Map.GetTileByLocation(location);
 
@@ -69,7 +68,7 @@ namespace AoeBoardgame
             }
         }
 
-        protected virtual void StartTurn()
+        public virtual void StartTurn()
         {
             UpdateQueues();
 
@@ -78,7 +77,7 @@ namespace AoeBoardgame
                 HandleRevolt();
             }
 
-            SetRangeableTiles();
+            SetRangeableTiles(); // TODO instead update rangeable tiles when objects are placed or moved
         }
 
         protected virtual void EndTurn()
@@ -95,7 +94,7 @@ namespace AoeBoardgame
             GatherResources();
             ConsumeFood();
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 IsEndOfTurn = true
@@ -174,7 +173,7 @@ namespace AoeBoardgame
         {
             obj.VisibleTiles = new List<Tile>();
 
-            // Skip objects that are gathering or part of an army
+            // Skip for objects that are gathering or part of an army
             if (!Map.Tiles.Any(e => e.Object == obj))
             {
                 return;
@@ -193,6 +192,11 @@ namespace AoeBoardgame
                 {
                     tile.IsScouted = true;
                 }
+            }
+
+            if (obj is IHasRange ranger)
+            {
+                ranger.RangeableTiles = Map.FindTilesInRangeOfTile(originTile, ranger.Range, ranger.HasMinimumRange);
             }
 
             SetFogOfWar(ActivePlayer);
@@ -286,7 +290,7 @@ namespace AoeBoardgame
                     destinationTile = null;
                     trainer.WayPoint = null;
                 }
-                else if (path.First().Object == null)
+                else if (path.First().IsEmpty)
                 {
                     path.First().SetObject((PlayerObject)mover);
                     mover.DestinationTile = destinationTile;
@@ -333,7 +337,7 @@ namespace AoeBoardgame
                 }
                 else
                 {
-                    ((IContainsUnits)destinationTile.Object).Units.Add((ICanFormGroup)unit);
+                    MergeMoverWithDestination(originTile, destinationTile, mover);
                 }
             }
 
@@ -403,6 +407,17 @@ namespace AoeBoardgame
             {
                 UpdateVisibleTilesForObject(obj);
             }
+
+            Map.Tiles[255].IsScouted = false;
+            Map.Tiles[270].IsScouted = false;
+            Map.Tiles[254].IsScouted = false;
+            Map.Tiles[256].IsScouted = false;
+            Map.Tiles[280].IsScouted = false;
+            Map.Tiles[269].IsScouted = false;
+            Map.Tiles[271].IsScouted = false;
+            Map.Tiles[294].IsScouted = false;
+            Map.Tiles[230].IsScouted = false;
+            Map.Tiles[244].IsScouted = false;
         }
 
         public void LeftClickTileByLocation(Point location)
@@ -528,7 +543,7 @@ namespace AoeBoardgame
             trainer.WayPoint = destinationTile;
             destinationTile.SetTemporaryColor(TileColor.Orange);
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 OriginTileId = originTile.Id,
@@ -571,7 +586,7 @@ namespace AoeBoardgame
                 UpdateVisibleTilesForObject((PlayerObject)mover);
             }
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 IsMovement = true,
@@ -604,7 +619,7 @@ namespace AoeBoardgame
             }
 
             int range;
-            int damage;
+            int damage = attacker.AttackDamage;
             bool boarFoughtBack = false;
 
             if (attacker is ICanMove mover)
@@ -612,17 +627,23 @@ namespace AoeBoardgame
                 mover.DestinationTile = null;
             }
 
+            if ((attacker is Pikeman || attacker is Army army && army.Units[0] is Pikeman)
+                && (defender is ICavalry || (defender is Army army2 && army2.Units[0] is ICavalry)))
+            {
+                damage *= 3;
+            }
+
             if (attacker is IHasRange ranger)
             {
                 range = ranger.Range;
                 var armor = defender.RangedArmor - attacker.ArmorPierce;
-                damage = attacker.AttackDamage - (armor > 0 ? armor : 0);
+                damage -= (armor > 0 ? armor : 0);
             }
             else
             {
                 range = 1;
                 var armor = defender.MeleeArmor - attacker.ArmorPierce;
-                damage = attacker.AttackDamage - (armor > 0 ? armor : 0);
+                damage -= (armor > 0 ? armor : 0);
             }
 
             IEnumerable<Tile> tilesInRange = Map.FindTilesInRangeOfTile(originTile, range, attacker is IHasRange ranger2 && ranger2.HasMinimumRange);
@@ -635,11 +656,6 @@ namespace AoeBoardgame
                     Message = "Object is out of range"
                 };
                 return;
-            }
-
-            if (attacker is Pikeman && (defender is ICavalry || (defender is Army army && army.Units[0] is ICavalry)))
-            {
-                damage *= 3;
             }
 
             if (damage < 0)
@@ -681,7 +697,7 @@ namespace AoeBoardgame
                 _textNotification.Message += ", but the boar fought back";
             }
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 IsAttack = true,
@@ -814,7 +830,7 @@ namespace AoeBoardgame
 
             State = GameState.Default;
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 OriginTileId = Map.FindTileContainingObject((PlaceableObject)builder).Id,
@@ -841,7 +857,7 @@ namespace AoeBoardgame
             trainer.UnitTypeQueued = unitType;
             trainer.QueueTurnsLeft = factory.TurnsToComplete;
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 OriginTileId = Map.FindTileContainingObject((PlaceableObject)trainer).Id,
@@ -865,7 +881,7 @@ namespace AoeBoardgame
             researcher.ResearchQueued = research;
             researcher.QueueTurnsLeft = research.TurnsToComplete;
 
-            MakeMove(new GameMove
+            AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
                 OriginTileId = Map.FindTileContainingObject((PlaceableObject)researcher).Id,
@@ -897,7 +913,7 @@ namespace AoeBoardgame
 
             if (State != GameState.PlacingBuilding && !(selectedObject is ICanMakeUnits))
             {
-                ClearTemporaryTileColors();
+                ClearTemporaryTileColorsExceptPink();
             }
 
             Tile originTile = Map.SelectedTile;
@@ -966,7 +982,10 @@ namespace AoeBoardgame
                 viewedTile.IsViewed = false;
             }
 
-            ClearTemporaryTileColors();
+            foreach (var tile in Map.Tiles)
+            {
+                tile.SetTemporaryColor(TileColor.Default);
+            }
 
             State = GameState.Default;
 
@@ -989,13 +1008,13 @@ namespace AoeBoardgame
 
             if (State == GameState.MovingObject && SelectedObject is ICanMove)
             {
-                ClearTemporaryTileColors();
+                ClearTemporaryTileColorsExceptPink();
             }
         }
 
-        protected void ClearTemporaryTileColors()
+        protected void ClearTemporaryTileColorsExceptPink()
         {
-            foreach (var tile in Map.Tiles)
+            foreach (var tile in Map.Tiles.Where(e => e.TemporaryColor != TileColor.Pink))
             {
                 tile.SetTemporaryColor(TileColor.Default);
             }
@@ -1021,7 +1040,7 @@ namespace AoeBoardgame
 
         private void ShowValidBuildingDestinations(Type buildingType)
         {
-            ClearTemporaryTileColors();
+            ClearTemporaryTileColorsExceptPink();
             _textNotification = null;
 
             PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(buildingType);
@@ -1170,6 +1189,7 @@ namespace AoeBoardgame
                 Message = "Some units' destinations have become invalid. Their paths were reset",
                 FontColor = Color.Red
             };
+
             mover.DestinationTile = null;
         }
 
@@ -1210,6 +1230,10 @@ namespace AoeBoardgame
                 IContainsUnits newGroup = CreateNewGroup(grouper, endTile);
 
                 endTile.SetObject((PlaceableObject)newGroup);
+
+                newGroup.Units.ForEach(e => e.DestinationTile = null);
+
+                UpdateVisibleTilesForObject((PlayerObject)newGroup);
             }
 
             if (originTile.Object == mover)
@@ -1289,7 +1313,7 @@ namespace AoeBoardgame
             ImGui.End();
         }
 
-        protected virtual void MakeMove(GameMove move)
+        protected virtual void AddMove(GameMove move)
         {
             move.MoveNumber = MoveHistory.Count;
             MoveHistory.Add(move);

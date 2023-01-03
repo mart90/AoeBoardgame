@@ -54,7 +54,8 @@ namespace AoeBoardgame
             {
                 new MainMenu(),
                 new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _httpClient),
-                new LoginScreen(_fontLibrary, _httpClient)
+                new LoginScreen(_fontLibrary, _httpClient),
+                new CreateLobbyForm(_fontLibrary, _httpClient)
             };
 
             ChangeUiWindow(_uiWindows.Single(e => e is MainMenu));
@@ -81,6 +82,11 @@ namespace AoeBoardgame
 
                 var newWindow = GetUiWindowByState(_activeWindow.NewUiState.Value);
                 _activeWindow.NewUiState = null;
+
+                if (_activeWindow is CreateLobbyForm form && newWindow is LobbyBrowser)
+                {
+                    ((LobbyBrowser)newWindow).CreatedLobby = form.CreatedLobby;
+                }
 
                 ChangeUiWindow(newWindow);
             }
