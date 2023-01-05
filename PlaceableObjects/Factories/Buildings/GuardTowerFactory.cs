@@ -41,7 +41,7 @@ namespace AoeBoardgame
             UiDescription = "Building with long line of sight and a ranged attack";
 
             HitPoints = 100;
-            _attackDamage = 8;
+            _attackDamage = 10;
             _range = 4;
             _lineOfSight = 5;
 

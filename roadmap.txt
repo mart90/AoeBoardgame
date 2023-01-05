@@ -1,6 +1,4 @@
 ﻿IMPORTANT
-- Show range of own units broken (sometimes crash)
-- Can start the same research again in another building if not yet finished
 - Out of range: https://i.imgur.com/wbBvfjK.png
 
 LESS IMPORTANT
@@ -9,6 +7,7 @@ LESS IMPORTANT
 - "Destination became invalid" after reaching waypoint?
 - Temporary tile color doesn't clear when setting new waypoint
 - Highlight units whose destination became invalid
+- If a researching building is destroyed it makes the research impossible to restart anywhere else
 
 EVENTUALLY
 - Replay viewer

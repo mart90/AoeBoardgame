@@ -30,8 +30,8 @@ namespace AoeBoardgame
                 Range = _range,
                 HasMinimumRange = HasMinimumRange,
                 LineOfSight = _lineOfSight,
-                MeleeArmor = 2,
-                RangedArmor = 5
+                MeleeArmor = 1,
+                RangedArmor = 3
             };
         }
 
@@ -48,7 +48,7 @@ namespace AoeBoardgame
             Cost = new List<ResourceCollection>
             {
                 new ResourceCollection(Resource.Wood, 50),
-                new ResourceCollection(Resource.Stone, 100)
+                new ResourceCollection(Resource.Stone, 80)
             };
         }
     }

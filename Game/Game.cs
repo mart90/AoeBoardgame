@@ -76,8 +76,6 @@ namespace AoeBoardgame
             {
                 HandleRevolt();
             }
-
-            SetRangeableTiles(); // TODO instead update rangeable tiles when objects are placed or moved
         }
 
         protected virtual void EndTurn()
@@ -150,15 +148,6 @@ namespace AoeBoardgame
             // TODO
         }
 
-        private void SetRangeableTiles()
-        {
-            foreach (IHasRange ranger in ActivePlayer.OwnedObjects.Where(e => e is IHasRange))
-            {
-                var tile = Map.FindTileContainingObject((PlayerObject)ranger);
-                ranger.RangeableTiles = Map.FindTilesInRangeOfTile(tile, ranger.Range, ranger.HasMinimumRange);
-            }
-        }
-
         protected void SetFogOfWar(Player player)
         {
             Map.ResetFogOfWar();
@@ -169,7 +158,7 @@ namespace AoeBoardgame
             }
         }
 
-        private void UpdateVisibleTilesForObject(PlayerObject obj)
+        private void UpdateVisibleAndRangeableTilesForObject(PlayerObject obj)
         {
             obj.VisibleTiles = new List<Tile>();
 
@@ -224,7 +213,7 @@ namespace AoeBoardgame
         {
             if (queuer is ICanMakeBuildings builder && builder.BuildingTypeQueued != null)
             {
-                PlaceBuilding(builder.BuildingTypeQueued, builder.BuildingDestinationTile);
+                CreateBuilding(builder.BuildingTypeQueued, builder.BuildingDestinationTile);
 
                 builder.BuildingTypeQueued = null;
                 builder.BuildingDestinationTile = null;
@@ -237,20 +226,12 @@ namespace AoeBoardgame
             }
             else if (queuer is ICanMakeResearch researcher && researcher.ResearchQueued != null)
             {
-                foreach (ICanMakeResearch similarResearcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcher.GetType()))
-                {
-                    similarResearcher.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
-                }
-
-                ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcher.GetType());
-                factory.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
-
                 researcher.ResearchQueued.Effect(ActivePlayer);
                 researcher.ResearchQueued = null;
             }
         }
 
-        private void PlaceBuilding(Type buildingType, Tile destinationTile)
+        private void CreateBuilding(Type buildingType, Tile destinationTile)
         {
             destinationTile.BuildingUnderConstruction = false;
 
@@ -264,7 +245,7 @@ namespace AoeBoardgame
 
             destinationTile.SetObject(building);
 
-            UpdateVisibleTilesForObject(building);
+            UpdateVisibleAndRangeableTilesForObject(building);
         }
 
         private void CreateUnit(Type unitType, ICanMakeUnits trainer)
@@ -341,7 +322,7 @@ namespace AoeBoardgame
                 }
             }
 
-            UpdateVisibleTilesForObject(unit);
+            UpdateVisibleAndRangeableTilesForObject(unit);
         }
 
         private void MoversTakeSteps()
@@ -368,7 +349,7 @@ namespace AoeBoardgame
                     }
 
                     ProgressOnPath(mover, path);
-                    UpdateVisibleTilesForObject((PlayerObject)mover);
+                    UpdateVisibleAndRangeableTilesForObject((PlayerObject)mover);
                 }
 
                 mover.StepsTakenThisTurn = 0;
@@ -405,7 +386,7 @@ namespace AoeBoardgame
 
             foreach (PlayerObject obj in startingUnits)
             {
-                UpdateVisibleTilesForObject(obj);
+                UpdateVisibleAndRangeableTilesForObject(obj);
             }
 
             Map.Tiles[255].IsScouted = false;
@@ -583,7 +564,7 @@ namespace AoeBoardgame
             if (!mover.HasSpentAllMovementPoints())
             {
                 ProgressOnPath(mover, path);
-                UpdateVisibleTilesForObject((PlayerObject)mover);
+                UpdateVisibleAndRangeableTilesForObject((PlayerObject)mover);
             }
 
             AddMove(new GameMove
@@ -722,14 +703,14 @@ namespace AoeBoardgame
                     newGroup.SetTexture();
 
                     defenderTile.SetObject(newGroup);
-                    UpdateVisibleTilesForObject(newGroup);
+                    UpdateVisibleAndRangeableTilesForObject(newGroup);
                 }
                 else
                 {
                     PlayerObject survivor = (PlayerObject)economicBuilding.Units[0];
 
                     defenderTile.SetObject(survivor);
-                    UpdateVisibleTilesForObject(survivor);
+                    UpdateVisibleAndRangeableTilesForObject(survivor);
                 }
             }
             else
@@ -739,7 +720,7 @@ namespace AoeBoardgame
                 if (!(attacker is IHasRange))
                 {
                     Map.MoveMover((ICanMove)attacker, defenderTile);
-                    UpdateVisibleTilesForObject((PlayerObject)attacker);
+                    UpdateVisibleAndRangeableTilesForObject((PlayerObject)attacker);
                 }
             }
 
@@ -880,6 +861,14 @@ namespace AoeBoardgame
 
             researcher.ResearchQueued = research;
             researcher.QueueTurnsLeft = research.TurnsToComplete;
+
+            foreach (ICanMakeResearch similarResearcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcher.GetType()))
+            {
+                similarResearcher.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
+            }
+
+            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcher.GetType());
+            factory.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
 
             AddMove(new GameMove
             {
@@ -1122,7 +1111,7 @@ namespace AoeBoardgame
                     mover.StepsTakenThisTurn++;
 
                     Map.MoveMover(mover, path.ToList()[i]);
-                    UpdateVisibleTilesForObject((PlayerObject)mover);
+                    UpdateVisibleAndRangeableTilesForObject((PlayerObject)mover);
 
                     if (!endTile.HasFogOfWar)
                     {
@@ -1164,7 +1153,7 @@ namespace AoeBoardgame
             else
             {
                 Map.MoveMover(mover, endTile);
-                UpdateVisibleTilesForObject((PlayerObject)mover);
+                UpdateVisibleAndRangeableTilesForObject((PlayerObject)mover);
             }
 
             if (destinationReached)
@@ -1233,7 +1222,7 @@ namespace AoeBoardgame
 
                 newGroup.Units.ForEach(e => e.DestinationTile = null);
 
-                UpdateVisibleTilesForObject((PlayerObject)newGroup);
+                UpdateVisibleAndRangeableTilesForObject((PlayerObject)newGroup);
             }
 
             if (originTile.Object == mover)
@@ -1626,8 +1615,10 @@ namespace AoeBoardgame
                 {
                     ImGui.Text("Research");
 
+                    List<ResearchEnum> allowedResearch = new List<ResearchEnum>(researcher.ResearchAllowedToMake);
+
                     i = 1;
-                    foreach (ResearchEnum researchEnum in researcher.ResearchAllowedToMake)
+                    foreach (ResearchEnum researchEnum in allowedResearch)
                     {
                         Research research = ResearchLibrary.GetByResearchEnum(researchEnum);
 

@@ -31,12 +31,12 @@ namespace AoeBoardgame
 
             HitPoints = 50;
             _speed = 2;
-            AttackDamage = 4;
+            AttackDamage = 7;
             ArmorPierce = 3;
             _range = 2;
             _lineOfSight = 3;
             MeleeArmor = 0;
-            RangedArmor = 2;
+            RangedArmor = 0;
 
             Cost = new List<ResourceCollection> 
             {

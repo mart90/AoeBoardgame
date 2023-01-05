@@ -30,7 +30,7 @@ namespace AoeBoardgame
             HitPoints = 70;
             Speed = 4;
             AttackDamage = 9;
-            _lineOfSight = 3;
+            _lineOfSight = 4;
             MeleeArmor = 2;
             RangedArmor = 3;
 

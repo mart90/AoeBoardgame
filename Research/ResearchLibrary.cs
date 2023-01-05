@@ -1013,14 +1013,14 @@ namespace AoeBoardgame
 
                         factory.UpgradeLevel = 3;
                         factory.HitPoints += 20;
-                        factory.AttackDamage += 3;
+                        factory.AttackDamage += 4;
 
                         foreach (Longbowman unit in player.OwnedObjects.Where(e => e is Longbowman))
                         {
                             unit.UpgradeLevel = 3;
                             unit.MaxHitPoints += 20;
                             unit.HitPoints += 20;
-                            unit.AttackDamage += 3;
+                            unit.AttackDamage += 4;
                         }
                     }
                 },

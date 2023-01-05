@@ -112,6 +112,11 @@ namespace AoeBoardgame.Multiplayer
                 TryRegister();
             }
 
+            if (ImGui.Button("Back"))
+            {
+                NewUiState = UiState.MainMenu;
+            }
+
             ImGui.End();
 
             if (TextNotification != null)

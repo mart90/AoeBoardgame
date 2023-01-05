@@ -20,7 +20,8 @@ namespace AoeBoardgame
         private readonly byte[] _restoreGameIdBuffer;
         private readonly byte[] _restoreMoveNumberBuffer;
 
-        private bool hostPlaysBlue;
+        private bool _hostPlaysBlue;
+        private bool _restoreGame;
 
         public Lobby CreatedLobby { get; set; }
 
@@ -37,6 +38,8 @@ namespace AoeBoardgame
 
             _httpClient = httpClient;
             _fontLibrary = fontLibrary;
+
+            _hostPlaysBlue = true;
         }
         
         private void CreateLobby()
@@ -89,7 +92,7 @@ namespace AoeBoardgame
                 settings.MapSeed = _httpClient.GetMapSeedByGameId(restoreGameId);
             }
 
-            settings.HostPlaysBlue = hostPlaysBlue;
+            settings.HostPlaysBlue = _hostPlaysBlue;
 
             CreatedLobby = new Lobby 
             { 
@@ -113,15 +116,20 @@ namespace AoeBoardgame
 
             ImGui.BeginChild("Form", new System.Numerics.Vector2(800, 400));
 
-            ImGui.Checkbox("Host plays blue", ref hostPlaysBlue);
+            ImGui.Checkbox("Host plays blue", ref _hostPlaysBlue);
 
             ImGui.NewLine();
+            
+            ImGui.Checkbox("Restore game", ref _restoreGame);
 
-            ImGui.SetNextItemWidth(70);
-            ImGui.InputText("Restore - Game id", _restoreGameIdBuffer, (uint)_restoreGameIdBuffer.Length);
+            if (_restoreGame)
+            {
+                ImGui.SetNextItemWidth(70);
+                ImGui.InputText("Game id", _restoreGameIdBuffer, (uint)_restoreGameIdBuffer.Length);
 
-            ImGui.SetNextItemWidth(70);
-            ImGui.InputText("Restore - To move number", _restoreMoveNumberBuffer, (uint)_restoreMoveNumberBuffer.Length);
+                ImGui.SetNextItemWidth(70);
+                ImGui.InputText("To move number", _restoreMoveNumberBuffer, (uint)_restoreMoveNumberBuffer.Length);
+            }
 
             ImGui.EndChild();
 
