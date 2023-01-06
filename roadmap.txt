@@ -1,5 +1,5 @@
 ﻿IMPORTANT
-- Out of range: https://i.imgur.com/wbBvfjK.png
+-
 
 LESS IMPORTANT
 - Opponent sees attacks on animals
@@ -17,6 +17,7 @@ EVENTUALLY
 - Time control
 - More civs
 - More maps
+- Auto-updater
 
 MAYBE
 - Water

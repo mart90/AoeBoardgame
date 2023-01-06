@@ -354,7 +354,13 @@ namespace AoeBoardgame
             return new Node(x, y);
         }
 
-        // TODO optimize if need?
+        private Tile GetTileInDirection(Tile originTile, Direction direction)
+        {
+            Node originNode = new Node(originTile.X, originTile.Y);
+            return NodeToTile(TakeStep(originNode, direction));
+        }
+
+        // TODO refactor, optimize if needed
         private IEnumerable<Tile> GetRangeableTilesStraightLine(Tile originTile, Tile destinationTile)
         {
             var rangeableTiles = new List<Tile>();
@@ -362,7 +368,10 @@ namespace AoeBoardgame
             Point originCenter = originTile.Center;
             Point destinationCenter = destinationTile.Center;
 
+            // Positive diffX means destination is RIGHT of origin
             int diffX = destinationCenter.X - originCenter.X;
+
+            // Positive diffY means destination is BELOW origin
             int diffY = destinationCenter.Y - originCenter.Y;
 
             double yPerX;
@@ -376,6 +385,13 @@ namespace AoeBoardgame
                 yPerX = (double)diffY < 0 ? -10 : 10;
             }
 
+            (bool edgeCaseRoadIsClear, int yAdjustment) = CheckForEdgeCaseObstacles(originTile, destinationTile, diffX, diffY);
+
+            if (!edgeCaseRoadIsClear)
+            {
+                return new List<Tile>();
+            }
+
             int y;
             Point point;
 
@@ -383,7 +399,7 @@ namespace AoeBoardgame
             {
                 for (int x = 1; x < diffX; x++)
                 {
-                    y = (int)Math.Round(x * yPerX) + originCenter.Y;
+                    y = yAdjustment + (int)Math.Round(x * yPerX) + originCenter.Y;
 
                     point = new Point(x + originCenter.X, y);
 
@@ -406,7 +422,7 @@ namespace AoeBoardgame
             {
                 for (int x = -1; x > diffX; x--)
                 {
-                    y = (int)Math.Round(x * yPerX) + originCenter.Y;
+                    y = yAdjustment + (int)Math.Round(x * yPerX) + originCenter.Y;
 
                     point = new Point(x + originCenter.X, y);
 
@@ -425,7 +441,7 @@ namespace AoeBoardgame
                     }
                 }
             }
-            else // diffX == 0, meaning the destination is straight north or south
+            else // diffX == 0, meaning the destination is directly north or south
             {
                 if (diffY > 0)
                 {
@@ -476,6 +492,244 @@ namespace AoeBoardgame
             }
 
             return rangeableTiles;
+        }
+
+        private (bool roadIsClear, int yAdjustment) CheckForEdgeCaseObstacles(Tile originTile, Tile destinationTile, int diffX, int diffY)
+        {
+            // In the following 4 cases, the destination is directly below or above the origin
+            // Rangers can shoot around obstacles on one side to reach the destination tile, but not in between them
+            // The calling method would sneak in between them and not notice the obstacles
+            // With Range 2, Abs(diffY) = 88: https://i.imgur.com/D9EX2f0.png, https://i.imgur.com/u9qI4Us.png
+            if (diffY == 88 && diffX == 0)
+            {
+                Tile sw = GetTileInDirection(originTile, Direction.SouthWest);
+                Tile se = GetTileInDirection(originTile, Direction.SouthEast);
+
+                return sw.Type == TileType.Dirt || se.Type == TileType.Dirt ?
+                    (true, 0) : (false, 0);
+            }
+            else if (diffY == -88 && diffX == 0)
+            {
+                Tile nw = GetTileInDirection(originTile, Direction.NorthWest);
+                Tile ne = GetTileInDirection(originTile, Direction.NorthEast);
+
+                return nw.Type == TileType.Dirt || ne.Type == TileType.Dirt ?
+                    (true, 0) : (false, 0);
+            }
+            // With Range 4, Abs(diffY) = 176: https://i.imgur.com/AB3WCCK.png, https://i.imgur.com/gzvjCVC.png, https://i.imgur.com/FbVjf8e.png
+            else if (diffY == 176 && diffX == 0)
+            {
+                Tile sw = GetTileInDirection(originTile, Direction.SouthWest);
+                Tile se = GetTileInDirection(originTile, Direction.SouthEast);
+                Tile swFar = GetTileInDirection(destinationTile, Direction.NorthWest);
+                Tile seFar = GetTileInDirection(destinationTile, Direction.NorthEast);
+
+                return (sw.Type == TileType.Dirt && swFar.Type == TileType.Dirt) || (se.Type == TileType.Dirt && seFar.Type == TileType.Dirt) ?
+                    (true, 0) : (false, 0);
+            }
+            else if (diffY == -176 && diffX == 0)
+            {
+                Tile nw = GetTileInDirection(originTile, Direction.NorthWest);
+                Tile ne = GetTileInDirection(originTile, Direction.NorthEast);
+                Tile nwFar = GetTileInDirection(destinationTile, Direction.SouthWest);
+                Tile neFar = GetTileInDirection(destinationTile, Direction.SouthEast);
+
+                return (nw.Type == TileType.Dirt && nwFar.Type == TileType.Dirt) || (ne.Type == TileType.Dirt && neFar.Type == TileType.Dirt) ?
+                    (true, 0) : (false, 0);
+            }
+
+            // In the following 8 cases, the destination is diagonally below or above the origin
+            // The same rules apply in the game (can shoot around, not in between)
+            // In this case, when going diagonally, the calling method DOES run into the obstacles (reason: pixels) and an adjustment of Y is needed to go around them
+            // https://i.imgur.com/qf7a2ja.png, https://i.imgur.com/hkuk00A.png, https://i.imgur.com/PuIjfYc.png
+            else if (diffY == 44 && diffX == 87) // 2 range, SouthEast
+            {
+                Tile e = GetTileInDirection(originTile, Direction.East);
+                Tile se = GetTileInDirection(originTile, Direction.SouthEast);
+
+                if (e.Type != TileType.Dirt && se.Type != TileType.Dirt)
+                {
+                    return (false, 0);
+                }
+
+                if (e.Type != TileType.Dirt)
+                {
+                    return (true, 2);
+                }
+                else if (se.Type != TileType.Dirt)
+                {
+                    return (true, -2);
+                }
+                else
+                {
+                    return (true, 0);
+                }
+            }
+            else if (diffY == -44 && diffX == 87) // 2 range, NorthEast
+            {
+                Tile e = GetTileInDirection(originTile, Direction.East);
+                Tile ne = GetTileInDirection(originTile, Direction.NorthEast);
+
+                if (e.Type != TileType.Dirt && ne.Type != TileType.Dirt)
+                {
+                    return (false, 0);
+                }
+
+                if (e.Type != TileType.Dirt)
+                {
+                    return (true, -2);
+                }
+                else if (ne.Type != TileType.Dirt)
+                {
+                    return (true, 2);
+                }
+                else
+                {
+                    return (true, 0);
+                }
+            }
+            else if (diffY == 44 && diffX == -87) // 2 range, SouthWest
+            {
+                Tile w = GetTileInDirection(originTile, Direction.West);
+                Tile sw = GetTileInDirection(originTile, Direction.SouthWest);
+
+                if (w.Type != TileType.Dirt && sw.Type != TileType.Dirt)
+                {
+                    return (false, 0);
+                }
+
+                if (w.Type != TileType.Dirt)
+                {
+                    return (true, 2);
+                }
+                else if (sw.Type != TileType.Dirt)
+                {
+                    return (true, -2);
+                }
+                else
+                {
+                    return (true, 0);
+                }
+            }
+            else if (diffY == -44 && diffX == -87) // 2 range, NorthWest
+            {
+                Tile w = GetTileInDirection(originTile, Direction.West);
+                Tile nw = GetTileInDirection(originTile, Direction.NorthWest);
+
+                if (w.Type != TileType.Dirt && nw.Type != TileType.Dirt)
+                {
+                    return (false, 0);
+                }
+
+                if (w.Type != TileType.Dirt)
+                {
+                    return (true, -2);
+                }
+                else if (nw.Type != TileType.Dirt)
+                {
+                    return (true, 2);
+                }
+                else
+                {
+                    return (true, 0);
+                }
+            }
+            else if (diffY == 88 && diffX == 174) // 4 range, SouthEast
+            {
+                Tile e = GetTileInDirection(originTile, Direction.East);
+                Tile se = GetTileInDirection(originTile, Direction.SouthEast);
+                Tile eFar = GetTileInDirection(destinationTile, Direction.NorthWest);
+                Tile seFar = GetTileInDirection(destinationTile, Direction.West);
+
+                if ((e.Type == TileType.Dirt && se.Type == TileType.Dirt) || (eFar.Type == TileType.Dirt && seFar.Type == TileType.Dirt))
+                {
+                    if (e.Type == TileType.Dirt)
+                    {
+                        return (true, -2);
+                    }
+                    else
+                    {
+                        return (true, 2);
+                    }
+                }
+                else
+                {
+                    return (false, 0);
+                }
+            }
+            else if (diffY == -88 && diffX == 174) // 4 range, NorthEast
+            {
+                Tile e = GetTileInDirection(originTile, Direction.East);
+                Tile ne = GetTileInDirection(originTile, Direction.NorthEast);
+                Tile eFar = GetTileInDirection(destinationTile, Direction.SouthWest);
+                Tile neFar = GetTileInDirection(destinationTile, Direction.West);
+
+                if ((e.Type == TileType.Dirt && ne.Type == TileType.Dirt) || (eFar.Type == TileType.Dirt && neFar.Type == TileType.Dirt))
+                {
+                    if (e.Type == TileType.Dirt)
+                    {
+                        return (true, 2);
+                    }
+                    else
+                    {
+                        return (true, -2);
+                    }
+                }
+                else
+                {
+                    return (false, 0);
+                }
+            }
+            else if (diffY == 88 && diffX == -174) // 4 range, SouthWest
+            {
+                Tile w = GetTileInDirection(originTile, Direction.West);
+                Tile sw = GetTileInDirection(originTile, Direction.SouthWest);
+                Tile wFar = GetTileInDirection(destinationTile, Direction.NorthEast);
+                Tile swFar = GetTileInDirection(destinationTile, Direction.East);
+
+                if ((w.Type == TileType.Dirt && sw.Type == TileType.Dirt) || (wFar.Type == TileType.Dirt && swFar.Type == TileType.Dirt))
+                {
+                    if (w.Type == TileType.Dirt)
+                    {
+                        return (true, -2);
+                    }
+                    else
+                    {
+                        return (true, 2);
+                    }
+                }
+                else
+                {
+                    return (false, 0);
+                }
+            }
+            else if (diffY == -88 && diffX == -174) // 4 range, NorthWest
+            {
+                Tile w = GetTileInDirection(originTile, Direction.West);
+                Tile nw = GetTileInDirection(originTile, Direction.NorthWest);
+                Tile wFar = GetTileInDirection(destinationTile, Direction.SouthEast);
+                Tile nwFar = GetTileInDirection(destinationTile, Direction.East);
+
+                if ((w.Type == TileType.Dirt && nw.Type == TileType.Dirt) || (wFar.Type == TileType.Dirt && nwFar.Type == TileType.Dirt))
+                {
+                    if (w.Type == TileType.Dirt)
+                    {
+                        return (true, 2);
+                    }
+                    else
+                    {
+                        return (true, -2);
+                    }
+                }
+                else
+                {
+                    return (false, 0);
+                }
+            }
+            else
+            {
+                return (true, 0);
+            }
         }
 
         private Direction GetNextDirectionClockwise(Direction lastDirection)
