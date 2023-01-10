@@ -357,7 +357,14 @@ namespace AoeBoardgame
         private Tile GetTileInDirection(Tile originTile, Direction direction)
         {
             Node originNode = new Node(originTile.X, originTile.Y);
-            return NodeToTile(TakeStep(originNode, direction));
+            Node destinationNode = TakeStep(originNode, direction);
+
+            if (destinationNode == null)
+            {
+                return null;
+            }
+
+            return NodeToTile(destinationNode);
         }
 
         // TODO refactor, optimize if needed
@@ -505,7 +512,7 @@ namespace AoeBoardgame
                 Tile sw = GetTileInDirection(originTile, Direction.SouthWest);
                 Tile se = GetTileInDirection(originTile, Direction.SouthEast);
 
-                return sw.Type == TileType.Dirt || se.Type == TileType.Dirt ?
+                return sw?.Type == TileType.Dirt || se?.Type == TileType.Dirt ?
                     (true, 0) : (false, 0);
             }
             else if (diffY == -88 && diffX == 0)
@@ -513,7 +520,7 @@ namespace AoeBoardgame
                 Tile nw = GetTileInDirection(originTile, Direction.NorthWest);
                 Tile ne = GetTileInDirection(originTile, Direction.NorthEast);
 
-                return nw.Type == TileType.Dirt || ne.Type == TileType.Dirt ?
+                return nw?.Type == TileType.Dirt || ne?.Type == TileType.Dirt ?
                     (true, 0) : (false, 0);
             }
             // With Range 4, Abs(diffY) = 176: https://i.imgur.com/AB3WCCK.png, https://i.imgur.com/gzvjCVC.png, https://i.imgur.com/FbVjf8e.png
@@ -524,7 +531,7 @@ namespace AoeBoardgame
                 Tile swFar = GetTileInDirection(destinationTile, Direction.NorthWest);
                 Tile seFar = GetTileInDirection(destinationTile, Direction.NorthEast);
 
-                return (sw.Type == TileType.Dirt && swFar.Type == TileType.Dirt) || (se.Type == TileType.Dirt && seFar.Type == TileType.Dirt) ?
+                return (sw?.Type == TileType.Dirt && swFar?.Type == TileType.Dirt) || (se?.Type == TileType.Dirt && seFar?.Type == TileType.Dirt) ?
                     (true, 0) : (false, 0);
             }
             else if (diffY == -176 && diffX == 0)
@@ -534,7 +541,7 @@ namespace AoeBoardgame
                 Tile nwFar = GetTileInDirection(destinationTile, Direction.SouthWest);
                 Tile neFar = GetTileInDirection(destinationTile, Direction.SouthEast);
 
-                return (nw.Type == TileType.Dirt && nwFar.Type == TileType.Dirt) || (ne.Type == TileType.Dirt && neFar.Type == TileType.Dirt) ?
+                return (nw?.Type == TileType.Dirt && nwFar?.Type == TileType.Dirt) || (ne?.Type == TileType.Dirt && neFar?.Type == TileType.Dirt) ?
                     (true, 0) : (false, 0);
             }
 
@@ -547,16 +554,16 @@ namespace AoeBoardgame
                 Tile e = GetTileInDirection(originTile, Direction.East);
                 Tile se = GetTileInDirection(originTile, Direction.SouthEast);
 
-                if (e.Type != TileType.Dirt && se.Type != TileType.Dirt)
+                if (e?.Type != TileType.Dirt && se?.Type != TileType.Dirt)
                 {
                     return (false, 0);
                 }
 
-                if (e.Type != TileType.Dirt)
+                if (e?.Type != TileType.Dirt)
                 {
                     return (true, 2);
                 }
-                else if (se.Type != TileType.Dirt)
+                else if (se?.Type != TileType.Dirt)
                 {
                     return (true, -2);
                 }
@@ -570,16 +577,16 @@ namespace AoeBoardgame
                 Tile e = GetTileInDirection(originTile, Direction.East);
                 Tile ne = GetTileInDirection(originTile, Direction.NorthEast);
 
-                if (e.Type != TileType.Dirt && ne.Type != TileType.Dirt)
+                if (e?.Type != TileType.Dirt && ne?.Type != TileType.Dirt)
                 {
                     return (false, 0);
                 }
 
-                if (e.Type != TileType.Dirt)
+                if (e?.Type != TileType.Dirt)
                 {
                     return (true, -2);
                 }
-                else if (ne.Type != TileType.Dirt)
+                else if (ne?.Type != TileType.Dirt)
                 {
                     return (true, 2);
                 }
@@ -593,16 +600,16 @@ namespace AoeBoardgame
                 Tile w = GetTileInDirection(originTile, Direction.West);
                 Tile sw = GetTileInDirection(originTile, Direction.SouthWest);
 
-                if (w.Type != TileType.Dirt && sw.Type != TileType.Dirt)
+                if (w?.Type != TileType.Dirt && sw?.Type != TileType.Dirt)
                 {
                     return (false, 0);
                 }
 
-                if (w.Type != TileType.Dirt)
+                if (w?.Type != TileType.Dirt)
                 {
                     return (true, 2);
                 }
-                else if (sw.Type != TileType.Dirt)
+                else if (sw?.Type != TileType.Dirt)
                 {
                     return (true, -2);
                 }
@@ -616,16 +623,16 @@ namespace AoeBoardgame
                 Tile w = GetTileInDirection(originTile, Direction.West);
                 Tile nw = GetTileInDirection(originTile, Direction.NorthWest);
 
-                if (w.Type != TileType.Dirt && nw.Type != TileType.Dirt)
+                if (w?.Type != TileType.Dirt && nw?.Type != TileType.Dirt)
                 {
                     return (false, 0);
                 }
 
-                if (w.Type != TileType.Dirt)
+                if (w?.Type != TileType.Dirt)
                 {
                     return (true, -2);
                 }
-                else if (nw.Type != TileType.Dirt)
+                else if (nw?.Type != TileType.Dirt)
                 {
                     return (true, 2);
                 }
@@ -641,9 +648,9 @@ namespace AoeBoardgame
                 Tile eFar = GetTileInDirection(destinationTile, Direction.NorthWest);
                 Tile seFar = GetTileInDirection(destinationTile, Direction.West);
 
-                if ((e.Type == TileType.Dirt && se.Type == TileType.Dirt) || (eFar.Type == TileType.Dirt && seFar.Type == TileType.Dirt))
+                if ((e?.Type == TileType.Dirt && se?.Type == TileType.Dirt) || (eFar?.Type == TileType.Dirt && seFar?.Type == TileType.Dirt))
                 {
-                    if (e.Type == TileType.Dirt)
+                    if (e?.Type == TileType.Dirt)
                     {
                         return (true, -2);
                     }
@@ -664,9 +671,9 @@ namespace AoeBoardgame
                 Tile eFar = GetTileInDirection(destinationTile, Direction.SouthWest);
                 Tile neFar = GetTileInDirection(destinationTile, Direction.West);
 
-                if ((e.Type == TileType.Dirt && ne.Type == TileType.Dirt) || (eFar.Type == TileType.Dirt && neFar.Type == TileType.Dirt))
+                if ((e?.Type == TileType.Dirt && ne?.Type == TileType.Dirt) || (eFar?.Type == TileType.Dirt && neFar?.Type == TileType.Dirt))
                 {
-                    if (e.Type == TileType.Dirt)
+                    if (e?.Type == TileType.Dirt)
                     {
                         return (true, 2);
                     }
@@ -687,9 +694,9 @@ namespace AoeBoardgame
                 Tile wFar = GetTileInDirection(destinationTile, Direction.NorthEast);
                 Tile swFar = GetTileInDirection(destinationTile, Direction.East);
 
-                if ((w.Type == TileType.Dirt && sw.Type == TileType.Dirt) || (wFar.Type == TileType.Dirt && swFar.Type == TileType.Dirt))
+                if ((w?.Type == TileType.Dirt && sw?.Type == TileType.Dirt) || (wFar?.Type == TileType.Dirt && swFar?.Type == TileType.Dirt))
                 {
-                    if (w.Type == TileType.Dirt)
+                    if (w?.Type == TileType.Dirt)
                     {
                         return (true, -2);
                     }
@@ -710,9 +717,9 @@ namespace AoeBoardgame
                 Tile wFar = GetTileInDirection(destinationTile, Direction.SouthEast);
                 Tile nwFar = GetTileInDirection(destinationTile, Direction.East);
 
-                if ((w.Type == TileType.Dirt && nw.Type == TileType.Dirt) || (wFar.Type == TileType.Dirt && nwFar.Type == TileType.Dirt))
+                if ((w?.Type == TileType.Dirt && nw?.Type == TileType.Dirt) || (wFar?.Type == TileType.Dirt && nwFar?.Type == TileType.Dirt))
                 {
-                    if (w.Type == TileType.Dirt)
+                    if (w?.Type == TileType.Dirt)
                     {
                         return (true, 2);
                     }

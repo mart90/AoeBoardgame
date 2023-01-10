@@ -237,7 +237,7 @@ namespace AoeBoardgame.Multiplayer
             return dtos.Select(e => e.ToLobby()).ToList();
         }
 
-        public PollLastMovesDto LatestMoves(int gameId, int minimumMoveNumber)
+        public PollLastMovesDto GetLatestMoves(int gameId, int minimumMoveNumber)
         {
             string result = Post("poll_last_moves", new
             {
@@ -273,11 +273,14 @@ namespace AoeBoardgame.Multiplayer
                 isQueueBuilding = dto.IsQueueBuilding,
                 isQueueUnit = dto.IsQueueUnit,
                 isQueueResearch = dto.IsQueueResearch,
+                isCancelBuilding = dto.IsCancelBuilding,
+                isDestroyBuilding = dto.IsDestroyBuilding,
                 subselectedUnitHitpoints = dto.SubselectedUnitHitpoints,
                 buildingTypeName = dto.BuildingTypeName,
                 unitTypeName = dto.UnitTypeName,
                 researchId = dto.ResearchId,
-                isEndOfTurn = dto.IsEndOfTurn
+                isEndOfTurn = dto.IsEndOfTurn,
+                isResign = dto.IsResign
             });
         }
 

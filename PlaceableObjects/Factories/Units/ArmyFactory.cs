@@ -14,6 +14,7 @@
         {
             return new Army(TextureLibrary, player)
             {
+                UiName = UiName,
                 MaxUnits = MaxUnits
             };
         }

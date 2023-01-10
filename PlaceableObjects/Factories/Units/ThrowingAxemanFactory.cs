@@ -20,7 +20,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(ThrowingAxeman);
-            TurnsToComplete = 3;
+            TurnsToComplete = 2;
             UpgradeLevel = 2;
         }
 
@@ -29,7 +29,7 @@ namespace AoeBoardgame
             UiName = "Throwing axeman";
             UiDescription = "Ranged unit with an armor-piercing attack";
 
-            HitPoints = 50;
+            HitPoints = 45;
             _speed = 2;
             AttackDamage = 7;
             ArmorPierce = 3;
@@ -50,6 +50,7 @@ namespace AoeBoardgame
         {
             return new ThrowingAxeman(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = _speed,

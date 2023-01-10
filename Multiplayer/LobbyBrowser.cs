@@ -102,7 +102,7 @@ namespace AoeBoardgame
 
             if (CreatedLobby.Settings.RestoreGameId != null)
             {
-                List<GameMove> moveList = _httpClient.LatestMoves(CreatedGame.Id, 0).Moves;
+                List<GameMove> moveList = _httpClient.GetLatestMoves(CreatedGame.Id, 0).Moves;
                 CreatedGame.ApplyMoveList(moveList);
             }
 
@@ -130,7 +130,7 @@ namespace AoeBoardgame
 
             if (lobby.Settings.RestoreGameId != null)
             {
-                List<GameMove> moveList = _httpClient.LatestMoves(CreatedGame.Id, 0).Moves;
+                List<GameMove> moveList = _httpClient.GetLatestMoves(CreatedGame.Id, 0).Moves;
                 CreatedGame.ApplyMoveList(moveList);
             }
 
@@ -167,9 +167,19 @@ namespace AoeBoardgame
             {
                 Lobby lobby = Lobbies[rowNumber];
 
-                if (ImGui.Button("Join"))
+                if (CreatedLobby != null && lobby.Id == CreatedLobby.Id)
                 {
-                    JoinLobby(lobby);
+                    if (ImGui.Button("Cancel"))
+                    {
+                        CancelLobby();
+                    }
+                }
+                else
+                {
+                    if (ImGui.Button("Join"))
+                    {
+                        JoinLobby(lobby);
+                    }
                 }
 
                 ImGui.PushID(rowNumber);

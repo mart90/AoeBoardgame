@@ -18,7 +18,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Knight);
-            TurnsToComplete = 4;
+            TurnsToComplete = 3;
             UpgradeLevel = 2;
         }
 
@@ -46,6 +46,7 @@ namespace AoeBoardgame
         {
             return new Knight(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = Speed,

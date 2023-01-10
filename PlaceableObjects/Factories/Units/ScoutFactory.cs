@@ -18,7 +18,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Scout);
-            TurnsToComplete = 3;
+            TurnsToComplete = 2;
         }
 
         protected override void SetBaseValues()
@@ -44,6 +44,7 @@ namespace AoeBoardgame
         {
             return new Scout(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = Speed,

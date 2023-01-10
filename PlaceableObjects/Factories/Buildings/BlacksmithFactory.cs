@@ -20,6 +20,7 @@ namespace AoeBoardgame
         {
             return new Blacksmith(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = _hitPoints,
                 MaxHitPoints = _hitPoints,
                 LineOfSight = 1,

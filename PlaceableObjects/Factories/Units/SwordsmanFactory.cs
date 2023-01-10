@@ -18,7 +18,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Swordsman);
-            TurnsToComplete = 3;
+            TurnsToComplete = 2;
             UpgradeLevel = 0;
         }
 
@@ -46,6 +46,7 @@ namespace AoeBoardgame
         {
             return new Swordsman(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = _speed,

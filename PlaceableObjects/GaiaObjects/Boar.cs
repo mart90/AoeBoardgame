@@ -14,11 +14,12 @@
 
         public Boar(TextureLibrary textureLibrary) : base(textureLibrary)
         {
-            HitPoints = 25;
-            MaxHitPoints = 25;
+            UiName = "Boar";
+            HitPoints = 20;
+            MaxHitPoints = 20;
             MeleeArmor = 0;
-            RangedArmor = 0;
-            AttackDamage = 6;
+            RangedArmor = 1;
+            AttackDamage = 4;
         }
     }
 }

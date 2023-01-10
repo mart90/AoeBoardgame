@@ -2,15 +2,22 @@
 -
 
 LESS IMPORTANT
-- Opponent sees attacks on animals
-- Can click on stuff in FoW
+- Audio signal when it's your turn
+- Show current age
+- Economic win condition (Wonder?)
+- Show which units have moved/attacked this turn
+- Back should cancel lobby
+- Show how much damage attacks WOULD do on hover
+- Show when opponent aged up?
 - "Destination became invalid" after reaching waypoint?
 - Temporary tile color doesn't clear when setting new waypoint
 - Highlight units whose destination became invalid
 - If a researching building is destroyed it makes the research impossible to restart anywhere else
+- If one unit gets killed in an army, it stays an army
 
 EVENTUALLY
 - Replay viewer
+- Queueing stuff
 - Map from seed
 - Game.HandleRevolt()
 - Map generation: Make sure all tiles are reachable
@@ -22,3 +29,6 @@ EVENTUALLY
 MAYBE
 - Water
 - New sprites
+
+BALANCE
+-

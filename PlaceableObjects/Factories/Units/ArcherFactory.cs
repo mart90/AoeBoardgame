@@ -17,7 +17,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Archer);
-            TurnsToComplete = 3;
+            TurnsToComplete = 2;
             UpgradeLevel = 1;
         }
 
@@ -46,6 +46,7 @@ namespace AoeBoardgame
         {
             return new Archer(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = Speed,

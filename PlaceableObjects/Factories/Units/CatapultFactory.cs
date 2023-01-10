@@ -19,7 +19,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Catapult);
-            TurnsToComplete = 5;
+            TurnsToComplete = 3;
             UpgradeLevel = 2;
         }
 
@@ -48,6 +48,7 @@ namespace AoeBoardgame
         {
             return new Catapult(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = _speed,

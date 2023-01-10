@@ -6,8 +6,8 @@ namespace AoeBoardgame
     {
         public bool HasMinimumRange { get; set; }
         public int HitPoints { get; set; }
+        public int AttackDamage { get; set; }
 
-        private int _attackDamage;
         private int _range;
         private int _lineOfSight;
 
@@ -23,9 +23,10 @@ namespace AoeBoardgame
         {
             return new GuardTower(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
-                AttackDamage = _attackDamage,
+                AttackDamage = AttackDamage,
                 ArmorPierce = 3,
                 Range = _range,
                 HasMinimumRange = HasMinimumRange,
@@ -41,7 +42,7 @@ namespace AoeBoardgame
             UiDescription = "Building with long line of sight and a ranged attack";
 
             HitPoints = 100;
-            _attackDamage = 10;
+            AttackDamage = 12;
             _range = 4;
             _lineOfSight = 5;
 

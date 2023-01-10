@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,8 @@ namespace AoeBoardgame
         private readonly FontLibrary _fontLibrary;
         protected readonly ResearchLibrary ResearchLibrary;
 
+        private readonly byte[] _destroyBuildingName;
+
         public Game(TextureLibrary textureLibrary, FontLibrary fontLibrary, ResearchLibrary researchLibrary)
         {
             WidthPixels = 1920;
@@ -36,10 +39,12 @@ namespace AoeBoardgame
             ResearchLibrary = researchLibrary;
 
             MoveHistory = new List<GameMove>();
+
+            _destroyBuildingName = new byte[100];
         }
 
-        protected Player LocalPlayer => Players.Single(e => e.IsLocalPlayer);
         protected Player ActivePlayer => Players.Single(e => e.IsActive);
+        protected Player InActivePlayer => Players.Single(e => !e.IsActive);
         protected virtual Player VisiblePlayer => ActivePlayer;
         protected bool IsMyTurn => ActivePlayer.IsLocalPlayer;
 
@@ -114,7 +119,7 @@ namespace AoeBoardgame
 
                 int gatherRate = ActivePlayer.GatherRates.Single(e => e.Resource == resource).GatherRate;
 
-                ActivePlayer.ResourceCollection.Single(e => e.Resource == resource).Amount += gatherRate;
+                ActivePlayer.ResourceStockpile.Single(e => e.Resource == resource).Amount += gatherRate;
                 ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == resource).Amount += gatherRate;
             }
         }
@@ -138,7 +143,7 @@ namespace AoeBoardgame
         {
             foreach (IConsumesFood consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesFood>())
             {
-                ActivePlayer.ResourceCollection.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
+                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
                 ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
             }
         }
@@ -168,7 +173,7 @@ namespace AoeBoardgame
                 return;
             }
 
-            Tile originTile = Map.FindTileContainingObject(obj);
+            Tile originTile = Map.GetTileContainingObject(obj);
 
             List<Tile> tiles = new PathFinder(Map).GetAllTilesInRange(originTile, obj.LineOfSight).ToList();
             tiles.Add(originTile);
@@ -215,8 +220,7 @@ namespace AoeBoardgame
             {
                 CreateBuilding(builder.BuildingTypeQueued, builder.BuildingDestinationTile);
 
-                builder.BuildingTypeQueued = null;
-                builder.BuildingDestinationTile = null;
+                builder.StopConstruction();
             }
             else if (queuer is ICanMakeUnits trainer && trainer.UnitTypeQueued != null)
             {
@@ -233,8 +237,6 @@ namespace AoeBoardgame
 
         private void CreateBuilding(Type buildingType, Tile destinationTile)
         {
-            destinationTile.BuildingUnderConstruction = false;
-
             PlayerObject building = ActivePlayer.AddAndGetPlaceableObject(buildingType);
 
             if (building is Mine mine)
@@ -253,7 +255,7 @@ namespace AoeBoardgame
             PlayerObject unit = ActivePlayer.AddAndGetPlaceableObject(unitType);
             ICanMove mover = (ICanMove)unit;
 
-            Tile originTile = Map.FindTileContainingObject((PlayerObject)trainer);
+            Tile originTile = Map.GetTileContainingObject((PlayerObject)trainer);
             Tile destinationTile = trainer.WayPoint;
 
             if (destinationTile != null)
@@ -295,34 +297,42 @@ namespace AoeBoardgame
 
             if (destinationTile == null)
             {
-                var pathFinder = new PathFinder(Map);
-                IEnumerable<Tile> adjacentTiles = pathFinder.GetAdjacentTiles(originTile);
-
-                destinationTile = adjacentTiles
-                    .Where(e => e.IsEmpty || (e.Object != null && unit.CanMergeWith(e.Object)))
-                    .FirstOrDefault();
-
-                if (destinationTile == null)
-                {
-                    _textNotification = new TextNotification
-                    {
-                        FontColor = Color.Red,
-                        Message = "A created unit had no possible tiles to spawn on"
-                    };
-
-                    ActivePlayer.OwnedObjects.Remove(unit);
-                }
-                else if (destinationTile.IsEmpty)
-                {
-                    destinationTile.SetObject(unit);
-                }
-                else
-                {
-                    MergeMoverWithDestination(originTile, destinationTile, mover);
-                }
+                PlaceObjectOnAdjacentTile(unit, originTile);
             }
 
             UpdateVisibleAndRangeableTilesForObject(unit);
+        }
+
+        private Tile PlaceObjectOnAdjacentTile(PlayerObject unit, Tile originTile)
+        {
+            Tile destinationTile;
+            var pathFinder = new PathFinder(Map);
+            IEnumerable<Tile> adjacentTiles = pathFinder.GetAdjacentTiles(originTile);
+
+            destinationTile = adjacentTiles
+                .Where(e => e.IsEmpty || (e.Object != null && unit.CanMergeWith(e.Object)))
+                .FirstOrDefault();
+
+            if (destinationTile == null)
+            {
+                _textNotification = new TextNotification
+                {
+                    FontColor = Color.Red,
+                    Message = "A created unit had no possible tiles to spawn on"
+                };
+
+                ActivePlayer.OwnedObjects.Remove(unit);
+            }
+            else if (destinationTile.IsEmpty)
+            {
+                destinationTile.SetObject(unit);
+            }
+            else
+            {
+                MergeMoverWithDestination(originTile, destinationTile, (ICanMove)unit);
+            }
+
+            return destinationTile;
         }
 
         private void MoversTakeSteps()
@@ -333,7 +343,7 @@ namespace AoeBoardgame
             {
                 if (mover.DestinationTile != null && !mover.HasSpentAllMovementPoints())
                 {
-                    Tile sourceTile = Map.FindTileContainingObject((PlayerObject)mover);
+                    Tile sourceTile = Map.GetTileContainingObject((PlayerObject)mover);
                     var path = Map.FindPath(sourceTile, mover.DestinationTile, mover);
 
                     if (path == null)
@@ -424,14 +434,18 @@ namespace AoeBoardgame
 
             ClearCurrentSelection();
 
-            tile.IsSelected = true;
-
-            if (!ActivePlayer.OwnedObjects.Contains(tile.Object))
+            if (tile.HasFogOfWar)
             {
-                tile.IsViewed = true;
-                tile.IsSelected = false;
                 return;
             }
+
+            if (!IsMyTurn || !ActivePlayer.OwnedObjects.Contains(tile.Object))
+            {
+                tile.IsViewed = true;
+                return;
+            }
+
+            tile.IsSelected = true;
 
             if (tile.Object is ICanMakeUnits trainer && trainer.WayPoint != null)
             {
@@ -446,7 +460,7 @@ namespace AoeBoardgame
 
                     if (mover.DestinationTile != null)
                     {
-                        var path = Map.FindPath(Map.FindTileContainingObject(tile.Object), mover.DestinationTile, mover);
+                        var path = Map.FindPath(Map.GetTileContainingObject(tile.Object), mover.DestinationTile, mover);
 
                         if (path == null)
                         {
@@ -485,7 +499,7 @@ namespace AoeBoardgame
                 return;
             }
 
-            Tile originTile = Map.FindTileContainingObject(SelectedObject);
+            Tile originTile = Map.GetTileContainingObject(SelectedObject);
 
             if (!destinationTile.HasFogOfWar && destinationTile.Object != null && ((PlayerObject)SelectedObject).CanAttack(destinationTile.Object))
             {
@@ -667,15 +681,18 @@ namespace AoeBoardgame
                 mover3.StepsTakenThisTurn = mover3.Speed;
             }
 
-            _textNotification = new TextNotification
+            if (IsMyTurn || defender is PlayerObject)
             {
-                FontColor = Color.Green,
-                Message = $"The attack did {damage} damage"
-            };
+                _textNotification = new TextNotification
+                {
+                    FontColor = Color.Green,
+                    Message = $"The attack did {damage} damage"
+                };
 
-            if (boarFoughtBack)
-            {
-                _textNotification.Message += ", but the boar fought back";
+                if (boarFoughtBack)
+                {
+                    _textNotification.Message += ", but the boar fought back";
+                }
             }
 
             AddMove(new GameMove
@@ -689,11 +706,16 @@ namespace AoeBoardgame
 
         private void HandleObjectKilled(IAttackable defender, IAttacker attacker, Tile defenderTile)
         {
+            if (defender is Villager vill && vill.HasBuildingQueued())
+            {
+                vill.BuildingDestinationTile.BuildingUnderConstruction = false;
+            }
+
             if (defender is IEconomicBuilding economicBuilding && economicBuilding.Units.Any())
             {
                 if (economicBuilding.Units.Count > 1)
                 {
-                    GathererGroup newGroup = ActivePlayer.AddAndGetPlaceableObject<GathererGroup>();
+                    GathererGroup newGroup = InActivePlayer.AddAndGetPlaceableObject<GathererGroup>();
 
                     foreach (ICanFormGroup grouper in economicBuilding.Units)
                     {
@@ -702,22 +724,26 @@ namespace AoeBoardgame
 
                     newGroup.SetTexture();
 
-                    defenderTile.SetObject(newGroup);
+                    PlaceObjectOnAdjacentTile(newGroup, defenderTile);
+
                     UpdateVisibleAndRangeableTilesForObject(newGroup);
                 }
                 else
                 {
                     PlayerObject survivor = (PlayerObject)economicBuilding.Units[0];
 
-                    defenderTile.SetObject(survivor);
+                    PlaceObjectOnAdjacentTile(survivor, defenderTile);
+
                     UpdateVisibleAndRangeableTilesForObject(survivor);
                 }
+
+                defenderTile.SetObject(null);
             }
             else
             {
                 defenderTile.SetObject(null);
 
-                if (!(attacker is IHasRange))
+                if (!(attacker is IHasRange) && !(defender is Mine || defender is LumberCamp))
                 {
                     Map.MoveMover((ICanMove)attacker, defenderTile);
                     UpdateVisibleAndRangeableTilesForObject((PlayerObject)attacker);
@@ -728,17 +754,52 @@ namespace AoeBoardgame
             {
                 playerObject.Owner.OwnedObjects.Remove(playerObject);
             }
-            else if (defender is GaiaObject && !(attacker is TownCenter))
+            else if (defender is GaiaObject && attacker is ICanMove)
             {
                 if (defender is Deer)
                 {
-                    ActivePlayer.ResourceCollection.Single(e => e.Resource == Resource.Food).Amount += 50;
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 50;
                 }
                 else if (defender is Boar)
                 {
-                    ActivePlayer.ResourceCollection.Single(e => e.Resource == Resource.Food).Amount += 300;
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 300;
                 }
             }
+        }
+
+        protected void DestroyBuilding(Tile buildingTile)
+        {
+            PlayerObject building = (PlayerObject)buildingTile.Object;
+
+            buildingTile.SetObject(null);
+            building.Owner.OwnedObjects.Remove(building);
+
+            AddMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                IsDestroyBuilding = true,
+                OriginTileId = buildingTile.Id
+            });
+        }
+
+        protected void CancelBuilding(ICanMakeBuildings builder)
+        {
+            PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(builder.BuildingTypeQueued);
+
+            builder.StopConstruction();
+
+            // Reimburse 50% of the cost
+            foreach (ResourceCollection cost in factory.Cost)
+            {
+                ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount / 2;
+            }
+
+            AddMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                IsCancelBuilding = true,
+                OriginTileId = Map.GetTileContainingObject((PlayerObject)builder).Id
+            });
         }
 
         private bool BoarDefense(Tile boarTile, Tile attackerTile)
@@ -814,7 +875,7 @@ namespace AoeBoardgame
             AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
-                OriginTileId = Map.FindTileContainingObject((PlaceableObject)builder).Id,
+                OriginTileId = Map.GetTileContainingObject((PlaceableObject)builder).Id,
                 DestinationTileId = tile.Id,
                 IsQueueBuilding = true,
                 BuildingTypeName = buildingType.Name
@@ -841,7 +902,7 @@ namespace AoeBoardgame
             AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
-                OriginTileId = Map.FindTileContainingObject((PlaceableObject)trainer).Id,
+                OriginTileId = Map.GetTileContainingObject((PlaceableObject)trainer).Id,
                 IsQueueUnit = true,
                 UnitTypeName = unitType.Name
             });
@@ -873,7 +934,7 @@ namespace AoeBoardgame
             AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
-                OriginTileId = Map.FindTileContainingObject((PlaceableObject)researcher).Id,
+                OriginTileId = Map.GetTileContainingObject((PlaceableObject)researcher).Id,
                 IsQueueResearch = true,
                 ResearchId = research.ResearchEnum
             });
@@ -1044,7 +1105,7 @@ namespace AoeBoardgame
                 return;
             }
 
-            Tile originTile = Map.FindTileContainingObject(SelectedObject);
+            Tile originTile = Map.GetTileContainingObject(SelectedObject);
 
             IEnumerable<Tile> adjacentTiles = new PathFinder(Map).GetAdjacentTiles(originTile);
             var validPlacementTiles = new List<Tile>();
@@ -1091,7 +1152,7 @@ namespace AoeBoardgame
 
         private Tile ProgressOnPath(ICanMove mover, IEnumerable<Tile> path)
         {
-            Tile originTile = Map.FindTileContainingObject((PlaceableObject)mover);
+            Tile originTile = Map.GetTileContainingObject((PlaceableObject)mover);
 
             int steps = path.Count() >= mover.Speed - mover.StepsTakenThisTurn ? mover.Speed - mover.StepsTakenThisTurn : path.Count();
 
@@ -1283,14 +1344,14 @@ namespace AoeBoardgame
             DrawEconomy();
             if (!DrawObjectInformation())
             {
-                ImGui.Dummy(new System.Numerics.Vector2(500, 120));
+                ImGui.Dummy(new System.Numerics.Vector2(500, 180));
             }
 
             if (IsMyTurn)
             {
                 if (!DrawObjectContents() && !DrawObjectActions())
                 {
-                    ImGui.Dummy(new System.Numerics.Vector2(500, 300));
+                    ImGui.Dummy(new System.Numerics.Vector2(500, 500));
                 }
 
                 if (ImGui.Button("End turn", new System.Numerics.Vector2(200, 40)))
@@ -1311,7 +1372,7 @@ namespace AoeBoardgame
         #region Control panel
         protected virtual void DrawEconomy()
         {
-            IEnumerable<ResourceCollection> resources = VisiblePlayer.ResourceCollection;
+            IEnumerable<ResourceCollection> resources = VisiblePlayer.ResourceStockpile;
             IEnumerable<ResourceCollection> resourcesGathered = VisiblePlayer.ResourcesGatheredLastTurn;
 
             ImGui.BeginChild("Resources", new System.Numerics.Vector2(500, 180));
@@ -1386,7 +1447,11 @@ namespace AoeBoardgame
                 return false;
             }
 
-            ImGui.BeginChild("Information", new System.Numerics.Vector2(500, 120));
+            ImGui.BeginChild("Information", new System.Numerics.Vector2(500, 180));
+
+            ImGui.Text(obj.UiName ?? "??NAME NOT SET??");
+
+            ImGui.NewLine();
 
             DrawObjectStat("Hit points", $"{attackableObject.HitPoints}/{attackableObject.MaxHitPoints}");
 
@@ -1451,7 +1516,7 @@ namespace AoeBoardgame
                 return false;
             }
 
-            ImGui.BeginChild("Contents", new System.Numerics.Vector2(500, 300));
+            ImGui.BeginChild("Contents", new System.Numerics.Vector2(500, 500));
 
             ImGui.Text("Units");
 
@@ -1487,14 +1552,14 @@ namespace AoeBoardgame
                 return false;
             }
 
-            if (Map.FindTileContainingObject(SelectedObject)?.Object is IContainsUnits && SelectedObject is ICanFormGroup)
+            if (Map.GetTileContainingObject(SelectedObject)?.Object is IContainsUnits && SelectedObject is ICanFormGroup)
             {
                 // Unit is part of a group. Its only possible action is to move out of the group
                 return false;
             }
 
             var defaultButtonSize = new System.Numerics.Vector2(80, 40);
-            ImGui.BeginChild("Actions", new System.Numerics.Vector2(500, 300));
+            ImGui.BeginChild("Actions", new System.Numerics.Vector2(500, 500));
 
             bool isBusy = false;
 
@@ -1504,10 +1569,18 @@ namespace AoeBoardgame
 
                 if (SelectedObject is ICanMakeBuildings builder2 && builder2.HasBuildingQueued())
                 {
-                    string buildingName = ActivePlayer.GetFactoryByObjectType(builder2.BuildingTypeQueued).UiName;
+                    PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(builder2.BuildingTypeQueued);
+                    string buildingName = factory.UiName;
                     string str = $"\n\nBuilding a {buildingName.Replace('\n', ' ')}, {builder2.QueueTurnsLeft} turn(s) left";
 
                     ImGui.Text(str);
+
+                    ImGui.NewLine();
+
+                    if (ImGui.Button("Cancel"))
+                    {
+                        CancelBuilding(builder2);
+                    }
                 }
                 else if (SelectedObject is ICanMakeUnits trainer && trainer.HasUnitQueued())
                 {
@@ -1646,6 +1719,38 @@ namespace AoeBoardgame
 
                         i++;
                     }
+                }
+
+                if (!(SelectedObject is ICanMove))
+                {
+                    ImGui.NewLine();
+                    ImGui.NewLine();
+                    ImGui.NewLine();
+
+                    if (i % 4 != 0)
+                    {
+                        ImGui.NewLine();
+                    }
+
+                    if (ImGui.Button("Destroy"))
+                    {
+                        if (_destroyBuildingName.GetString().ToLower() == SelectedObject.UiName.ToLower())
+                        {
+                            DestroyBuilding(Map.SelectedTile);
+                        }
+                        else
+                        {
+                            _textNotification = new TextNotification
+                            {
+                                FontColor = Color.Red,
+                                Message = "If you want to destroy the building, type its name (shown above its stats) in the field next to the button and click it again"
+                            };
+                        }
+                    }
+
+                    ImGui.SameLine();
+                    ImGui.SetNextItemWidth(80);
+                    ImGui.InputText("", _destroyBuildingName, (uint)_destroyBuildingName.Length);
                 }
             }
 

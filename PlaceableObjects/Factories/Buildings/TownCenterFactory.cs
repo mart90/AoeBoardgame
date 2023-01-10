@@ -6,8 +6,8 @@ namespace AoeBoardgame
     class TownCenterFactory : PlaceableObjectFactory, ICanMakeUnitsFactory, ICanMakeResearchFactory
     {
         public int HitPoints { get; set; }
+        public int AttackDamage { get; set; }
 
-        private int _attackDamage;
         private int _range;
         private int _lineOfSight;
         
@@ -18,16 +18,17 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(TownCenter);
-            TurnsToComplete = 4;
+            TurnsToComplete = 3;
         }
 
         public override PlaceableObject Get(Player player) 
         {
             return new TownCenter(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
-                AttackDamage = _attackDamage,
+                AttackDamage = AttackDamage,
                 ArmorPierce = 3,
                 Range = _range,
                 LineOfSight = _lineOfSight,
@@ -44,7 +45,7 @@ namespace AoeBoardgame
             UiDescription = "Villager production and age-up building";
 
             HitPoints = 120;
-            _attackDamage = 5;
+            AttackDamage = 5;
             _range = 3;
             _lineOfSight = 4;
 

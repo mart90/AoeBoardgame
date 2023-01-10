@@ -17,6 +17,8 @@
         public bool IsQueueBuilding { get; set; }
         public bool IsQueueUnit { get; set; }
         public bool IsQueueResearch { get; set; }
+        public bool IsCancelBuilding { get; set; }
+        public bool IsDestroyBuilding { get; set; }
 
         public int? SubselectedUnitHitpoints { get; set; }
         public string BuildingTypeName { get; set; }
@@ -24,5 +26,6 @@
         public ResearchEnum? ResearchId { get; set; }
 
         public bool IsEndOfTurn { get; set; }
+        public bool IsResign { get; set; }
     }
 }

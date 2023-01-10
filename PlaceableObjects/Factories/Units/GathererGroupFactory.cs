@@ -14,6 +14,7 @@
         {
             return new GathererGroup(TextureLibrary, player)
             {
+                UiName = UiName,
                 MaxUnits = MaxUnits
             };
         }

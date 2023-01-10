@@ -17,7 +17,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Trebuchet);
-            TurnsToComplete = 5;
+            TurnsToComplete = 4;
         }
 
         protected override void SetBaseValues()
@@ -45,6 +45,7 @@ namespace AoeBoardgame
         {
             return new Trebuchet(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = _hitPoints,
                 MaxHitPoints = _hitPoints,
                 Speed = _speed,

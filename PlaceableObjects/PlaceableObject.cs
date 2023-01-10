@@ -5,6 +5,8 @@ namespace AoeBoardgame
 {
     abstract class PlaceableObject
     {
+        public string UiName { get; set; }
+
         public TileColorTexture ColorTexture { get; set; }
 
         public Texture2D Texture;

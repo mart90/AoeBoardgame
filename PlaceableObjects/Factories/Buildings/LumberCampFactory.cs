@@ -19,6 +19,7 @@ namespace AoeBoardgame
         {
             return new LumberCamp(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = _hitPoints,
                 MaxHitPoints = _hitPoints,
                 MaxUnits = MaxUnits,

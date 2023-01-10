@@ -19,7 +19,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Longbowman);
-            TurnsToComplete = 3;
+            TurnsToComplete = 2;
             UpgradeLevel = 2;
         }
 
@@ -28,7 +28,7 @@ namespace AoeBoardgame
             UiName = "Longbowman";
             UiDescription = "Long-range archer";
 
-            HitPoints = 40;
+            HitPoints = 35;
             _speed = 2;
             AttackDamage = 8;
             _range = 4;
@@ -48,6 +48,7 @@ namespace AoeBoardgame
         {
             return new Longbowman(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = _speed,

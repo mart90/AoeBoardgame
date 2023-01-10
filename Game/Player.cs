@@ -12,7 +12,7 @@ namespace AoeBoardgame
         public Civilization Civilization { get; set; }
         public bool IsLocalPlayer { get; set; }
 
-        public IEnumerable<ResourceCollection> ResourceCollection { get; }
+        public IEnumerable<ResourceCollection> ResourceStockpile { get; }
         public IEnumerable<ResourceCollection> ResourcesGatheredLastTurn { get; private set; }
         public IEnumerable<ResourceGatherRate> GatherRates { get; }
         public List<PlayerObject> OwnedObjects { get; }
@@ -22,7 +22,7 @@ namespace AoeBoardgame
 
         public IEnumerable<PlaceableObjectFactory> Factories { get; private set; }
 
-        public bool IsPopulationRevolting => ResourceCollection.Single(e => e.Resource == Resource.Gold).Amount < 0;
+        public bool IsPopulationRevolting => ResourceStockpile.Single(e => e.Resource == Resource.Gold).Amount < 0;
 
         public Player(string name, Civilization civilization, TileColor color)
         {
@@ -33,7 +33,7 @@ namespace AoeBoardgame
 
             OwnedObjects = new List<PlayerObject>();
 
-            ResourceCollection = Civilization.GetStartingResources();
+            ResourceStockpile = Civilization.GetStartingResources();
             GatherRates = Civilization.GetBaseGatherRates();
             Factories = Civilization.GetFactories(this);
             ResetResourcesGatheredLastTurn();
@@ -101,7 +101,7 @@ namespace AoeBoardgame
         {
             foreach (ResourceCollection resourceCost in cost)
             {
-                if (ResourceCollection.Single(e => e.Resource == resourceCost.Resource).Amount < resourceCost.Amount)
+                if (ResourceStockpile.Single(e => e.Resource == resourceCost.Resource).Amount < resourceCost.Amount)
                 {
                     return false;
                 }
@@ -114,7 +114,7 @@ namespace AoeBoardgame
         {
             foreach (ResourceCollection resourceCost in cost)
             {
-                int resourceBank = ResourceCollection.Single(e => e.Resource == resourceCost.Resource).Amount;
+                int resourceBank = ResourceStockpile.Single(e => e.Resource == resourceCost.Resource).Amount;
                 
                 if (resourceBank < resourceCost.Amount)
                 {
@@ -130,7 +130,7 @@ namespace AoeBoardgame
         {
             foreach (ResourceCollection resourceCost in cost)
             {
-                ResourceCollection.Single(e => e.Resource == resourceCost.Resource).Amount -= resourceCost.Amount;
+                ResourceStockpile.Single(e => e.Resource == resourceCost.Resource).Amount -= resourceCost.Amount;
             }
         }
 

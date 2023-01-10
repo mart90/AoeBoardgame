@@ -25,7 +25,7 @@ namespace AoeBoardgame
                     {
                         new ResourceCollection(Resource.Food, 300)
                     },
-                    TurnsToComplete = 5,
+                    TurnsToComplete = 3,
                     Effect = player => 
                     {
                         player.Age = 2;
@@ -49,7 +49,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 300),
                         new ResourceCollection(Resource.Gold, 300)
                     },
-                    TurnsToComplete = 6,
+                    TurnsToComplete = 4,
                     Effect = player =>
                     {
                         player.Age = 3;
@@ -68,7 +68,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 300),
                         new ResourceCollection(Resource.Iron, 300)
                     },
-                    TurnsToComplete = 8,
+                    TurnsToComplete = 5,
                     Effect = player =>
                     {
                         player.Age = 4;
@@ -86,23 +86,21 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 50)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
                         factory.UpgradeLevel = 1;
-                        factory.HitPoints += 15;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 2;
-                        factory.RangedArmor += 1;
 
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
                         {
                             unit.UpgradeLevel = 1;
-                            unit.MaxHitPoints += 15;
-                            unit.HitPoints += 15;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 2;
-                            unit.RangedArmor += 1;
                         }
 
                         if (player.Age > 2)
@@ -125,13 +123,13 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
                         factory.UpgradeLevel = 2;
-                        factory.HitPoints += 15;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 2;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 1;
@@ -139,8 +137,8 @@ namespace AoeBoardgame
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
                         {
                             unit.UpgradeLevel = 2;
-                            unit.MaxHitPoints += 15;
-                            unit.HitPoints += 15;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 2;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 1;
@@ -166,13 +164,13 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 100),
                         new ResourceCollection(Resource.Iron, 200)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 15;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 2;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 1;
@@ -180,8 +178,8 @@ namespace AoeBoardgame
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 15;
-                            unit.HitPoints += 15;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 2;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 1;
@@ -200,20 +198,20 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Iron, 50),
 
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         ArcherFactory factory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
 
                         factory.UpgradeLevel = 2;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 3;
 
                         foreach (Archer unit in player.OwnedObjects.Where(e => e is Archer))
                         {
                             unit.UpgradeLevel = 2;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 3;
                         }
 
@@ -237,20 +235,20 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 250),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         ArcherFactory factory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 3;
 
                         foreach (Archer unit in player.OwnedObjects.Where(e => e is Archer))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 3;
                         }
                     }
@@ -267,20 +265,20 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Iron, 100),
 
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         PikemanFactory factory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
 
                         factory.UpgradeLevel = 2;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 2;
 
                         foreach (Pikeman unit in player.OwnedObjects.Where(e => e is Pikeman))
                         {
                             unit.UpgradeLevel = 2;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 2;
                         }
 
@@ -304,20 +302,20 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         PikemanFactory factory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 2;
 
                         foreach (Pikeman unit in player.OwnedObjects.Where(e => e is Pikeman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 2;
                         }
                     }
@@ -330,16 +328,16 @@ namespace AoeBoardgame
                     UiDescription = "Upgrades your knights",
                     Cost = new List<ResourceCollection>
                     {
-                        new ResourceCollection(Resource.Gold, 150),
-                        new ResourceCollection(Resource.Iron, 250)
+                        new ResourceCollection(Resource.Gold, 300),
+                        new ResourceCollection(Resource.Iron, 200)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         KnightFactory factory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 30;
+                        factory.HitPoints += 20;
                         factory.AttackDamage += 4;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 2;
@@ -347,8 +345,8 @@ namespace AoeBoardgame
                         foreach (Knight unit in player.OwnedObjects.Where(e => e is Knight))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 30;
-                            unit.HitPoints += 30;
+                            unit.MaxHitPoints += 20;
+                            unit.HitPoints += 20;
                             unit.AttackDamage += 4;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 2;
@@ -366,7 +364,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 100),
                         new ResourceCollection(Resource.Gold, 50)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         KnightFactory knightFactory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
@@ -399,7 +397,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 100),
                         new ResourceCollection(Resource.Gold, 200)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         KnightFactory knightFactory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
@@ -430,7 +428,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 250),
                         new ResourceCollection(Resource.Iron, 400)
                     },
-                    TurnsToComplete = 6,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         CatapultFactory factory = (CatapultFactory)player.GetFactoryByObjectType(typeof(Catapult));
@@ -461,7 +459,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 100),
                         new ResourceCollection(Resource.Iron, 250)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         CatapultFactory catapultFactory = (CatapultFactory)player.GetFactoryByObjectType(typeof(Catapult));
@@ -517,7 +515,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 50)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 5,
                     Effect = player =>
                     {
                         foreach (IMilitaryUnit factory in player.Factories.Where(e => e is IArcher).Cast<IMilitaryUnit>())
@@ -542,7 +540,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 5,
                     Effect = player =>
                     {
                         foreach (IMilitaryUnit factory in player.Factories.Where(e => e is IMilitaryUnit && !(e is IHasRange)))
@@ -644,7 +642,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 150),
                         new ResourceCollection(Resource.Iron, 250)
                     },
-                    TurnsToComplete = 6,
+                    TurnsToComplete = 5,
                     Effect = player =>
                     {
                         foreach (IMilitaryUnit factory in player.Factories.Where(e => e is IMilitaryUnit && !(e is IHasRange)))
@@ -671,7 +669,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 150),
                         new ResourceCollection(Resource.Iron, 250)
                     },
-                    TurnsToComplete = 6,
+                    TurnsToComplete = 5,
                     Effect = player =>
                     {
                         foreach (IMilitaryUnit factory in player.Factories.Where(e => e is IMilitaryUnit))
@@ -690,21 +688,23 @@ namespace AoeBoardgame
                 {
                     ResearchEnum = ResearchEnum.Loom,
                     UiName = "Loom",
-                    UiDescription = "Villagers +20 HP",
+                    UiDescription = "Villagers +10 HP and +2 attack",
                     Cost = new List<ResourceCollection>
                     {
-                        new ResourceCollection(Resource.Gold, 30)
+                        new ResourceCollection(Resource.Gold, 50)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         VillagerFactory factory = (VillagerFactory)player.GetFactoryByObjectType(typeof(Villager));
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 10;
+                        factory.AttackDamage += 2;
 
                         foreach (Villager unit in player.OwnedObjects.Where(e => e is Villager))
                         {
-                            unit.HitPoints += 20;
-                            unit.MaxHitPoints += 20;
+                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 10;
+                            unit.AttackDamage += 2;
                         }
                     }
                 },
@@ -719,7 +719,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         foreach (ResourceGatherRate gatherRate in player.GatherRates)
@@ -739,7 +739,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 50)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Wood).GatherRate++;
@@ -753,8 +753,8 @@ namespace AoeBoardgame
                     UiDescription = "Mines and lumber camps can hold +1 gatherer",
                     Cost = new List<ResourceCollection>
                     {
-                        new ResourceCollection(Resource.Wood, 100),
-                        new ResourceCollection(Resource.Stone, 50)
+                        new ResourceCollection(Resource.Wood, 200),
+                        new ResourceCollection(Resource.Stone, 100)
                     },
                     TurnsToComplete = 3,
                     Effect = player =>
@@ -787,7 +787,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Wood).GatherRate += 2;
@@ -798,23 +798,18 @@ namespace AoeBoardgame
                 {
                     ResearchEnum = ResearchEnum.HandCart,
                     UiName = "Hand cart",
-                    UiDescription = "Villagers +1 speed",
+                    UiDescription = "All gather rates +1 per turn per gatherer",
                     Cost = new List<ResourceCollection>
                     {
-                        new ResourceCollection(Resource.Gold, 100),
-                        new ResourceCollection(Resource.Iron, 100)
+                        new ResourceCollection(Resource.Gold, 200),
+                        new ResourceCollection(Resource.Iron, 200)
                     },
-                    TurnsToComplete = 5,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
-                        foreach (VillagerFactory factory in player.Factories.Where(e => e is VillagerFactory))
+                        foreach (ResourceGatherRate gatherRate in player.GatherRates)
                         {
-                            factory.Speed++;
-                        }
-
-                        foreach (Villager unit in player.OwnedObjects.Where(e => e is Villager))
-                        {
-                            unit.Speed++;
+                            gatherRate.GatherRate++;
                         }
                     }
                 },
@@ -829,7 +824,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Gold).GatherRate++;
@@ -848,7 +843,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 50),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         TowerFactory towerFactory = (TowerFactory)player.GetFactoryByObjectType(typeof(Tower));
@@ -881,49 +876,57 @@ namespace AoeBoardgame
                 {
                     ResearchEnum = ResearchEnum.Masonry,
                     UiName = "Masonry",
-                    UiDescription = "Town centers, towers and castles +50% HP",
+                    UiDescription = "Town centers, towers and castles +50% HP and +5 attack",
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Wood, 150),
                         new ResourceCollection(Resource.Stone, 150)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         TownCenterFactory townCenterFactory = (TownCenterFactory)player.GetFactoryByObjectType(typeof(TownCenter));
                         townCenterFactory.HitPoints += townCenterFactory.HitPoints / 2;
+                        townCenterFactory.AttackDamage += 5;
 
                         TowerFactory towerFactory = (TowerFactory)player.GetFactoryByObjectType(typeof(Tower));
                         towerFactory.HitPoints += towerFactory.HitPoints / 2;
+                        towerFactory.AttackDamage += 5;
 
                         GuardTowerFactory guardTowerFactory = (GuardTowerFactory)player.GetFactoryByObjectType(typeof(GuardTower));
                         guardTowerFactory.HitPoints += guardTowerFactory.HitPoints / 2;
+                        guardTowerFactory.AttackDamage += 5;
 
                         CastleFactory castleFactory = (CastleFactory)player.GetFactoryByObjectType(typeof(Castle));
                         castleFactory.HitPoints += castleFactory.HitPoints / 2;
+                        castleFactory.AttackDamage += 5;
 
                         foreach (TownCenter tc in player.OwnedObjects.Where(e => e is TownCenter))
                         {
                             tc.HitPoints += tc.MaxHitPoints / 2;
                             tc.MaxHitPoints += tc.MaxHitPoints / 2;
+                            tc.AttackDamage += 5;
                         }
 
                         foreach (Tower tower in player.OwnedObjects.Where(e => e is Tower))
                         {
                             tower.HitPoints += tower.MaxHitPoints / 2;
                             tower.MaxHitPoints += tower.MaxHitPoints / 2;
+                            tower.AttackDamage += 5;
                         }
 
                         foreach (GuardTower guardTower in player.OwnedObjects.Where(e => e is GuardTower))
                         {
                             guardTower.HitPoints += guardTower.MaxHitPoints / 2;
                             guardTower.MaxHitPoints += guardTower.MaxHitPoints / 2;
+                            guardTower.AttackDamage += 5;
                         }
 
                         foreach (Castle castle in player.OwnedObjects.Where(e => e is Castle))
                         {
                             castle.HitPoints += castle.MaxHitPoints / 2;
                             castle.MaxHitPoints += castle.MaxHitPoints / 2;
+                            castle.AttackDamage += 5;
                         }
                     }
                 },
@@ -938,7 +941,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 150),
                         new ResourceCollection(Resource.Gold, 150)
                     },
-                    TurnsToComplete = 5,
+                    TurnsToComplete = 4,
                     Effect = player =>
                     {
                         FarmFactory factory = (FarmFactory)player.GetFactoryByObjectType(typeof(Farm));
@@ -959,9 +962,9 @@ namespace AoeBoardgame
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Food, 250),
-                        new ResourceCollection(Resource.Gold, 100)
+                        new ResourceCollection(Resource.Gold, 300)
                     },
-                    TurnsToComplete = 5,
+                    TurnsToComplete = 4,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
@@ -978,9 +981,9 @@ namespace AoeBoardgame
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Wood, 200),
-                        new ResourceCollection(Resource.Gold, 200)
+                        new ResourceCollection(Resource.Gold, 300)
                     },
-                    TurnsToComplete = 5,
+                    TurnsToComplete = 4,
                     Effect = player =>
                     {
                         ArmyFactory factory = (ArmyFactory)player.GetFactoryByObjectType(typeof(Army));
@@ -1006,20 +1009,20 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 300),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         LongbowmanFactory factory = (LongbowmanFactory)player.GetFactoryByObjectType(typeof(Longbowman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 10;
                         factory.AttackDamage += 4;
 
                         foreach (Longbowman unit in player.OwnedObjects.Where(e => e is Longbowman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 10;
+                            unit.HitPoints += 10;
                             unit.AttackDamage += 4;
                         }
                     }
@@ -1052,21 +1055,21 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 300),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         ThrowingAxemanFactory factory = (ThrowingAxemanFactory)player.GetFactoryByObjectType(typeof(ThrowingAxeman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 15;
                         factory.AttackDamage += 3;
                         factory.ArmorPierce++;
 
                         foreach (ThrowingAxeman unit in player.OwnedObjects.Where(e => e is ThrowingAxeman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 15;
+                            unit.HitPoints += 15;
                             unit.AttackDamage += 3;
                             unit.ArmorPierce++;
                         }

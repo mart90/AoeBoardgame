@@ -16,5 +16,13 @@ namespace AoeBoardgame
         {
             return builder.BuildingTypeQueued != null;
         }
+
+        public static void StopConstruction<T>(this T builder) where T : ICanMakeBuildings
+        {
+            builder.BuildingTypeQueued = null;
+            builder.QueueTurnsLeft = 0;
+            builder.BuildingDestinationTile.BuildingUnderConstruction = false;
+            builder.BuildingDestinationTile = null;
+        }
     }
 }

@@ -118,6 +118,7 @@ namespace AoeBoardgame
             player.AddAllowedResearch<University>(new List<ResearchEnum>
             {
                 ResearchEnum.HandCart,
+                ResearchEnum.Housing,
                 ResearchEnum.BowSaw,
                 ResearchEnum.IronPickaxes,
                 ResearchEnum.MurderHoles,

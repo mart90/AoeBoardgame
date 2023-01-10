@@ -26,16 +26,16 @@ namespace AoeBoardgame
 
             MakeBaseTiles();
 
-            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(0, 0, 13, 9)); // Top left
-            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(13, 0, 13, 9)); // Top right
+            AddRandomlyGeneratedTiles(TileType.Forest, 18, new Rectangle(0, 0, 13, 9)); // Top left
+            AddRandomlyGeneratedTiles(TileType.Forest, 18, new Rectangle(13, 0, 13, 9)); // Top right
 
-            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(0, 12, 13, 9)); // Bottom left
-            AddRandomlyGeneratedTiles(TileType.Forest, 20, new Rectangle(13, 12, 13, 9)); // Bottom right
+            AddRandomlyGeneratedTiles(TileType.Forest, 18, new Rectangle(0, 12, 13, 9)); // Bottom left
+            AddRandomlyGeneratedTiles(TileType.Forest, 18, new Rectangle(13, 12, 13, 9)); // Bottom right
 
             AddRandomlyGeneratedTiles(TileType.Forest, 4, new Rectangle(0, 10, 4, 3)); // Left middle
             AddRandomlyGeneratedTiles(TileType.Forest, 4, new Rectangle(22, 10, 4, 3)); // Right middle
 
-            AddRandomlyGeneratedTiles(TileType.Forest, 8, new Rectangle(8, 9, 10, 3)); // Middle
+            AddRandomlyGeneratedTiles(TileType.Forest, 5, new Rectangle(8, 9, 10, 3)); // Middle
 
             AddRandomlyGeneratedTiles(TileType.GoldMine, 2, new Rectangle(0, 3, 10, 5)); // Top left
             AddRandomlyGeneratedTiles(TileType.GoldMine, 2, new Rectangle(15, 3, 10, 5)); // Top right
@@ -65,7 +65,7 @@ namespace AoeBoardgame
             AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(0, 13, 10, 7)); // Bottom left
             AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(15, 13, 10, 7)); // Bottom right
 
-            AddRandomlyGeneratedGaiaObjects<Deer>(5, new Rectangle(11, 0, 3, 21)); // Middle
+            AddRandomlyGeneratedGaiaObjects<Deer>(4, new Rectangle(11, 0, 3, 21)); // Middle
 
             AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(0, 1, 10, 7)); // Top left
             AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(15, 1, 10, 7)); // Top right
@@ -73,7 +73,7 @@ namespace AoeBoardgame
             AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(0, 13, 10, 7)); // Bottom left
             AddRandomlyGeneratedGaiaObjects<Boar>(1, new Rectangle(15, 13, 10, 7)); // Bottom right
 
-            AddRandomlyGeneratedGaiaObjects<Boar>(3, new Rectangle(11, 0, 3, 21)); // Middle
+            AddRandomlyGeneratedGaiaObjects<Boar>(2, new Rectangle(11, 0, 3, 21)); // Middle
 
             _map.SetSeed();
 

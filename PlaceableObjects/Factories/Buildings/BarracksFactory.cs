@@ -21,6 +21,7 @@ namespace AoeBoardgame
         {
             return new Barracks(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = _hitPoints,
                 MaxHitPoints = _hitPoints,
                 LineOfSight = 1,

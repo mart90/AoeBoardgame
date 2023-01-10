@@ -7,8 +7,8 @@ namespace AoeBoardgame
     {
         public bool HasMinimumRange { get; set; }
         public int HitPoints { get; set; }
+        public int AttackDamage { get; set; }
 
-        private int _attackDamage;
         private int _range;
         private int _lineOfSight;
         
@@ -27,9 +27,10 @@ namespace AoeBoardgame
         {
             return new Castle(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
-                AttackDamage = _attackDamage,
+                AttackDamage = AttackDamage,
                 ArmorPierce = 5,
                 Range = _range,
                 HasMinimumRange = HasMinimumRange,
@@ -47,7 +48,7 @@ namespace AoeBoardgame
             UiDescription = "Strong defensive building that produces your civ's unique unit";
 
             HitPoints = 280;
-            _attackDamage = 20;
+            AttackDamage = 20;
             _range = 4;
             _lineOfSight = 5;
 

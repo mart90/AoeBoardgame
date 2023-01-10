@@ -14,6 +14,7 @@
         {
             return new RangedArmy(TextureLibrary, player)
             {
+                UiName = UiName,
                 MaxUnits = MaxUnits
             };
         }

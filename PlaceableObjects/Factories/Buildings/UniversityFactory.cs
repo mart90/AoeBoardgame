@@ -20,6 +20,7 @@ namespace AoeBoardgame
         {
             return new University(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = _hitPoints,
                 MaxHitPoints = _hitPoints,
                 LineOfSight = 1,
@@ -38,7 +39,7 @@ namespace AoeBoardgame
 
             Cost = new List<ResourceCollection>
             {
-                new ResourceCollection(Resource.Wood, 200)
+                new ResourceCollection(Resource.Wood, 150)
             };
 
             ResearchAllowedToMake = new List<ResearchEnum>();

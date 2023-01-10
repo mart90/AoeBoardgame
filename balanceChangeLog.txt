@@ -1,0 +1,14 @@
+﻿0.2.0.5
+- Hitpoints of almost all military units reduced in castle and imperial age
+- Many train times and research times reduced by at least 1 turn
+- Can now cancel building construction and get 50% of the invested resources back
+- Can now destroy own buildings at no cost
+- Can now collect boar and deer food with any moving unit
+- Boar HP reduced from 25 to 20, attack reduced from 6 to 4, ranged armor increased from 0 to 1
+- Loom now also upgrades villager attack. Cost increased slightly
+- Masonry now also upgrades TC, tower, and castle attack by 5
+- Conscription gold cost increased
+- Supply lines gold cost increased
+- Elite knights gold cost increased
+- Amount of boars in the middle of the map decreased
+- Amount of trees on the map decreased

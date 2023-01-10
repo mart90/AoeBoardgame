@@ -23,7 +23,8 @@ namespace AoeBoardgame
 
         public string MapSeed => Map.Seed;
 
-        protected override Player VisiblePlayer => LocalPlayer;
+        private Player _localPlayer => Players.Single(e => e.IsLocalPlayer);
+        protected override Player VisiblePlayer => _localPlayer;
 
         public MultiplayerGame(
             MultiplayerGameSettings settings,
@@ -71,7 +72,7 @@ namespace AoeBoardgame
         protected override void AddMove(GameMove move)
         {
             move.GameId = Id;
-            move.PlayerId = ActivePlayer == LocalPlayer ? _us.Id : _opponent.Id;
+            move.PlayerId = ActivePlayer == _localPlayer ? _us.Id : _opponent.Id;
 
             base.AddMove(move);
 
@@ -85,7 +86,7 @@ namespace AoeBoardgame
         {
             base.EndTurn();
 
-            SetFogOfWar(LocalPlayer); // TODO Make this not needed
+            SetFogOfWar(_localPlayer); // TODO Make this not needed
         }
 
         public void SetLocalPlayer(bool blueIsLocal)
@@ -99,7 +100,7 @@ namespace AoeBoardgame
                 Players.Single(e => e.Color == TileColor.Red).IsLocalPlayer = true;
             }
 
-            SetFogOfWar(LocalPlayer);
+            SetFogOfWar(_localPlayer);
         }
 
         public override void Update(SpriteBatch spriteBatch)
@@ -123,7 +124,7 @@ namespace AoeBoardgame
 
             _lastPoll = DateTime.Now;
 
-            PollLastMovesDto dto = _httpClient.LatestMoves(Id, MoveHistory.Count);
+            PollLastMovesDto dto = _httpClient.GetLatestMoves(Id, MoveHistory.Count);
 
             if (dto == null)
             {
@@ -137,7 +138,7 @@ namespace AoeBoardgame
                 ApplyMove(newMove);
             }
 
-            SetFogOfWar(LocalPlayer);
+            SetFogOfWar(_localPlayer);
             ClearTemporaryTileColorsExceptPink();
         }
 
@@ -222,6 +223,16 @@ namespace AoeBoardgame
             {
                 Research research = ResearchLibrary.GetByResearchEnum(newMove.ResearchId.Value);
                 TryResearch(research, (ICanMakeResearch)originTile.Object);
+            }
+            else if (newMove.IsCancelBuilding)
+            {
+                Tile tile = Map.Tiles[newMove.OriginTileId.Value];
+                CancelBuilding((ICanMakeBuildings)tile.Object);
+            }
+            else if (newMove.IsDestroyBuilding)
+            {
+                Tile tile = Map.Tiles[newMove.OriginTileId.Value];
+                DestroyBuilding(tile);
             }
         }
     }

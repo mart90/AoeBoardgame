@@ -7,8 +7,8 @@ namespace AoeBoardgame
     {
         public int HitPoints { get; set; }
         public int Speed { get; set; }
+        public int AttackDamage { get; set; }
 
-        private int _attackDamage;
         private int _lineOfSight;
         private int _meleeArmor;
         private int _rangedArmor;
@@ -29,7 +29,7 @@ namespace AoeBoardgame
 
             HitPoints = 10;
             Speed = 2;
-            _attackDamage = 1;
+            AttackDamage = 1;
             _lineOfSight = 3;
             _meleeArmor = 0;
             _rangedArmor = 0;
@@ -52,11 +52,12 @@ namespace AoeBoardgame
         {
             return new Villager(TextureLibrary, player)
             {
+                UiName = UiName,
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 Speed = Speed,
                 LineOfSight = _lineOfSight,
-                AttackDamage = _attackDamage,
+                AttackDamage = AttackDamage,
                 BuildingTypesAllowedToMake = new List<Type>(BuildingTypesAllowedToMake),
                 FoodConsumption = 1,
                 RangedArmor = _rangedArmor,

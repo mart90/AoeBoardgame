@@ -88,7 +88,7 @@ namespace AoeBoardgame
 
         public Tile GetTileByCoordinates(int x, int y) => Tiles.Single(e => e.X == x && e.Y == y);
 
-        public Tile FindTileContainingObject(PlaceableObject obj)
+        public Tile GetTileContainingObject(PlaceableObject obj)
         {
             Tile objectTile = Tiles.SingleOrDefault(e => e.Object == obj);
 
@@ -140,7 +140,7 @@ namespace AoeBoardgame
 
         public void MoveMover(ICanMove mover, Tile destination)
         {
-            Tile originTile = FindTileContainingObject((PlaceableObject)mover);
+            Tile originTile = GetTileContainingObject((PlaceableObject)mover);
 
             if (mover is ICanFormGroup grouper && originTile.Object is IContainsUnits unitContainer)
             {
@@ -162,11 +162,6 @@ namespace AoeBoardgame
             {
                 destination.SetObject(originTile.Object);
                 originTile.SetObject(null);
-            }
-
-            if (mover is IHasRange ranger)
-            {
-                ranger.RangeableTiles = FindTilesInRangeOfTile(destination, ranger.Range, ranger.HasMinimumRange);
             }
 
             if (originTile.IsSelected)

@@ -26,6 +26,13 @@ namespace AoeBoardgame
                     unit.HitPoints -= damagePerUnit;
                 }
 
+                int restDamage = damage - (damagePerUnit * army.Units.Count);
+
+                if (restDamage > 0)
+                {
+                    ((PlayerObject)army.Units.First()).HitPoints -= restDamage;
+                }
+
                 army.Units.RemoveAll(e => ((PlayerObject)e).HitPoints <= 0);
                 army.Owner.OwnedObjects.RemoveAll(e => e.HitPoints <= 0);
 
