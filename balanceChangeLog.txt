@@ -1,4 +1,4 @@
-﻿0.2.0.5
+﻿0.2.1.0
 - Hitpoints of almost all military units reduced in castle and imperial age
 - Many train times and research times reduced by at least 1 turn
 - Can now cancel building construction and get 50% of the invested resources back
