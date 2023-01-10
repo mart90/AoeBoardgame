@@ -25,6 +25,7 @@ namespace AoeBoardgame
         private readonly FontLibrary _fontLibrary;
         private readonly TextureLibrary _textureLibrary;
         private readonly ResearchLibrary _researchLibrary;
+        private readonly SoundEffectLibrary _soundEffectLibrary;
         private readonly MultiplayerHttpClient _httpClient;
 
         public MultiplayerGame CreatedGame { get; private set; }
@@ -33,6 +34,7 @@ namespace AoeBoardgame
             TextureLibrary textureLibrary,
             FontLibrary fontLibrary,
             ResearchLibrary researchLibrary,
+            SoundEffectLibrary soundEffectLibrary,
             MultiplayerHttpClient httpClient)
         {
             CorrespondingUiState = UiState.LobbyBrowser;
@@ -43,6 +45,7 @@ namespace AoeBoardgame
             _fontLibrary = fontLibrary;
             _textureLibrary = textureLibrary;
             _researchLibrary = researchLibrary;
+            _soundEffectLibrary = soundEffectLibrary;
 
             Lobbies = new List<Lobby>();
         }
@@ -85,7 +88,13 @@ namespace AoeBoardgame
                 CreatedLobby.Settings.MapSeed = _httpClient.GetGeneratedMapSeed(CreatedLobby.Id);
             }
 
-            CreatedGame = new MultiplayerGame(CreatedLobby.Settings, _textureLibrary, _fontLibrary, _researchLibrary, _httpClient)
+            CreatedGame = new MultiplayerGame(
+                CreatedLobby.Settings,
+                _textureLibrary,
+                _fontLibrary,
+                _researchLibrary,
+                _soundEffectLibrary,
+                _httpClient)
             {
                 Id = _httpClient.GetGameId(CreatedLobby.Id)
             };
@@ -113,7 +122,13 @@ namespace AoeBoardgame
 
         private void JoinLobby(Lobby lobby)
         {
-            CreatedGame = new MultiplayerGame(lobby.Settings, _textureLibrary, _fontLibrary, _researchLibrary, _httpClient);
+            CreatedGame = new MultiplayerGame(
+                lobby.Settings,
+                _textureLibrary,
+                _fontLibrary,
+                _researchLibrary,
+                _soundEffectLibrary,
+                _httpClient);
 
             CreatedGame.StartTurn();
 

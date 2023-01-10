@@ -26,10 +26,15 @@ namespace AoeBoardgame
         private readonly TextureLibrary _textureLibrary;
         private readonly FontLibrary _fontLibrary;
         protected readonly ResearchLibrary ResearchLibrary;
+        protected readonly SoundEffectLibrary SoundEffectLibrary;
 
         private readonly byte[] _destroyBuildingName;
 
-        public Game(TextureLibrary textureLibrary, FontLibrary fontLibrary, ResearchLibrary researchLibrary)
+        public Game(
+            TextureLibrary textureLibrary, 
+            FontLibrary fontLibrary, 
+            ResearchLibrary researchLibrary,
+            SoundEffectLibrary soundEffectLibrary)
         {
             WidthPixels = 1920;
             HeightPixels = 1020;
@@ -37,6 +42,7 @@ namespace AoeBoardgame
             _fontLibrary = fontLibrary;
             _textureLibrary = textureLibrary;
             ResearchLibrary = researchLibrary;
+            SoundEffectLibrary = soundEffectLibrary;
 
             MoveHistory = new List<GameMove>();
 
@@ -724,7 +730,14 @@ namespace AoeBoardgame
 
                     newGroup.SetTexture();
 
-                    PlaceObjectOnAdjacentTile(newGroup, defenderTile);
+                    if (economicBuilding is Farm)
+                    {
+                        defenderTile.SetObject(newGroup);
+                    }
+                    else
+                    {
+                        PlaceObjectOnAdjacentTile(newGroup, defenderTile);
+                    }
 
                     UpdateVisibleAndRangeableTilesForObject(newGroup);
                 }
@@ -732,7 +745,14 @@ namespace AoeBoardgame
                 {
                     PlayerObject survivor = (PlayerObject)economicBuilding.Units[0];
 
-                    PlaceObjectOnAdjacentTile(survivor, defenderTile);
+                    if (economicBuilding is Farm)
+                    {
+                        defenderTile.SetObject(survivor);
+                    }
+                    else
+                    {
+                        PlaceObjectOnAdjacentTile(survivor, defenderTile);
+                    }
 
                     UpdateVisibleAndRangeableTilesForObject(survivor);
                 }

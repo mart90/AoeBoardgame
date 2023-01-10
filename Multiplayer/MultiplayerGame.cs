@@ -31,7 +31,8 @@ namespace AoeBoardgame
             TextureLibrary textureLibrary, 
             FontLibrary fontLibrary, 
             ResearchLibrary researchLibrary,
-            MultiplayerHttpClient httpClient) : base(textureLibrary, fontLibrary, researchLibrary)
+            SoundEffectLibrary soundEffectLibrary,
+            MultiplayerHttpClient httpClient) : base(textureLibrary, fontLibrary, researchLibrary, soundEffectLibrary)
         {
             CorrespondingUiState = UiState.MultiplayerGame;
             _httpClient = httpClient;
@@ -173,6 +174,8 @@ namespace AoeBoardgame
             {
                 EndTurn();
                 State = GameState.Default;
+
+                SoundEffectLibrary.YourTurn.Play();
             }
             else if (newMove.IsMovement)
             {

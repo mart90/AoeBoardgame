@@ -21,6 +21,7 @@ namespace AoeBoardgame
         private TextureLibrary _textureLibrary;
         private FontLibrary _fontLibrary;
         private ResearchLibrary _researchLibrary;
+        private SoundEffectLibrary _soundEffectLibrary;
 
         private bool _leftMouseHeld;
         private bool _rightMouseHeld;
@@ -49,11 +50,12 @@ namespace AoeBoardgame
             _textureLibrary = new TextureLibrary(Content, _guiRenderer);
             _fontLibrary = new FontLibrary(Content);
             _researchLibrary = new ResearchLibrary();
+            _soundEffectLibrary = new SoundEffectLibrary(Content);
 
             _uiWindows = new List<IUiWindow>
             {
                 new MainMenu(),
-                new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _httpClient),
+                new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary, _httpClient),
                 new LoginScreen(_fontLibrary, _httpClient),
                 new CreateLobbyForm(_fontLibrary, _httpClient)
             };
@@ -72,7 +74,7 @@ namespace AoeBoardgame
             {
                 if (_activeWindow.NewUiState == UiState.Sandbox)
                 {
-                    _uiWindows.Add(new Sandbox(_textureLibrary, _fontLibrary, _researchLibrary));
+                    _uiWindows.Add(new Sandbox(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary));
                 }
 
                 if (_activeWindow is LobbyBrowser browser && _activeWindow.NewUiState == UiState.MultiplayerGame)

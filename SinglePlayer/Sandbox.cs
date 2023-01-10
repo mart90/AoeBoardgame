@@ -8,8 +8,8 @@ namespace AoeBoardgame
         public UiState CorrespondingUiState { get; set; }
         public UiState? NewUiState { get; set; }
 
-        public Sandbox(TextureLibrary textureLibrary, FontLibrary fontLibrary, ResearchLibrary researchLibrary) 
-            : base(textureLibrary, fontLibrary, researchLibrary)
+        public Sandbox(TextureLibrary textureLibrary, FontLibrary fontLibrary, ResearchLibrary researchLibrary, SoundEffectLibrary soundEffectLibrary) 
+            : base(textureLibrary, fontLibrary, researchLibrary, soundEffectLibrary)
         {
             CorrespondingUiState = UiState.Sandbox;
 

@@ -471,6 +471,12 @@
 /processorParam:TextureFormat=Color
 /build:Objects/watertower.png
 
+#begin SoundEffects/your_turn.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundEffects/your_turn.wav
+
 #begin Tiles/dirt_06.png
 /importer:TextureImporter
 /processor:TextureProcessor
