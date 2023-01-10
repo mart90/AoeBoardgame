@@ -175,7 +175,10 @@ namespace AoeBoardgame
                 EndTurn();
                 State = GameState.Default;
 
-                SoundEffectLibrary.YourTurn.Play();
+                if (!_restoringGame)
+                {
+                    SoundEffectLibrary.YourTurn.Play();
+                }
             }
             else if (newMove.IsMovement)
             {

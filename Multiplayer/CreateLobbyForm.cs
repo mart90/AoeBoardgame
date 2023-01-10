@@ -2,6 +2,7 @@
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Text;
 
 namespace AoeBoardgame
 {
@@ -126,6 +127,18 @@ namespace AoeBoardgame
             {
                 ImGui.SetNextItemWidth(70);
                 ImGui.InputText("Game id", _restoreGameIdBuffer, (uint)_restoreGameIdBuffer.Length);
+
+                ImGui.SameLine();
+
+                if (ImGui.Button("My last game"))
+                {
+                    string game_id = _httpClient.GetMyLastGameId();
+
+                    if (game_id != null)
+                    {
+                        Encoding.ASCII.GetBytes(game_id).CopyTo(_restoreGameIdBuffer, 0);
+                    }
+                }
 
                 ImGui.SetNextItemWidth(70);
                 ImGui.InputText("To move number", _restoreMoveNumberBuffer, (uint)_restoreMoveNumberBuffer.Length);

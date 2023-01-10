@@ -295,6 +295,15 @@ namespace AoeBoardgame.Multiplayer
             });
         }
 
+        public string GetMyLastGameId()
+        {
+            return Post("get_my_last_game_id", new
+            {
+                username = AuthenticatedUser.Username,
+                password = AuthenticatedUser.Password
+            });
+        }
+
         //public LeaderboardDto GetLeaderboard()
         //{
         //    string result = Post("get_leaderboard", new
@@ -320,6 +329,7 @@ namespace AoeBoardgame.Multiplayer
                 request = new HttpRequestMessage(HttpMethod.Post, url);
             }
 
+            
             var response = _client.SendAsync(request).Result;
             var stringResult = response.Content.ReadAsStringAsync().Result;
 
