@@ -2,7 +2,6 @@
 -
 
 LESS IMPORTANT
-- Audio signal when it's your turn
 - Show current age
 - Economic win condition (Wonder?)
 - Show which units have moved/attacked this turn
