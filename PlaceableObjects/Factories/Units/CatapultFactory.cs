@@ -28,7 +28,7 @@ namespace AoeBoardgame
             UiName = "Catapult";
             UiDescription = "Siege weapon. Good against infantry and buildings";
 
-            HitPoints = 30;
+            HitPoints = 25;
             AttackDamage = 25;
             _speed = 1;
             Range = 3;

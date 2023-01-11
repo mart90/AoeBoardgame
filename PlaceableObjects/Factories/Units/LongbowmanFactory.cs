@@ -28,7 +28,7 @@ namespace AoeBoardgame
             UiName = "Longbowman";
             UiDescription = "Long-range archer";
 
-            HitPoints = 35;
+            HitPoints = 30;
             _speed = 2;
             AttackDamage = 8;
             _range = 4;

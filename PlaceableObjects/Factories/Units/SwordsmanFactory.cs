@@ -27,7 +27,7 @@ namespace AoeBoardgame
             UiName = "Swordsman";
             UiDescription = "Basic infantry unit";
 
-            HitPoints = 20;
+            HitPoints = 12;
             _speed = 2;
             AttackDamage = 3;
             _lineOfSight = 3;

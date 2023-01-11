@@ -26,7 +26,7 @@ namespace AoeBoardgame
             UiName = "Archer";
             UiDescription = "Has a ranged attack";
 
-            HitPoints = 25;
+            HitPoints = 15;
             Speed = 2;
             AttackDamage = 4;
             Range = 2;

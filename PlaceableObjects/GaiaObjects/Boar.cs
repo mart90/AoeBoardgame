@@ -19,7 +19,7 @@
             MaxHitPoints = 20;
             MeleeArmor = 0;
             RangedArmor = 1;
-            AttackDamage = 4;
+            AttackDamage = 3;
         }
     }
 }

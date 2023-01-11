@@ -15,7 +15,7 @@ namespace AoeBoardgame
         /// <summary>
         /// Returns true if we died
         /// </summary>
-        public static bool TakeDamage<T>(this T defender, IAttacker attacker, int damage) where T : IAttackable
+        public static bool TakeDamage<T>(this T defender, int damage, Tile defenderTile) where T : IAttackable
         {
             if (defender is Army army)
             {
@@ -39,6 +39,12 @@ namespace AoeBoardgame
                 if (!army.Units.Any())
                 {
                     return true;
+                }
+                else if (army.Units.Count == 1)
+                {
+                    // Disband army
+                    defenderTile.SetObject((PlayerObject)army.Units[0]);
+                    army.Owner.OwnedObjects.Remove(army);
                 }
             }
             else

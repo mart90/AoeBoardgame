@@ -26,7 +26,7 @@ namespace AoeBoardgame
             UiName = "Scout";
             UiDescription = "Cavalry with increased movement points and line of sight";
 
-            HitPoints = 30;
+            HitPoints = 20;
             Speed = 4;
             AttackDamage = 3;
             _lineOfSight = 4;

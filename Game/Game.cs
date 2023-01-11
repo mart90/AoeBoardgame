@@ -664,7 +664,7 @@ namespace AoeBoardgame
                 damage = 0;
             }
 
-            bool defenderDied = defender.TakeDamage(attacker, damage);
+            bool defenderDied = defender.TakeDamage(damage, destinationTile);
 
             if (defender is Boar)
             {
@@ -682,7 +682,7 @@ namespace AoeBoardgame
 
             attacker.HasAttackedThisTurn = true;
 
-            if (attacker is ICanMove mover3 && !(((PlayerObject)mover3).Owner.Civilization is France && attacker is ICavalry))
+            if (attacker is ICanMove mover3 && !((PlayerObject)attacker).IsFrenchCavalry())
             {
                 mover3.StepsTakenThisTurn = mover3.Speed;
             }
@@ -766,6 +766,12 @@ namespace AoeBoardgame
                 if (!(attacker is IHasRange) && !(defender is Mine || defender is LumberCamp))
                 {
                     Map.MoveMover((ICanMove)attacker, defenderTile);
+
+                    if (((PlayerObject)attacker).IsFrenchCavalry())
+                    {
+                        ((ICanMove)attacker).StepsTakenThisTurn++;
+                    }
+
                     UpdateVisibleAndRangeableTilesForObject((PlayerObject)attacker);
                 }
             }
@@ -834,7 +840,7 @@ namespace AoeBoardgame
 
                 int damage = boar.AttackDamage - defender.MeleeArmor;
 
-                bool defenderDied = defender.TakeDamage(boar, damage);
+                bool defenderDied = defender.TakeDamage(damage, attackerTile);
                 
                 if (defenderDied)
                 {

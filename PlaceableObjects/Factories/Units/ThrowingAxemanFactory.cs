@@ -29,7 +29,7 @@ namespace AoeBoardgame
             UiName = "Throwing axeman";
             UiDescription = "Ranged unit with an armor-piercing attack";
 
-            HitPoints = 45;
+            HitPoints = 35;
             _speed = 2;
             AttackDamage = 7;
             ArmorPierce = 3;

@@ -92,14 +92,14 @@ namespace AoeBoardgame
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
                         factory.UpgradeLevel = 1;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 8;
                         factory.AttackDamage += 2;
 
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
                         {
                             unit.UpgradeLevel = 1;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 8;
+                            unit.HitPoints += 8;
                             unit.AttackDamage += 2;
                         }
 
@@ -129,7 +129,7 @@ namespace AoeBoardgame
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
                         factory.UpgradeLevel = 2;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 8;
                         factory.AttackDamage += 2;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 1;
@@ -137,8 +137,8 @@ namespace AoeBoardgame
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
                         {
                             unit.UpgradeLevel = 2;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 8;
+                            unit.HitPoints += 8;
                             unit.AttackDamage += 2;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 1;
@@ -170,7 +170,7 @@ namespace AoeBoardgame
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 8;
                         factory.AttackDamage += 2;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 1;
@@ -178,8 +178,8 @@ namespace AoeBoardgame
                         foreach (Swordsman unit in player.OwnedObjects.Where(e => e is Swordsman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 8;
+                            unit.HitPoints += 8;
                             unit.AttackDamage += 2;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 1;
@@ -204,14 +204,14 @@ namespace AoeBoardgame
                         ArcherFactory factory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
 
                         factory.UpgradeLevel = 2;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 7;
                         factory.AttackDamage += 3;
 
                         foreach (Archer unit in player.OwnedObjects.Where(e => e is Archer))
                         {
                             unit.UpgradeLevel = 2;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 7;
+                            unit.HitPoints += 7;
                             unit.AttackDamage += 3;
                         }
 
@@ -241,14 +241,14 @@ namespace AoeBoardgame
                         ArcherFactory factory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 7;
                         factory.AttackDamage += 3;
 
                         foreach (Archer unit in player.OwnedObjects.Where(e => e is Archer))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 7;
+                            unit.HitPoints += 7;
                             unit.AttackDamage += 3;
                         }
                     }
@@ -271,14 +271,14 @@ namespace AoeBoardgame
                         PikemanFactory factory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
 
                         factory.UpgradeLevel = 2;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 7;
                         factory.AttackDamage += 2;
 
                         foreach (Pikeman unit in player.OwnedObjects.Where(e => e is Pikeman))
                         {
                             unit.UpgradeLevel = 2;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 7;
+                            unit.HitPoints += 7;
                             unit.AttackDamage += 2;
                         }
 
@@ -308,14 +308,14 @@ namespace AoeBoardgame
                         PikemanFactory factory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 7;
                         factory.AttackDamage += 2;
 
                         foreach (Pikeman unit in player.OwnedObjects.Where(e => e is Pikeman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 7;
+                            unit.HitPoints += 7;
                             unit.AttackDamage += 2;
                         }
                     }
@@ -337,7 +337,7 @@ namespace AoeBoardgame
                         KnightFactory factory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 15;
                         factory.AttackDamage += 4;
                         factory.MeleeArmor += 1;
                         factory.RangedArmor += 2;
@@ -345,8 +345,8 @@ namespace AoeBoardgame
                         foreach (Knight unit in player.OwnedObjects.Where(e => e is Knight))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 20;
-                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 15;
+                            unit.HitPoints += 15;
                             unit.AttackDamage += 4;
                             unit.MeleeArmor += 1;
                             unit.RangedArmor += 2;
@@ -358,7 +358,7 @@ namespace AoeBoardgame
                 {
                     ResearchEnum = ResearchEnum.Bloodlines,
                     UiName = "Bloodlines",
-                    UiDescription = "Cavalry +10 HP",
+                    UiDescription = "Cavalry +8 HP",
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Food, 100),
@@ -368,21 +368,21 @@ namespace AoeBoardgame
                     Effect = player =>
                     {
                         KnightFactory knightFactory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
-                        knightFactory.HitPoints += 10;
+                        knightFactory.HitPoints += 8;
 
                         foreach (Knight knight in player.OwnedObjects.Where(e => e is Knight))
                         {
-                            knight.MaxHitPoints += 10;
-                            knight.HitPoints += 10;
+                            knight.MaxHitPoints += 8;
+                            knight.HitPoints += 8;
                         }
 
                         ScoutFactory scoutFactory = (ScoutFactory)player.GetFactoryByObjectType(typeof(Scout));
-                        scoutFactory.HitPoints += 10;
+                        scoutFactory.HitPoints += 8;
 
                         foreach (Scout scout in player.OwnedObjects.Where(e => e is Scout))
                         {
-                            scout.MaxHitPoints += 10;
-                            scout.HitPoints += 10;
+                            scout.MaxHitPoints += 8;
+                            scout.HitPoints += 8;
                         }
                     }
                 },
@@ -433,15 +433,15 @@ namespace AoeBoardgame
                     {
                         CatapultFactory factory = (CatapultFactory)player.GetFactoryByObjectType(typeof(Catapult));
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 30;
+                        factory.HitPoints += 20;
                         factory.AttackDamage += 20;
                         factory.RangedArmor += 3;
 
                         foreach (Catapult unit in player.OwnedObjects.Where(e => e is Catapult))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.HitPoints += 30;
-                            unit.MaxHitPoints += 30;
+                            unit.HitPoints += 20;
+                            unit.MaxHitPoints += 20;
                             unit.AttackDamage += 20;
                             unit.RangedArmor += 3;
                         }
@@ -698,13 +698,13 @@ namespace AoeBoardgame
                     {
                         VillagerFactory factory = (VillagerFactory)player.GetFactoryByObjectType(typeof(Villager));
                         factory.HitPoints += 10;
-                        factory.AttackDamage += 2;
+                        factory.AttackDamage += 1;
 
                         foreach (Villager unit in player.OwnedObjects.Where(e => e is Villager))
                         {
                             unit.HitPoints += 10;
                             unit.MaxHitPoints += 10;
-                            unit.AttackDamage += 2;
+                            unit.AttackDamage += 1;
                         }
                     }
                 },
@@ -1015,14 +1015,14 @@ namespace AoeBoardgame
                         LongbowmanFactory factory = (LongbowmanFactory)player.GetFactoryByObjectType(typeof(Longbowman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 10;
+                        factory.HitPoints += 7;
                         factory.AttackDamage += 4;
 
                         foreach (Longbowman unit in player.OwnedObjects.Where(e => e is Longbowman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 10;
-                            unit.HitPoints += 10;
+                            unit.MaxHitPoints += 7;
+                            unit.HitPoints += 7;
                             unit.AttackDamage += 4;
                         }
                     }
@@ -1061,15 +1061,15 @@ namespace AoeBoardgame
                         ThrowingAxemanFactory factory = (ThrowingAxemanFactory)player.GetFactoryByObjectType(typeof(ThrowingAxeman));
 
                         factory.UpgradeLevel = 3;
-                        factory.HitPoints += 15;
+                        factory.HitPoints += 8;
                         factory.AttackDamage += 3;
                         factory.ArmorPierce++;
 
                         foreach (ThrowingAxeman unit in player.OwnedObjects.Where(e => e is ThrowingAxeman))
                         {
                             unit.UpgradeLevel = 3;
-                            unit.MaxHitPoints += 15;
-                            unit.HitPoints += 15;
+                            unit.MaxHitPoints += 8;
+                            unit.HitPoints += 8;
                             unit.AttackDamage += 3;
                             unit.ArmorPierce++;
                         }
@@ -1090,12 +1090,12 @@ namespace AoeBoardgame
                     Effect = player =>
                     {
                         KnightFactory factory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
-                        factory.HitPoints += 20;
+                        factory.HitPoints += 15;
 
                         foreach (Knight unit in player.OwnedObjects.Where(e => e is Knight))
                         {
-                            unit.HitPoints += 20;
-                            unit.MaxHitPoints += 20;
+                            unit.HitPoints += 15;
+                            unit.MaxHitPoints += 15;
                         }
                     }
                 },

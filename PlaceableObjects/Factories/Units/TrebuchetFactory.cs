@@ -25,7 +25,7 @@ namespace AoeBoardgame
             UiName = "Trebuchet";
             UiDescription = "Siege weapon. Can only attack buildings";
 
-            _hitPoints = 50;
+            _hitPoints = 40;
             _speed = 1;
             AttackDamage = 80;
             Range = 5;

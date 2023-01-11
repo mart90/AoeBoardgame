@@ -27,7 +27,7 @@ namespace AoeBoardgame
             UiName = "Pikeman";
             UiDescription = "Anti-cavalry unit";
 
-            HitPoints = 30;
+            HitPoints = 15;
             _speed = 2;
             AttackDamage = 3;
             _lineOfSight = 3;
@@ -52,7 +52,7 @@ namespace AoeBoardgame
                 Speed = _speed,
                 LineOfSight = _lineOfSight,
                 AttackDamage = AttackDamage,
-                FoodConsumption = 2,
+                FoodConsumption = 1,
                 UpgradeLevel = UpgradeLevel,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor

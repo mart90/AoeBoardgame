@@ -92,5 +92,10 @@ namespace AoeBoardgame
 
             return true;
         }
+
+        public bool IsFrenchCavalry()
+        {
+            return Owner.Civilization is France && (this is ICavalry || this is Army army && army.Units[0] is ICavalry);
+        }
     }
 }

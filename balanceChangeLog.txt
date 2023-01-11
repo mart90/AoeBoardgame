@@ -1,4 +1,13 @@
-﻿0.2.1.0
+﻿0.2.2.0
+- Base hitpoints of all military units reduced, and further reductions in castle and imperial age
+- Feudal swordsmen upgrade no longer gives +1 ranged armor
+- Amount of deer in the middle of the map reduced from 4 to 2
+- Amount of deer in the outer parts of the map reduced from 4 per corner to 3 per corner (4 less total)
+- Boar attack reduced from 4 to 3
+- Town center base attack increased from 5 to 6
+- Loom now upgrades villager attack by 1 instead of 2
+
+0.2.1.0
 - Hitpoints of almost all military units reduced in castle and imperial age
 - Many train times and research times reduced by at least 1 turn
 - Can now cancel building construction and get 50% of the invested resources back
@@ -6,7 +15,8 @@
 - Can now collect boar and deer food with any moving unit
 - Boar HP reduced from 25 to 20, attack reduced from 6 to 4, ranged armor increased from 0 to 1
 - Loom now also upgrades villager attack. Cost increased slightly
-- Masonry now also upgrades TC, tower, and castle attack by 5
+- Masonry now also upgrades town center, tower, and castle attack by 5
+- University cost decreased from 200 to 150 wood
 - Conscription gold cost increased
 - Supply lines gold cost increased
 - Elite knights gold cost increased

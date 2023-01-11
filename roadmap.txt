@@ -1,9 +1,11 @@
 ﻿IMPORTANT
--
+- French cav armies can't move after attacking
+- If one unit gets killed in an army, it stays an army
 
 LESS IMPORTANT
 - Show current age
 - Economic win condition (Wonder?)
+- FoW wrong with restored games
 - Show which units have moved/attacked this turn
 - Back should cancel lobby
 - Show how much damage attacks WOULD do on hover
@@ -12,7 +14,6 @@ LESS IMPORTANT
 - Temporary tile color doesn't clear when setting new waypoint
 - Highlight units whose destination became invalid
 - If a researching building is destroyed it makes the research impossible to restart anywhere else
-- If one unit gets killed in an army, it stays an army
 
 EVENTUALLY
 - Replay viewer
