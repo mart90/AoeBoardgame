@@ -1,5 +1,5 @@
 ﻿IMPORTANT
--
+- Look and feel (UI, textures, sounddesign)
 
 LESS IMPORTANT
 - Show current age
