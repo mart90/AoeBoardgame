@@ -153,6 +153,7 @@
     <Compile Include="PlaceableObjects\Units\GathererGroup.cs" />
     <Compile Include="PlaceableObjects\Units\Archer.cs" />
     <Compile Include="SoundEffectLibrary.cs" />
+    <Compile Include="Textures\GUITexture.cs" />
     <Compile Include="UiController.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\MapGenerator.cs" />

@@ -14,6 +14,7 @@ namespace AoeBoardgame
         private readonly List<TileTexture> _tileTextures;
         private readonly List<PlaceableObjectTexture> _objectTextures;
         private readonly List<TileColorTexture> _colorTextures;
+        private readonly List<UiTexture> _UiTextures;
 
         public Texture2D FogOfWar { get; private set; }
         public Texture2D TileUnderConstruction { get; private set; }
@@ -26,11 +27,13 @@ namespace AoeBoardgame
             _tileTextures = new List<TileTexture>();
             _objectTextures = new List<PlaceableObjectTexture>();
             _colorTextures = new List<TileColorTexture>();
+            _UiTextures = new List<UiTexture>();
             _imGUIRenderer = imGUIRenderer;
 
             AddTileTextures(contentManager);
             AddObjectTextures(contentManager);
             AddColorTextures(contentManager);
+            AddUITextures(contentManager);
 
             FogOfWar = contentManager.Load<Texture2D>("Colors/fow");
             TileUnderConstruction = contentManager.Load<Texture2D>("Misc/hammer");
@@ -52,6 +55,10 @@ namespace AoeBoardgame
         public Texture2D GetTileColorByType(TileColor tileColor)
         {
             return _colorTextures.Single(e => e.TileColor == tileColor).Texture;
+        }
+        public Texture2D GetUiTextureByType(UiType uiType)
+        {
+            return _UiTextures.Single(e => e.UiType == uiType).Texture;
         }
 
         public IntPtr TextureToIntPtr(Texture2D texture)
@@ -253,6 +260,15 @@ namespace AoeBoardgame
             {
                 TileColor = TileColor.Purple,
                 Texture = contentManager.Load<Texture2D>("Colors/purple")
+            });
+        }
+
+        private void AddUITextures(ContentManager contentManager)
+        {
+            _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.EndTurnButton,
+                Texture = contentManager.Load<Texture2D>("UI/EndTurnButton")
             });
         }
     }

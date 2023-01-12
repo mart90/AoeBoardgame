@@ -125,4 +125,9 @@
         SouthWest,
         West
     }
+
+    enum UiType
+    {
+        EndTurnButton
+    }
 }

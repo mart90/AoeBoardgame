@@ -1,7 +1,9 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.ImGui;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1377,13 +1379,18 @@ namespace AoeBoardgame
             {
                 if (!DrawObjectContents() && !DrawObjectActions())
                 {
-                    ImGui.Dummy(new System.Numerics.Vector2(500, 500));
+                    ImGui.Dummy(new System.Numerics.Vector2(10, 10));
                 }
 
-                if (ImGui.Button("End turn", new System.Numerics.Vector2(200, 40)))
+                Texture2D endTurnButton = _textureLibrary.GetUiTextureByType(UiType.EndTurnButton);
+                if (ImGui.ImageButton(_textureLibrary.TextureToIntPtr(endTurnButton), new System.Numerics.Vector2(170, 170)))
                 {
                     EndTurn();
                 }
+            }
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip("End turn");
             }
 
             ImGui.End();
