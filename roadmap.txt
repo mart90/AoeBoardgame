@@ -1,6 +1,5 @@
 ﻿IMPORTANT
-- French cav armies can't move after attacking
-- If one unit gets killed in an army, it stays an army
+-
 
 LESS IMPORTANT
 - Show current age
@@ -20,6 +19,7 @@ EVENTUALLY
 - Queueing stuff
 - Map from seed
 - Game.HandleRevolt()
+- Ranking system
 - Map generation: Make sure all tiles are reachable
 - Time control
 - More civs
@@ -28,7 +28,9 @@ EVENTUALLY
 
 MAYBE
 - Water
-- New sprites
+- New object textures
+- Replace ImGui
+- Ingame chat
 
 BALANCE
 -
