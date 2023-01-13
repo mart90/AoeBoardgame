@@ -4,6 +4,7 @@
 *.userosscache
 *.sln.docstates
 sprites.zip
+MonogameFiles.zip
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

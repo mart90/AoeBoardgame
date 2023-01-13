@@ -354,12 +354,15 @@ namespace AoeBoardgame
 
                     if (path == null)
                     {
-                        // TODO highlight unit
-                        _textNotification = new TextNotification
+                        if (IsMyTurn)
                         {
-                            Message = "The highlighted units' destination has become invalid. Their paths were reset",
-                            FontColor = Color.Red
-                        };
+                            // TODO highlight unit
+                            _textNotification = new TextNotification
+                            {
+                                Message = "Some units' destination has become invalid. Their paths were reset",
+                                FontColor = Color.Red
+                            };
+                        }
                         mover.DestinationTile = null;
                         continue;
                     }
