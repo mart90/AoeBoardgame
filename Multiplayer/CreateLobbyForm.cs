@@ -117,7 +117,7 @@ namespace AoeBoardgame
 
             ImGui.BeginChild("Form", new System.Numerics.Vector2(800, 400));
 
-            ImGui.Checkbox("Host plays blue", ref _hostPlaysBlue);
+            ImGui.Checkbox("Host plays England", ref _hostPlaysBlue);
 
             ImGui.NewLine();
             

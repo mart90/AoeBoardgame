@@ -1,4 +1,11 @@
-﻿IMPORTANT
+﻿0-3
+- Win conditions
+- Support resigning
+- Confirmation popups (when destroying, resigning)
+- Informational popups (you've reached X age)
+- Economic win condition (Wonder?)
+
+IMPORTANT
 - 
 
 LESS IMPORTANT
@@ -8,7 +15,6 @@ LESS IMPORTANT
 - Temporary tile color doesn't clear when setting new waypoint
 - FoW wrong with restored games
 - If a researching building is destroyed it makes the research impossible to restart anywhere else
-- Economic win condition (Wonder?)
 - Back should cancel lobby
 - Show how much damage attacks WOULD do on hover
 - Show current age
