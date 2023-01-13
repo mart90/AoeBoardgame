@@ -1,18 +1,18 @@
 ﻿IMPORTANT
--
+- 
 
 LESS IMPORTANT
-- Show current age
-- Economic win condition (Wonder?)
-- FoW wrong with restored games
 - Show which units have moved/attacked this turn
+- "Destination became invalid" after reaching waypoint?
+- Highlight units whose destination became invalid
+- Temporary tile color doesn't clear when setting new waypoint
+- FoW wrong with restored games
+- If a researching building is destroyed it makes the research impossible to restart anywhere else
+- Economic win condition (Wonder?)
 - Back should cancel lobby
 - Show how much damage attacks WOULD do on hover
+- Show current age
 - Show when opponent aged up?
-- "Destination became invalid" after reaching waypoint?
-- Temporary tile color doesn't clear when setting new waypoint
-- Highlight units whose destination became invalid
-- If a researching building is destroyed it makes the research impossible to restart anywhere else
 
 EVENTUALLY
 - Replay viewer
