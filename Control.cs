@@ -54,7 +54,7 @@ namespace AoeBoardgame
 
             _uiWindows = new List<IUiWindow>
             {
-                new MainMenu(),
+                new MainMenu(_httpClient, _fontLibrary),
                 new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary, _httpClient),
                 new LoginScreen(_fontLibrary, _httpClient),
                 new CreateLobbyForm(_fontLibrary, _httpClient)
