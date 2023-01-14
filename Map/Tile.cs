@@ -97,7 +97,7 @@ namespace AoeBoardgame
             TemporaryColor = color;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Player activePlayer)
         {
             spriteBatch.Draw(_texture, _location, Color.White);
 
@@ -128,12 +128,23 @@ namespace AoeBoardgame
                 }
                 else if (Object != null)
                 {
-                    if (!(Object is GaiaObject) && TemporaryColor == TileColor.Default)
+                    if (Object is PlayerObject playerObject2 && TemporaryColor == TileColor.Default)
                     {
-                        spriteBatch.Draw(
-                            IsSelected || IsViewed ? _textureLibrary.GetTileColorByType(TileColor.Green) : Object.ColorTexture.Texture,
-                            _location,
-                            Color.White);
+                        TileColor tileColor = playerObject2.Owner.Color;
+
+                        if (IsSelected || IsViewed)
+                        {
+                            tileColor = TileColor.Green;
+                        }
+                        else if (playerObject2.Owner == activePlayer
+                            && activePlayer.IsLocalPlayer
+                            && !playerObject2.IsIdle()
+                            && TemporaryColor == TileColor.Default)
+                        {
+                            tileColor = activePlayer.Color == TileColor.Blue ? TileColor.BlueUsed : TileColor.RedUsed;
+                        }
+
+                        spriteBatch.Draw(_textureLibrary.GetTileColorByType(tileColor), _location, Color.White);
                     }
 
                     Object.Draw(spriteBatch, _objectLocation);

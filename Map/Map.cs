@@ -31,11 +31,11 @@ namespace AoeBoardgame
 
         public Tile ViewedTile => Tiles.SingleOrDefault(e => e.IsViewed);
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Player activePlayer)
         {
             foreach (var tile in Tiles)
             {
-                tile.Draw(spriteBatch);
+                tile.Draw(spriteBatch, activePlayer);
             }
         }
 

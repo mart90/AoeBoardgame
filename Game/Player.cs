@@ -8,6 +8,7 @@ namespace AoeBoardgame
     {
         public string Name { get; set; }
         public TileColor Color { get; set; }
+        public TileColor UsedUnitColor { get; set; }
         public bool IsActive { get; set; }
         public Civilization Civilization { get; set; }
         public bool IsLocalPlayer { get; set; }
@@ -25,11 +26,12 @@ namespace AoeBoardgame
 
         public bool IsPopulationRevolting => ResourceStockpile.Single(e => e.Resource == Resource.Gold).Amount < 0;
 
-        public Player(string name, Civilization civilization, TileColor color)
+        public Player(string name, Civilization civilization, TileColor color, TileColor usedUnitColor)
         {
             Name = name;
             Age = 1;
             Color = color;
+            UsedUnitColor = usedUnitColor;
             Civilization = civilization;
 
             OwnedObjects = new List<PlayerObject>();

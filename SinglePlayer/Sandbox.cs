@@ -15,12 +15,12 @@ namespace AoeBoardgame
 
             Players = new List<Player>
             {
-                new Player("Blue", new England(textureLibrary, researchLibrary), TileColor.Blue) 
+                new Player("Blue", new England(textureLibrary, researchLibrary), TileColor.Blue, TileColor.BlueUsed) 
                 { 
                     IsActive = true,
                     IsLocalPlayer = true
                 },
-                new Player("Red", new France(textureLibrary, researchLibrary), TileColor.Red)
+                new Player("Red", new France(textureLibrary, researchLibrary), TileColor.Red, TileColor.RedUsed)
                 {
                     IsLocalPlayer = true
                 }

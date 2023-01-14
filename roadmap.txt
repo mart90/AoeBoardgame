@@ -1,12 +1,10 @@
 ﻿BUGS
 - If a researching building is destroyed it makes the research impossible to restart anywhere else
 - Temporary tile color doesn't clear when setting new waypoint
-- "Destination became invalid" after reaching waypoint?
 - FoW wrong with restored games
 - Back should cancel lobby
 
 FEATURES
-- Show which units have moved/attacked this turn
 - Show player names somewhere, incl scores, wonder timer
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover

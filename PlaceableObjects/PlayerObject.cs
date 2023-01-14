@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
@@ -96,6 +97,21 @@ namespace AoeBoardgame
         public bool IsFrenchCavalry()
         {
             return Owner.Civilization is France && (this is ICavalry || this is Army army && army.Units[0] is ICavalry);
+        }
+
+        public bool IsIdle()
+        {
+            if (this is ICanMove mover && mover.HasSpentAllMovementPoints())
+            {
+                return false;
+            }
+            
+            if (this is IHasQueue queuer && queuer.HasSomethingQueued())
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

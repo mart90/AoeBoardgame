@@ -107,7 +107,9 @@
     {
         Default,
         Blue,
+        BlueUsed,
         Red,
+        RedUsed,
         Green,
         Teal,
         Pink,

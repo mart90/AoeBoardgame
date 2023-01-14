@@ -319,8 +319,13 @@ namespace AoeBoardgame
                 }
                 else if (path.First().IsEmpty)
                 {
-                    path.First().SetObject((PlayerObject)mover);
-                    mover.DestinationTile = destinationTile;
+                    Tile firstTile = path.First();
+                    firstTile.SetObject((PlayerObject)mover);
+
+                    if (firstTile != destinationTile)
+                    {
+                        mover.DestinationTile = destinationTile;
+                    }
                 }
                 else if (!unit.CanMergeWith(path.First().Object))
                 {
@@ -1418,7 +1423,7 @@ namespace AoeBoardgame
 
         public virtual void Update(SpriteBatch spriteBatch)
         {
-            Map.Draw(spriteBatch);
+            Map.Draw(spriteBatch, ActivePlayer);
 
             if (_textNotification != null)
             {
