@@ -3,11 +3,8 @@ using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
-    class Sandbox : Game, IUiWindow
+    class Sandbox : Game
     {
-        public UiState CorrespondingUiState { get; set; }
-        public UiState? NewUiState { get; set; }
-
         public Sandbox(TextureLibrary textureLibrary, FontLibrary fontLibrary, ResearchLibrary researchLibrary, SoundEffectLibrary soundEffectLibrary) 
             : base(textureLibrary, fontLibrary, researchLibrary, soundEffectLibrary)
         {
@@ -45,6 +42,17 @@ namespace AoeBoardgame
         {
             SetFogOfWar(ActivePlayer);
             base.StartTurn();
+        }
+
+        protected override void EndGame()
+        {
+            base.EndGame();
+
+            Popup = new Popup
+            {
+                IsInformational = true,
+                Message = "The game has ended"
+            };
         }
     }
 }

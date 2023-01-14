@@ -108,6 +108,7 @@
     <Compile Include="PlaceableObjects\Buildings\Blacksmith.cs" />
     <Compile Include="PlaceableObjects\Buildings\Stable.cs" />
     <Compile Include="PlaceableObjects\Buildings\Barracks.cs" />
+    <Compile Include="PlaceableObjects\Buildings\Wonder.cs" />
     <Compile Include="PlaceableObjects\Buildings\University.cs" />
     <Compile Include="PlaceableObjects\Buildings\Mine.cs" />
     <Compile Include="PlaceableObjects\Buildings\GuardTower.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="PlaceableObjects\Factories\Buildings\StableFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\Buildings\GuardTowerFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\Buildings\CastleFactory.cs" />
+    <Compile Include="PlaceableObjects\Factories\Buildings\WonderFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\Buildings\UniversityFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\Buildings\BlacksmithFactory.cs" />
     <Compile Include="PlaceableObjects\Factories\Buildings\FarmFactory.cs" />
@@ -152,8 +154,9 @@
     <Compile Include="PlaceableObjects\Units\Knight.cs" />
     <Compile Include="PlaceableObjects\Units\GathererGroup.cs" />
     <Compile Include="PlaceableObjects\Units\Archer.cs" />
+    <Compile Include="Popup.cs" />
     <Compile Include="SoundEffectLibrary.cs" />
-    <Compile Include="UiController.cs" />
+    <Compile Include="Control.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\MapGenerator.cs" />
     <Compile Include="Pathing\PathFinderNode.cs" />

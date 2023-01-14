@@ -185,9 +185,9 @@ namespace AoeBoardgame.Multiplayer
             });
         }
 
-        public void SetWhite(int gameId)
+        public void SetBlue(int gameId)
         {
-            Post("set_white", new
+            Post("set_blue", new
             {
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password,

@@ -183,6 +183,18 @@
 /processorParam:TextureFormat=Color
 /build:Objects/archer.png
 
+#begin Objects/archway.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Objects/archway.png
+
 #begin Objects/boar.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -242,18 +254,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Objects/catapult.png
-
-#begin Objects/church.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Objects/church.png
 
 #begin Objects/deer.png
 /importer:TextureImporter

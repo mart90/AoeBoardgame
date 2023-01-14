@@ -5,7 +5,7 @@ namespace AoeBoardgame
 {
     static class TileListExtensions
     {
-        public static void Highlight(this IEnumerable<Tile> tiles, TileColor color)
+        public static void SetTemporaryColor(this IEnumerable<Tile> tiles, TileColor color)
         {
             foreach (var tile in tiles)
             {

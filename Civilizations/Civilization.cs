@@ -33,6 +33,7 @@ namespace AoeBoardgame
                 new TowerFactory(TextureLibrary),
                 new GuardTowerFactory(TextureLibrary),
                 GetCastleFactory(),
+                new WonderFactory(TextureLibrary),
 
                 // Units
                 new ArmyFactory(TextureLibrary),
@@ -84,6 +85,14 @@ namespace AoeBoardgame
 
         public virtual void UnlockFeudalAge(Player player)
         {
+            player.AddAllowedBuildings<Villager>(new List<Type>
+            {
+                typeof(Blacksmith),
+                typeof(University),
+                typeof(Stable),
+                typeof(Tower)
+            });
+
             player.AddAllowedResearch<TownCenter>(new List<ResearchEnum>
             {
                 ResearchEnum.CastleAge
@@ -98,18 +107,18 @@ namespace AoeBoardgame
             { 
                 ResearchEnum.FeudalSwordsmen 
             });
-
-            player.AddAllowedBuildings<Villager>(new List<Type>
-            {
-                typeof(Blacksmith),
-                typeof(University),
-                typeof(Stable),
-                typeof(Tower)
-            });
         }
 
         public virtual void UnlockCastleAge(Player player)
         {
+            player.AddAllowedBuildings<Villager>(new List<Type>
+            {
+                typeof(TownCenter),
+                typeof(SiegeWorkshop),
+                typeof(Castle),
+                typeof(GuardTower)
+            });
+
             player.AddAllowedResearch<TownCenter>(new List<ResearchEnum>
             {
                 ResearchEnum.ImperialAge
@@ -130,14 +139,6 @@ namespace AoeBoardgame
                 ResearchEnum.ChainMailArmor,
                 ResearchEnum.IronCasting,
                 ResearchEnum.BodkinArrow
-            });
-
-            player.AddAllowedBuildings<Villager>(new List<Type>
-            {
-                typeof(TownCenter),
-                typeof(SiegeWorkshop),
-                typeof(Castle),
-                typeof(GuardTower)
             });
 
             player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
@@ -169,6 +170,11 @@ namespace AoeBoardgame
 
         public virtual void UnlockImperialAge(Player player)
         {
+            player.AddAllowedBuildings<Villager>(new List<Type>
+            {
+                typeof(Wonder)
+            });
+
             player.AddAllowedResearch<University>(new List<ResearchEnum>
             {
                 ResearchEnum.CropRotation,
