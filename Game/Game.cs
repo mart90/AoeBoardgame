@@ -194,7 +194,7 @@ namespace AoeBoardgame
 
         private void UpdateVisibleAndRangeableTilesForObject(PlayerObject obj)
         {
-            obj.VisibleTiles = new List<Tile>();
+            obj.VisibleTiles.Clear();
 
             // Skip for objects that are gathering or part of an army
             if (!Map.Tiles.Any(e => e.Object == obj))
@@ -710,7 +710,15 @@ namespace AoeBoardgame
                 damage = 0;
             }
 
+            bool defenderWasArmy = defender is Army;
+
             bool defenderDied = defender.TakeDamage(damage, destinationTile);
+
+            if (!defenderDied && defenderWasArmy && !(destinationTile.Object is Army))
+            {
+                // The army was disbanded
+                UpdateVisibleAndRangeableTilesForObject((PlayerObject)destinationTile.Object);
+            }
 
             if (defender is Boar)
             {
@@ -728,7 +736,7 @@ namespace AoeBoardgame
 
             attacker.HasAttackedThisTurn = true;
 
-            if (attacker is ICanMove mover3 && !((PlayerObject)attacker).IsFrenchCavalry())
+            if (attacker is ICanMove mover3)
             {
                 mover3.StepsTakenThisTurn = mover3.Speed;
             }
@@ -803,6 +811,7 @@ namespace AoeBoardgame
                     else
                     {
                         PlaceObjectOnAdjacentTile(newGroup, defenderTile);
+                        defenderTile.SetObject(null);
                     }
 
                     UpdateVisibleAndRangeableTilesForObject(newGroup);
@@ -818,12 +827,11 @@ namespace AoeBoardgame
                     else
                     {
                         PlaceObjectOnAdjacentTile(survivor, defenderTile);
+                        defenderTile.SetObject(null);
                     }
 
                     UpdateVisibleAndRangeableTilesForObject(survivor);
                 }
-
-                defenderTile.SetObject(null);
             }
             else
             {
@@ -832,11 +840,6 @@ namespace AoeBoardgame
                 if (!(attacker is IHasRange) && !(defender is Mine || defender is LumberCamp))
                 {
                     Map.MoveMover((ICanMove)attacker, defenderTile);
-
-                    if (((PlayerObject)attacker).IsFrenchCavalry())
-                    {
-                        ((ICanMove)attacker).StepsTakenThisTurn++;
-                    }
 
                     UpdateVisibleAndRangeableTilesForObject((PlayerObject)attacker);
                 }
@@ -859,7 +862,7 @@ namespace AoeBoardgame
                 }
                 else if (defender is Boar)
                 {
-                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 300;
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 200;
                 }
             }
 
@@ -1365,6 +1368,7 @@ namespace AoeBoardgame
                 {
                     army.Units.Add((ICanFormGroup)mover);
                     army.StepsTakenThisTurn = army.Units.Max(e => e.StepsTakenThisTurn);
+                    ((PlayerObject)mover).VisibleTiles.Clear();
                 }
                 else if (mover is Army army2)
                 {
@@ -1380,6 +1384,11 @@ namespace AoeBoardgame
                 endTile.SetObject((PlaceableObject)newGroup);
 
                 newGroup.Units.ForEach(e => e.DestinationTile = null);
+
+                foreach (PlayerObject unit in newGroup.Units)
+                {
+                    unit.VisibleTiles.Clear();
+                }
 
                 UpdateVisibleAndRangeableTilesForObject((PlayerObject)newGroup);
             }

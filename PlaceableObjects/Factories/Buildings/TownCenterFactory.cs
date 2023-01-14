@@ -45,7 +45,7 @@ namespace AoeBoardgame
             UiDescription = "Villager production and age-up building";
 
             HitPoints = 120;
-            AttackDamage = 6;
+            AttackDamage = 7;
             _range = 3;
             _lineOfSight = 4;
 

@@ -19,6 +19,11 @@ namespace AoeBoardgame
         {
             if (defender is Army army)
             {
+                if (army.HitPoints <= damage)
+                {
+                    return true;
+                }
+
                 int damagePerUnit = damage / army.Units.Count;
 
                 foreach (PlayerObject unit in army.Units)

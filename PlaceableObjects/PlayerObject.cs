@@ -11,7 +11,7 @@ namespace AoeBoardgame
         public virtual int RangedArmor { get; set; }
         public virtual int LineOfSight { get; set; }
         public Player Owner { get; set; } // TODO circular dependency
-        public List<Tile> VisibleTiles { get; set; }
+        public List<Tile> VisibleTiles { get; private set; }
 
         protected PlayerObject(TextureLibrary textureLibrary, Player owner)
         {
@@ -92,11 +92,6 @@ namespace AoeBoardgame
             }
 
             return true;
-        }
-
-        public bool IsFrenchCavalry()
-        {
-            return Owner.Civilization is France && (this is ICavalry || this is Army army && army.Units[0] is ICavalry);
         }
 
         public bool IsIdle()

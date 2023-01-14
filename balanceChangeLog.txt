@@ -1,4 +1,14 @@
-﻿0.2.2.0
+﻿0.3.1.0
+- French military bonus replaced with: Cavalry +1 speed
+- Knight HP reduced from 50 to 40, attack reduced from 9 to 8
+- Farm HP increased from 8 to 10
+- Food gained from collecting boar reduced from 300 to 200
+- Tower HP increased to 70, cost decreased from 50w, 80s to 50w, 60s
+- Guard tower cost reduced from 100w, 150s to 100w, 100s
+- Castle cost reduced from 500s to 350s
+- Wonder cost reduced from 1000w, 1000g to 500w, 500g
+
+0.2.2.0
 - Base hitpoints of all military units reduced, and further reductions in castle and imperial age
 - Feudal swordsmen upgrade no longer gives +1 ranged armor
 - Amount of deer in the middle of the map reduced from 4 to 2

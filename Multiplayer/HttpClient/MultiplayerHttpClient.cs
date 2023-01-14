@@ -9,7 +9,7 @@ namespace AoeBoardgame.Multiplayer
 {
     class MultiplayerHttpClient
     {
-        const string OUR_VERSION = "0.3.0.0";
+        const string OUR_VERSION = "0.3.1.0";
 
         public User AuthenticatedUser { get; set; }
 

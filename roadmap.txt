@@ -5,6 +5,7 @@
 - Back should cancel lobby
 
 FEATURES
+- Cancel units & research
 - Show player names somewhere, incl scores, wonder timer
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
@@ -23,7 +24,4 @@ FEATURES
 - Auto-updater
 - Water
 - New object textures
-- Replace ImGui
-
-BALANCE
--
+- Replace ImGui?

@@ -27,7 +27,7 @@ namespace AoeBoardgame
                 HitPoints = HitPoints,
                 MaxHitPoints = HitPoints,
                 AttackDamage = AttackDamage,
-                ArmorPierce = 3,
+                ArmorPierce = 5,
                 Range = _range,
                 HasMinimumRange = HasMinimumRange,
                 LineOfSight = _lineOfSight,
@@ -49,7 +49,7 @@ namespace AoeBoardgame
             Cost = new List<ResourceCollection>
             {
                 new ResourceCollection(Resource.Wood, 100),
-                new ResourceCollection(Resource.Stone, 150)
+                new ResourceCollection(Resource.Stone, 100)
             };
         }
     }
