@@ -281,10 +281,10 @@ namespace AoeBoardgame
                 Research research = ResearchLibrary.GetByResearchEnum(newMove.ResearchId.Value);
                 TryResearch(research, (ICanMakeResearch)originTile.Object);
             }
-            else if (newMove.IsCancelBuilding)
+            else if (newMove.IsCancel)
             {
                 Tile tile = Map.Tiles[newMove.OriginTileId.Value];
-                CancelBuilding((ICanMakeBuildings)tile.Object);
+                CancelQueue((IHasQueue)tile.Object);
             }
             else if (newMove.IsDestroyBuilding)
             {

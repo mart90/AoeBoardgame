@@ -884,23 +884,52 @@ namespace AoeBoardgame
             });
         }
 
-        protected void CancelBuilding(ICanMakeBuildings builder)
+        protected void CancelQueue(IHasQueue queuer)
         {
-            PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(builder.BuildingTypeQueued);
-
-            builder.StopConstruction();
-
-            // Reimburse 50% of the cost
-            foreach (ResourceCollection cost in factory.Cost)
+            if (queuer is ICanMakeBuildings builder)
             {
-                ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount / 2;
+                PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(builder.BuildingTypeQueued);
+
+                builder.StopConstruction();
+
+                // Reimburse 50% of the cost
+                foreach (ResourceCollection cost in factory.Cost)
+                {
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount / 2;
+                }
+            }
+            else if (queuer is ICanMakeUnits trainer && trainer.HasUnitQueued())
+            {
+                PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(trainer.UnitTypeQueued);
+
+                trainer.StopQueue();
+
+                // Reimburse 100%
+                // TODO it's possible to "create" resources this way if combined with techs that reduce cost
+                foreach (ResourceCollection cost in factory.Cost)
+                {
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount;
+                }
+            }
+            else if (queuer is ICanMakeResearch researcher && researcher.HasResearchQueued())
+            {
+                // Reimburse 100%
+                // TODO it's possible to "create" resources this way if combined with techs that reduce cost
+                foreach (ResourceCollection cost in researcher.ResearchQueued.Cost)
+                {
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount;
+                }
+
+                AllowResearch(researcher.GetType(), researcher.ResearchQueued.ResearchEnum);
+                
+                researcher.StopQueue();
             }
 
             AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
-                IsCancelBuilding = true,
-                OriginTileId = Map.GetTileContainingObject((PlayerObject)builder).Id
+                IsCancel = true,
+                OriginTileId = Map.GetTileContainingObject((PlayerObject)queuer).Id
             });
         }
 
@@ -1024,13 +1053,7 @@ namespace AoeBoardgame
             researcher.ResearchQueued = research;
             researcher.QueueTurnsLeft = research.TurnsToComplete;
 
-            foreach (ICanMakeResearch similarResearcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcher.GetType()))
-            {
-                similarResearcher.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
-            }
-
-            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcher.GetType());
-            factory.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
+            DisallowResearch(researcher.GetType(), research.ResearchEnum);
 
             AddMove(new GameMove
             {
@@ -1039,6 +1062,28 @@ namespace AoeBoardgame
                 IsQueueResearch = true,
                 ResearchId = research.ResearchEnum
             });
+        }
+
+        private void DisallowResearch(Type researcherType, ResearchEnum researchEnum)
+        {
+            foreach (ICanMakeResearch researcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcherType))
+            {
+                researcher.ResearchAllowedToMake.Remove(researchEnum);
+            }
+
+            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcherType);
+            factory.ResearchAllowedToMake.Remove(researchEnum);
+        }
+
+        private void AllowResearch(Type researcherType, ResearchEnum researchEnum)
+        {
+            foreach (ICanMakeResearch researcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcherType))
+            {
+                researcher.ResearchAllowedToMake.Add(researchEnum);
+            }
+
+            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcherType);
+            factory.ResearchAllowedToMake.Add(researchEnum);
         }
 
         public void HoverOverTileByLocation(Point location)
@@ -1755,13 +1800,6 @@ namespace AoeBoardgame
                     string str = $"\n\nBuilding a {buildingName.Replace('\n', ' ')}, {builder2.QueueTurnsLeft} turn(s) left";
 
                     ImGui.Text(str);
-
-                    ImGui.NewLine();
-
-                    if (ImGui.Button("Cancel"))
-                    {
-                        CancelBuilding(builder2);
-                    }
                 }
                 else if (SelectedObject is ICanMakeUnits trainer && trainer.HasUnitQueued())
                 {
@@ -1775,7 +1813,12 @@ namespace AoeBoardgame
                     ImGui.Text($"\n\nResearching {researcher.ResearchQueued.UiName.Replace('\n', ' ')}, {researcher.QueueTurnsLeft} turn(s) left");
                 }
 
-                // TODO draw hourglass?
+                ImGui.NewLine();
+
+                if (ImGui.Button("Cancel"))
+                {
+                    CancelQueue((IHasQueue)SelectedObject);
+                }
             }
 
             if (!isBusy)
