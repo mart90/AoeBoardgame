@@ -163,6 +163,11 @@ namespace AoeBoardgame
                 PlaceableObjectType = typeof(SiegeWorkshop),
                 Texture = contentManager.Load<Texture2D>("Objects/siege_workshop")
             });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Wonder),
+                Texture = contentManager.Load<Texture2D>("Objects/archway")
+            });
 
             // Units
             _objectTextures.Add(new PlaceableObjectTexture

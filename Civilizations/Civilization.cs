@@ -69,21 +69,29 @@ namespace AoeBoardgame
         {
             return new List<ResourceCollection>
             {
-                //new ResourceCollection(Resource.Food, 9999),
-                //new ResourceCollection(Resource.Wood, 9999),
-                //new ResourceCollection(Resource.Gold, 9999),
-                //new ResourceCollection(Resource.Iron, 9999),
-                //new ResourceCollection(Resource.Stone, 9999)
-                new ResourceCollection(Resource.Food, 200),
-                new ResourceCollection(Resource.Wood, 100),
-                new ResourceCollection(Resource.Gold, 0),
-                new ResourceCollection(Resource.Iron, 0),
-                new ResourceCollection(Resource.Stone, 0)
+                new ResourceCollection(Resource.Food, 9999),
+                new ResourceCollection(Resource.Wood, 9999),
+                new ResourceCollection(Resource.Gold, 9999),
+                new ResourceCollection(Resource.Iron, 9999),
+                new ResourceCollection(Resource.Stone, 9999)
+                //new ResourceCollection(Resource.Food, 200),
+                //new ResourceCollection(Resource.Wood, 100),
+                //new ResourceCollection(Resource.Gold, 0),
+                //new ResourceCollection(Resource.Iron, 0),
+                //new ResourceCollection(Resource.Stone, 0)
             };
         }
 
         public virtual void UnlockFeudalAge(Player player)
         {
+            player.AddAllowedBuildings<Villager>(new List<Type>
+            {
+                typeof(Blacksmith),
+                typeof(University),
+                typeof(Stable),
+                typeof(Tower)
+            });
+
             player.AddAllowedResearch<TownCenter>(new List<ResearchEnum>
             {
                 ResearchEnum.CastleAge
@@ -98,18 +106,18 @@ namespace AoeBoardgame
             { 
                 ResearchEnum.FeudalSwordsmen 
             });
-
-            player.AddAllowedBuildings<Villager>(new List<Type>
-            {
-                typeof(Blacksmith),
-                typeof(University),
-                typeof(Stable),
-                typeof(Tower)
-            });
         }
 
         public virtual void UnlockCastleAge(Player player)
         {
+            player.AddAllowedBuildings<Villager>(new List<Type>
+            {
+                typeof(TownCenter),
+                typeof(SiegeWorkshop),
+                typeof(Castle),
+                typeof(GuardTower)
+            });
+
             player.AddAllowedResearch<TownCenter>(new List<ResearchEnum>
             {
                 ResearchEnum.ImperialAge
@@ -130,14 +138,6 @@ namespace AoeBoardgame
                 ResearchEnum.ChainMailArmor,
                 ResearchEnum.IronCasting,
                 ResearchEnum.BodkinArrow
-            });
-
-            player.AddAllowedBuildings<Villager>(new List<Type>
-            {
-                typeof(TownCenter),
-                typeof(SiegeWorkshop),
-                typeof(Castle),
-                typeof(GuardTower)
             });
 
             player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
@@ -169,6 +169,11 @@ namespace AoeBoardgame
 
         public virtual void UnlockImperialAge(Player player)
         {
+            player.AddAllowedBuildings<Villager>(new List<Type>
+            {
+                typeof(Wonder)
+            });
+
             player.AddAllowedResearch<University>(new List<ResearchEnum>
             {
                 ResearchEnum.CropRotation,

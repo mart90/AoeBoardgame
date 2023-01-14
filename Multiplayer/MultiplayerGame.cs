@@ -6,12 +6,9 @@ using System.Linq;
 
 namespace AoeBoardgame
 {
-    class MultiplayerGame : Game, IUiWindow
+    class MultiplayerGame : Game
     {
         public int Id { get; set; }
-
-        public UiState CorrespondingUiState { get; set; }
-        public UiState? NewUiState { get; set; }
 
         private readonly User _us;
         private User _opponent;
@@ -104,14 +101,62 @@ namespace AoeBoardgame
             SetFogOfWar(_localPlayer);
         }
 
+        protected override void EndGame()
+        {
+            base.EndGame();
+
+            if (ActivePlayer == _localPlayer)
+            {
+                // Active player communicates the result
+                _httpClient.SetResult(Id, Result);
+            }
+
+            if (ActivePlayer == _localPlayer && Result[2] == 'r')
+            {
+                // No need to notify the player that just resigned that the game ended
+                return;
+            }
+
+            string message = "The game has ended. ";
+
+            if ((Result[0] == 'b' && _localPlayer.Color == TileColor.Blue)
+                || (Result[0] == 'r' && _localPlayer.Color == TileColor.Red))
+            {
+                message += "You have achieved victory by ";
+            }
+            else
+            {
+                message += "You were defeated by ";
+            }
+
+            if (Result[2] == 'r')
+            {
+                message += "resignation.";
+            }
+            else if (Result[2] == 'c')
+            {
+                message += "conquest.";
+            }
+            else
+            {
+                message += "wonder.";
+            }
+
+            Popup = new Popup
+            {
+                IsInformational = true,
+                Message = message
+            };
+        }
+
         public override void Update(SpriteBatch spriteBatch)
         {
             base.Update(spriteBatch);
 
-            //if (GameEnded)
-            //{
-            //    return;
-            //}
+            if (IsEnded)
+            {
+                return;
+            }
 
             if (IsMyTurn)
             {
@@ -139,7 +184,11 @@ namespace AoeBoardgame
                 ApplyMove(newMove);
             }
 
-            SetFogOfWar(_localPlayer);
+            if (!IsEnded)
+            {
+                SetFogOfWar(_localPlayer);
+            }
+
             ClearTemporaryTileColorsExceptPink();
         }
 
@@ -179,6 +228,11 @@ namespace AoeBoardgame
                 {
                     SoundEffectLibrary.YourTurn.Play();
                 }
+            }
+            else if (newMove.IsResign)
+            {
+                Result = ActivePlayer.Color == TileColor.Blue ? "r+r" : "b+r";
+                EndGame();
             }
             else if (newMove.IsMovement)
             {

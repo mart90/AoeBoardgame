@@ -14,7 +14,7 @@ namespace AoeBoardgame
         [STAThread]
         static void Main()
         {
-            using (var game = new UiController())
+            using (var game = new Control())
                 game.Run();
         }
     }

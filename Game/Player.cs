@@ -17,6 +17,7 @@ namespace AoeBoardgame
         public IEnumerable<ResourceGatherRate> GatherRates { get; }
         public List<PlayerObject> OwnedObjects { get; }
         public int Age { get; set; }
+        public int? WonderTimer { get; set; }
 
         public List<Tile> VisibleTiles => OwnedObjects.SelectMany(e => e.VisibleTiles).Distinct().ToList();
 
