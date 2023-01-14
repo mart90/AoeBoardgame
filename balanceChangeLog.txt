@@ -3,7 +3,7 @@
 - Knight HP reduced from 50 to 40, attack reduced from 9 to 8
 - Farm HP increased from 8 to 10
 - Food gained from collecting boar reduced from 300 to 200
-- Tower HP increased to 70, cost decreased from 50w, 80s to 50w, 60s
+- Tower HP increased to 70, cost reduced from 50w, 80s to 50w, 60s
 - Guard tower cost reduced from 100w, 150s to 100w, 100s
 - Castle cost reduced from 500s to 350s
 - Wonder cost reduced from 1000w, 1000g to 500w, 500g
