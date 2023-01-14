@@ -184,10 +184,7 @@ namespace AoeBoardgame
                 ApplyMove(newMove);
             }
 
-            if (!IsEnded)
-            {
-                SetFogOfWar(_localPlayer);
-            }
+            SetFogOfWar(_localPlayer);
 
             ClearTemporaryTileColorsExceptPink();
         }

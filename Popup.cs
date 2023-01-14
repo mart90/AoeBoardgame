@@ -5,7 +5,11 @@ namespace AoeBoardgame
 {
     class Popup
     {
+        /// <summary>
+        /// Max length ~120 for now, or it will go out of bounds
+        /// </summary>
         public string Message { get; set; }
+
         public bool IsInformational { get; set; }
 
         /// <summary>
@@ -17,7 +21,22 @@ namespace AoeBoardgame
 
         public void Draw()
         {
-            ImGui.Text(Message);
+            string message = Message;
+
+            if (message.Length > 60)
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    if (message[59 - i] == ' ')
+                    {
+                        message = message.Remove(59 - i, 1);
+                        message = message.Insert(59 - i, "\n");
+                        break;
+                    }
+                }
+            }
+
+            ImGui.Text(message);
             ImGui.NewLine();
 
             if (!IsInformational)
@@ -35,7 +54,7 @@ namespace AoeBoardgame
             }
             else
             {
-                if (ImGui.Button("Ok"))
+                if (ImGui.Button("Ok", new System.Numerics.Vector2(50, 20)))
                 {
                     IsInteractedWith = true;
                 }

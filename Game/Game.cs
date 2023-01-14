@@ -83,7 +83,7 @@ namespace AoeBoardgame
 
         public virtual void StartTurn()
         {
-            UpdateWonderTimers();
+            UpdateWonderTimer();
 
             UpdateQueues();
 
@@ -149,19 +149,16 @@ namespace AoeBoardgame
             }
         }
 
-        private void UpdateWonderTimers()
+        private void UpdateWonderTimer()
         {
-            foreach (Player player in Players)
+            if (ActivePlayer.WonderTimer != null)
             {
-                if (player.WonderTimer != null)
-                {
-                    player.WonderTimer--;
+                ActivePlayer.WonderTimer--;
 
-                    if (player.WonderTimer == 0)
-                    {
-                        Result = player.Color == TileColor.Blue ? "b+w" : "r+w";
-                        EndGame();
-                    }
+                if (ActivePlayer.WonderTimer == 0)
+                {
+                    Result = ActivePlayer.Color == TileColor.Blue ? "b+w" : "r+w";
+                    EndGame();
                 }
             }
         }
@@ -182,6 +179,11 @@ namespace AoeBoardgame
 
         protected void SetFogOfWar(Player player)
         {
+            if (IsEnded)
+            {
+                return;
+            }
+
             Map.ResetFogOfWar();
 
             foreach (Tile tile in player.VisibleTiles)
@@ -278,16 +280,14 @@ namespace AoeBoardgame
 
             if (building is Wonder)
             {
-                ActivePlayer.WonderTimer = 60;
+                ActivePlayer.WonderTimer = 25;
                 destinationTile.IsScouted = true;
 
                 if (!IsMyTurn)
                 {
-                    destinationTile.SetTemporaryColor(TileColor.Orange);
-
                     Popup = new Popup
                     {
-                        Message = "Your opponent built a wonder on the highlighted tile. If you don't destroy it within 60 turns, they will win the game.",
+                        Message = "Your opponent built a wonder. If you don't destroy it within 25 turns, they will win the game.",
                         IsInformational = true
                     };
                 }
@@ -1540,10 +1540,14 @@ namespace AoeBoardgame
             int foodGathered = resourcesGathered.Single(e => e.Resource == Resource.Food).Amount;
             DrawResourceLine("Food", foodCount, foodGathered, new System.Numerics.Vector4(1, 0, 0, 1));
 
+            int activePlayerTurnCount = MoveHistory
+                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
+                .Count() + 1;
+
             ImGui.SameLine();
             ImGui.Dummy(new System.Numerics.Vector2(86, 0));
             ImGui.SameLine();
-            ImGui.Text($"Turn {MoveHistory.Count(e => e.IsEndOfTurn) + 1}");
+            ImGui.Text($"Turn {activePlayerTurnCount}");
 
             int woodCount = resources.Single(e => e.Resource == Resource.Wood).Amount;
             int woodGathered = resourcesGathered.Single(e => e.Resource == Resource.Wood).Amount;

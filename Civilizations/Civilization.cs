@@ -33,6 +33,7 @@ namespace AoeBoardgame
                 new TowerFactory(TextureLibrary),
                 new GuardTowerFactory(TextureLibrary),
                 GetCastleFactory(),
+                new WonderFactory(TextureLibrary),
 
                 // Units
                 new ArmyFactory(TextureLibrary),
