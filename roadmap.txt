@@ -1,36 +1,31 @@
-﻿IMPORTANT
-- 
-
-LESS IMPORTANT
-- Show which units have moved/attacked this turn
-- "Destination became invalid" after reaching waypoint?
-- Highlight units whose destination became invalid
-- Temporary tile color doesn't clear when setting new waypoint
-- FoW wrong with restored games
+﻿BUGS
 - If a researching building is destroyed it makes the research impossible to restart anywhere else
-- Economic win condition (Wonder?)
+- Temporary tile color doesn't clear when setting new waypoint
+- "Destination became invalid" after reaching waypoint?
+- FoW wrong with restored games
 - Back should cancel lobby
+
+FEATURES
+- Show which units have moved/attacked this turn
+- Show player names somewhere, incl scores, wonder timer
+- Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
 - Show current age
 - Show when opponent aged up?
-
-EVENTUALLY
 - Replay viewer
 - Queueing stuff
 - Map from seed
 - Game.HandleRevolt()
-- Ranking system
+- Ranking system (see backed up trigger for ELO calcs)
 - Map generation: Make sure all tiles are reachable
 - Time control
 - More civs
 - More maps
+- Ingame chat
 - Auto-updater
-
-MAYBE
 - Water
 - New object textures
 - Replace ImGui
-- Ingame chat
 
 BALANCE
 -
