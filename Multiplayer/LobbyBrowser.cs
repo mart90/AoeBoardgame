@@ -99,6 +99,11 @@ namespace AoeBoardgame
                 Id = _httpClient.GetGameId(CreatedLobby.Id)
             };
 
+            if (CreatedLobby.Settings.HostPlaysBlue)
+            {
+                _httpClient.SetBlue(CreatedGame.Id);
+            }
+            
             CreatedGame.StartTurn();
 
             CreatedGame.SetLocalPlayer(CreatedLobby.Settings.HostPlaysBlue);
@@ -139,6 +144,11 @@ namespace AoeBoardgame
             }
 
             CreatedGame.Id = _httpClient.JoinLobby(lobby);
+
+            if (!lobby.Settings.HostPlaysBlue)
+            {
+                _httpClient.SetBlue(CreatedGame.Id);
+            }
 
             CreatedGame.SetLocalPlayer(!lobby.Settings.HostPlaysBlue);
             CreatedGame.SetOpponent();

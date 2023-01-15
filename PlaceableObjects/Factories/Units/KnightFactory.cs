@@ -27,9 +27,9 @@ namespace AoeBoardgame
             UiName = "Knight";
             UiDescription = "Armored cavalry";
 
-            HitPoints = 50;
+            HitPoints = 40;
             Speed = 4;
-            AttackDamage = 9;
+            AttackDamage = 8;
             _lineOfSight = 4;
             MeleeArmor = 2;
             RangedArmor = 3;

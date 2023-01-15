@@ -21,6 +21,7 @@ namespace AoeBoardgame
         public Texture2D SomethingInQueue { get; private set; }
         public Texture2D ArmyStar { get; private set; }
         public Texture2D HpBar { get; private set; }
+        public Texture2D UnusedUnit { get; private set; }
 
         public TextureLibrary(ContentManager contentManager, ImGUIRenderer imGUIRenderer)
         {
@@ -170,6 +171,11 @@ namespace AoeBoardgame
                 PlaceableObjectType = typeof(SiegeWorkshop),
                 Texture = contentManager.Load<Texture2D>("Objects/siege_workshop")
             });
+            _objectTextures.Add(new PlaceableObjectTexture
+            {
+                PlaceableObjectType = typeof(Wonder),
+                Texture = contentManager.Load<Texture2D>("Objects/archway")
+            });
 
             // Units
             _objectTextures.Add(new PlaceableObjectTexture
@@ -233,8 +239,18 @@ namespace AoeBoardgame
             });
             _colorTextures.Add(new TileColorTexture
             {
+                TileColor = TileColor.BlueUsed, // Player 1 used units
+                Texture = contentManager.Load<Texture2D>("Colors/blue_used")
+            });
+            _colorTextures.Add(new TileColorTexture
+            {
                 TileColor = TileColor.Red, // Player 2
                 Texture = contentManager.Load<Texture2D>("Colors/red")
+            });
+            _colorTextures.Add(new TileColorTexture
+            {
+                TileColor = TileColor.RedUsed, // Player 2 used units
+                Texture = contentManager.Load<Texture2D>("Colors/red_used")
             });
             _colorTextures.Add(new TileColorTexture
             {

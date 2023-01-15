@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
@@ -10,7 +11,7 @@ namespace AoeBoardgame
         public virtual int RangedArmor { get; set; }
         public virtual int LineOfSight { get; set; }
         public Player Owner { get; set; } // TODO circular dependency
-        public List<Tile> VisibleTiles { get; set; }
+        public List<Tile> VisibleTiles { get; private set; }
 
         protected PlayerObject(TextureLibrary textureLibrary, Player owner)
         {
@@ -93,9 +94,19 @@ namespace AoeBoardgame
             return true;
         }
 
-        public bool IsFrenchCavalry()
+        public bool IsIdle()
         {
-            return Owner.Civilization is France && (this is ICavalry || this is Army army && army.Units[0] is ICavalry);
+            if (this is ICanMove mover && mover.HasSpentAllMovementPoints())
+            {
+                return false;
+            }
+            
+            if (this is IHasQueue queuer && queuer.HasSomethingQueued())
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

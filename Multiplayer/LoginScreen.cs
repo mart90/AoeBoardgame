@@ -10,10 +10,11 @@ namespace AoeBoardgame.Multiplayer
         public int WidthPixels { get; set; }
         public int HeightPixels { get; set; }
         public UiState? NewUiState { get; set; }
-        public TextNotification TextNotification { get; private set; }
 
         private readonly byte[] _usernameBuffer;
         private readonly byte[] _passwordBuffer;
+
+        private TextNotification _textNotification;
 
         private readonly FontLibrary _fontLibrary;
         private readonly MultiplayerHttpClient _httpClient;
@@ -43,7 +44,7 @@ namespace AoeBoardgame.Multiplayer
 
             if (username.Length > 12)
             {
-                TextNotification = new TextNotification
+                _textNotification = new TextNotification
                 {
                     FontColor = Color.Red,
                     Message = "Username too long. Max 12 characters"
@@ -55,7 +56,7 @@ namespace AoeBoardgame.Multiplayer
 
             if (existingUser != null)
             {
-                TextNotification = new TextNotification
+                _textNotification = new TextNotification
                 {
                     FontColor = Color.Red,
                     Message = "Username is taken"
@@ -78,7 +79,7 @@ namespace AoeBoardgame.Multiplayer
             }
             else
             {
-                TextNotification = new TextNotification
+                _textNotification = new TextNotification
                 {
                     FontColor = Color.Red,
                     Message = "Login failed"
@@ -119,9 +120,9 @@ namespace AoeBoardgame.Multiplayer
 
             ImGui.End();
 
-            if (TextNotification != null)
+            if (_textNotification != null)
             {
-                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, TextNotification.Message, new Vector2(20, HeightPixels - 60), TextNotification.FontColor);
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(20, HeightPixels - 60), _textNotification.FontColor);
             }
         }
     }

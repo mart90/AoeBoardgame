@@ -9,7 +9,7 @@ namespace AoeBoardgame.Multiplayer
 {
     class MultiplayerHttpClient
     {
-        const string OUR_VERSION = "0.1";
+        const string OUR_VERSION = "0.3.1.1";
 
         public User AuthenticatedUser { get; set; }
 
@@ -185,9 +185,9 @@ namespace AoeBoardgame.Multiplayer
             });
         }
 
-        public void SetWhite(int gameId)
+        public void SetBlue(int gameId)
         {
-            Post("set_white", new
+            Post("set_blue", new
             {
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password,
@@ -273,7 +273,7 @@ namespace AoeBoardgame.Multiplayer
                 isQueueBuilding = dto.IsQueueBuilding,
                 isQueueUnit = dto.IsQueueUnit,
                 isQueueResearch = dto.IsQueueResearch,
-                isCancelBuilding = dto.IsCancelBuilding,
+                isCancel = dto.IsCancel,
                 isDestroyBuilding = dto.IsDestroyBuilding,
                 subselectedUnitHitpoints = dto.SubselectedUnitHitpoints,
                 buildingTypeName = dto.BuildingTypeName,

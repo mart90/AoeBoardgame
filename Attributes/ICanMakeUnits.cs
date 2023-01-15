@@ -12,9 +12,15 @@ namespace AoeBoardgame
 
     static class ICanMakeUnitsMethods
     {
-        public static bool HasUnitQueued<T>(this T builder) where T : ICanMakeUnits
+        public static bool HasUnitQueued<T>(this T trainer) where T : ICanMakeUnits
         {
-            return builder.UnitTypeQueued != null;
+            return trainer.UnitTypeQueued != null;
+        }
+
+        public static void StopQueue<T>(this T trainer) where T : ICanMakeUnits
+        {
+            trainer.UnitTypeQueued = null;
+            trainer.QueueTurnsLeft = 0;
         }
     }
 }

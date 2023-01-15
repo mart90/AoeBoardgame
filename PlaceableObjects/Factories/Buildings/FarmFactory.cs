@@ -35,7 +35,7 @@ namespace AoeBoardgame
             UiName = "Farm";
             UiDescription = "Food gather building";
 
-            _hitPoints = 8;
+            _hitPoints = 10;
             MaxUnits = 1;
 
             Cost = new List<ResourceCollection>

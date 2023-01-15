@@ -6,7 +6,7 @@ namespace AoeBoardgame
 {
     /// <summary>
     /// Economic bonus: Cheaper farms
-    /// Military bonus: Cavalry can move after attacking
+    /// Military bonus: Cavalry +1 speed
     /// Unique unit: Throwing axeman (armor piercing ranged unit)
     /// Unique tech: Chivalry
     /// </summary>
@@ -54,6 +54,20 @@ namespace AoeBoardgame
                 new ResourceCollection(Resource.Wood, 50)
             };
 
+            return factory;
+        }
+
+        public override KnightFactory GetKnightFactory()
+        {
+            var factory = base.GetKnightFactory();
+            factory.Speed++;
+            return factory;
+        }
+
+        public override ScoutFactory GetScoutFactory()
+        {
+            var factory = base.GetScoutFactory();
+            factory.Speed++;
             return factory;
         }
     }

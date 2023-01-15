@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace AoeBoardgame
 {
-    class UiController : Microsoft.Xna.Framework.Game
+    class Control : Microsoft.Xna.Framework.Game
     {
         private ImGUIRenderer _guiRenderer;
         private readonly GraphicsDeviceManager _graphics;
@@ -28,7 +28,7 @@ namespace AoeBoardgame
 
         private MultiplayerHttpClient _httpClient;
 
-        public UiController()
+        public Control()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -54,7 +54,7 @@ namespace AoeBoardgame
 
             _uiWindows = new List<IUiWindow>
             {
-                new MainMenu(),
+                new MainMenu(_httpClient, _fontLibrary),
                 new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary, _httpClient),
                 new LoginScreen(_fontLibrary, _httpClient),
                 new CreateLobbyForm(_fontLibrary, _httpClient)
@@ -63,10 +63,7 @@ namespace AoeBoardgame
             ChangeUiWindow(_uiWindows.Single(e => e is MainMenu));
         }
 
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
+        protected override void UnloadContent() { }
 
         protected override void Update(GameTime gameTime)
         {
@@ -82,12 +79,26 @@ namespace AoeBoardgame
                     _uiWindows.Add(browser.CreatedGame);
                 }
 
+                if (_activeWindow.NewUiState == UiState.LoginScreen)
+                {
+                    if (_httpClient.AuthenticatedUser != null)
+                    {
+                        _activeWindow.NewUiState = UiState.LobbyBrowser;
+                    }
+                }
+
                 var newWindow = GetUiWindowByState(_activeWindow.NewUiState.Value);
                 _activeWindow.NewUiState = null;
 
                 if (_activeWindow is CreateLobbyForm form && newWindow is LobbyBrowser)
                 {
                     ((LobbyBrowser)newWindow).CreatedLobby = form.CreatedLobby;
+                }
+
+                if (_activeWindow is Game)
+                {
+                    _uiWindows.Remove(_activeWindow);
+                    _activeWindow = null;
                 }
 
                 ChangeUiWindow(newWindow);
@@ -153,6 +164,16 @@ namespace AoeBoardgame
         private IUiWindow GetUiWindowByState(UiState uiState)
         {
             return _uiWindows.Single(e => e.CorrespondingUiState == uiState);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            if (_activeWindow is LobbyBrowser browser && browser.CreatedLobby != null)
+            {
+                _httpClient.CancelLobby(browser.CreatedLobby.Id);
+            }
+
+            base.OnExiting(sender, args);
         }
     }
 }

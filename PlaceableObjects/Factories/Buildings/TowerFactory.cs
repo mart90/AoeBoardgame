@@ -41,7 +41,7 @@ namespace AoeBoardgame
             UiName = "Tower";
             UiDescription = "Building with long line of sight and a ranged attack";
 
-            HitPoints = 60;
+            HitPoints = 70;
             AttackDamage = 6;
             _range = 3;
             _lineOfSight = 4;
@@ -49,7 +49,7 @@ namespace AoeBoardgame
             Cost = new List<ResourceCollection>
             {
                 new ResourceCollection(Resource.Wood, 50),
-                new ResourceCollection(Resource.Stone, 80)
+                new ResourceCollection(Resource.Stone, 60)
             };
         }
     }

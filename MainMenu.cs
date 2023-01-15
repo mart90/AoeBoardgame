@@ -1,4 +1,6 @@
-﻿using ImGuiNET;
+﻿using AoeBoardgame.Multiplayer;
+using ImGuiNET;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace AoeBoardgame
@@ -10,11 +12,19 @@ namespace AoeBoardgame
         public int WidthPixels { get; set; }
         public int HeightPixels { get; set; }
 
-        public MainMenu()
+        private TextNotification _textNotification;
+
+        private readonly MultiplayerHttpClient _httpClient;
+        private readonly FontLibrary _fontLibrary;
+
+        public MainMenu(MultiplayerHttpClient httpClient, FontLibrary fontLibrary)
         {
             CorrespondingUiState = UiState.MainMenu;
             WidthPixels = 500;
             HeightPixels = 500;
+
+            _httpClient = httpClient;
+            _fontLibrary = fontLibrary;
         }
 
         public void Update(SpriteBatch spriteBatch)
@@ -37,10 +47,26 @@ namespace AoeBoardgame
 
             if (ImGui.Button("Multiplayer", new System.Numerics.Vector2(200, 50)))
             {
-                NewUiState = UiState.LoginScreen;
+                if (_httpClient.RunningLatestVersion())
+                {
+                    NewUiState = UiState.LoginScreen;
+                }
+                else
+                {
+                    _textNotification = new TextNotification
+                    {
+                        FontColor = Color.Red,
+                        Message = "Version mismatch. Get the latest from the discord"
+                    };
+                }
             }
 
             ImGui.End();
+
+            if (_textNotification != null)
+            {
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(20, HeightPixels - 60), _textNotification.FontColor);
+            }
         }
     }
 }

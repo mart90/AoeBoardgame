@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.ImGui;
 using System;
 using System.Collections.Generic;
@@ -10,16 +9,23 @@ using System.Linq;
 
 namespace AoeBoardgame
 {
-    class Game
+    abstract class Game : IUiWindow
     {
         public int WidthPixels { get; set; }
         public int HeightPixels { get; set; }
+
+        public UiState CorrespondingUiState { get; set; }
+        public UiState? NewUiState { get; set; }
 
         public GameState State { get; set; }
         public List<Player> Players { get; set; }
         public List<GameMove> MoveHistory { get; set; }
 
-        protected Map Map;
+        protected bool IsEnded { get; set; }
+        protected string Result { get; set; }
+
+        protected Map Map { get; set; }
+        protected Popup Popup { get; set; }
 
         private TextNotification _textNotification;
 
@@ -30,11 +36,9 @@ namespace AoeBoardgame
         protected readonly ResearchLibrary ResearchLibrary;
         protected readonly SoundEffectLibrary SoundEffectLibrary;
 
-        private readonly byte[] _destroyBuildingName;
-
         public Game(
-            TextureLibrary textureLibrary, 
-            FontLibrary fontLibrary, 
+            TextureLibrary textureLibrary,
+            FontLibrary fontLibrary,
             ResearchLibrary researchLibrary,
             SoundEffectLibrary soundEffectLibrary)
         {
@@ -47,8 +51,6 @@ namespace AoeBoardgame
             SoundEffectLibrary = soundEffectLibrary;
 
             MoveHistory = new List<GameMove>();
-
-            _destroyBuildingName = new byte[100];
         }
 
         protected Player ActivePlayer => Players.Single(e => e.IsActive);
@@ -83,6 +85,8 @@ namespace AoeBoardgame
 
         public virtual void StartTurn()
         {
+            UpdateWonderTimer();
+
             UpdateQueues();
 
             if (ActivePlayer.IsPopulationRevolting)
@@ -147,6 +151,20 @@ namespace AoeBoardgame
             }
         }
 
+        private void UpdateWonderTimer()
+        {
+            if (ActivePlayer.WonderTimer != null)
+            {
+                ActivePlayer.WonderTimer--;
+
+                if (ActivePlayer.WonderTimer == 0)
+                {
+                    Result = ActivePlayer.Color == TileColor.Blue ? "b+w" : "r+w";
+                    EndGame();
+                }
+            }
+        }
+
         private void ConsumeFood()
         {
             foreach (IConsumesFood consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesFood>())
@@ -163,6 +181,11 @@ namespace AoeBoardgame
 
         protected void SetFogOfWar(Player player)
         {
+            if (IsEnded)
+            {
+                return;
+            }
+
             Map.ResetFogOfWar();
 
             foreach (Tile tile in player.VisibleTiles)
@@ -173,7 +196,7 @@ namespace AoeBoardgame
 
         private void UpdateVisibleAndRangeableTilesForObject(PlayerObject obj)
         {
-            obj.VisibleTiles = new List<Tile>();
+            obj.VisibleTiles.Clear();
 
             // Skip for objects that are gathering or part of an army
             if (!Map.Tiles.Any(e => e.Object == obj))
@@ -256,6 +279,21 @@ namespace AoeBoardgame
             destinationTile.SetObject(building);
 
             UpdateVisibleAndRangeableTilesForObject(building);
+
+            if (building is Wonder)
+            {
+                ActivePlayer.WonderTimer = 25;
+                destinationTile.IsScouted = true;
+
+                if (!IsMyTurn)
+                {
+                    Popup = new Popup
+                    {
+                        Message = "Your opponent built a wonder. If you don't destroy it within 25 turns, they will win the game.",
+                        IsInformational = true
+                    };
+                }
+            }
         }
 
         private void CreateUnit(Type unitType, ICanMakeUnits trainer)
@@ -283,8 +321,13 @@ namespace AoeBoardgame
                 }
                 else if (path.First().IsEmpty)
                 {
-                    path.First().SetObject((PlayerObject)mover);
-                    mover.DestinationTile = destinationTile;
+                    Tile firstTile = path.First();
+                    firstTile.SetObject((PlayerObject)mover);
+
+                    if (firstTile != destinationTile)
+                    {
+                        mover.DestinationTile = destinationTile;
+                    }
                 }
                 else if (!unit.CanMergeWith(path.First().Object))
                 {
@@ -356,12 +399,15 @@ namespace AoeBoardgame
 
                     if (path == null)
                     {
-                        // TODO highlight unit
-                        _textNotification = new TextNotification
+                        if (IsMyTurn)
                         {
-                            Message = "The highlighted units' destination has become invalid. Their paths were reset",
-                            FontColor = Color.Red
-                        };
+                            // TODO highlight unit
+                            _textNotification = new TextNotification
+                            {
+                                Message = "Some units' destination has become invalid. Their paths were reset",
+                                FontColor = Color.Red
+                            };
+                        }
                         mover.DestinationTile = null;
                         continue;
                     }
@@ -481,7 +527,7 @@ namespace AoeBoardgame
                         }
                         else
                         {
-                            path.Highlight(TileColor.Orange);
+                            path.SetTemporaryColor(TileColor.Orange);
                         }
                     }
                 }
@@ -581,7 +627,7 @@ namespace AoeBoardgame
 
             mover.DestinationTile = destinationTile;
 
-            path.Highlight(TileColor.Orange);
+            path.SetTemporaryColor(TileColor.Orange);
 
             if (!mover.HasSpentAllMovementPoints())
             {
@@ -666,7 +712,15 @@ namespace AoeBoardgame
                 damage = 0;
             }
 
+            bool defenderWasArmy = defender is Army;
+
             bool defenderDied = defender.TakeDamage(damage, destinationTile);
+
+            if (!defenderDied && defenderWasArmy && !(destinationTile.Object is Army))
+            {
+                // The army was disbanded
+                UpdateVisibleAndRangeableTilesForObject((PlayerObject)destinationTile.Object);
+            }
 
             if (defender is Boar)
             {
@@ -684,7 +738,7 @@ namespace AoeBoardgame
 
             attacker.HasAttackedThisTurn = true;
 
-            if (attacker is ICanMove mover3 && !((PlayerObject)attacker).IsFrenchCavalry())
+            if (attacker is ICanMove mover3)
             {
                 mover3.StepsTakenThisTurn = mover3.Speed;
             }
@@ -710,6 +764,26 @@ namespace AoeBoardgame
                 DestinationTileId = destinationTile.Id,
                 OriginTileId = originTile.Id
             });
+        }
+
+        private void CheckForMilitaryVictory()
+        {
+            foreach (Player player in Players)
+            {
+                if (!player.OwnedObjects.Any())
+                {
+                    Result = player.Color == TileColor.Blue ? "r+c" : "b+c";
+                    EndGame();
+                    return;
+                }
+            }
+        }
+
+        protected virtual void EndGame()
+        {
+            IsEnded = true;
+
+            Map.Tiles.ForEach(e => e.HasFogOfWar = false);
         }
 
         private void HandleObjectKilled(IAttackable defender, IAttacker attacker, Tile defenderTile)
@@ -739,6 +813,7 @@ namespace AoeBoardgame
                     else
                     {
                         PlaceObjectOnAdjacentTile(newGroup, defenderTile);
+                        defenderTile.SetObject(null);
                     }
 
                     UpdateVisibleAndRangeableTilesForObject(newGroup);
@@ -754,12 +829,11 @@ namespace AoeBoardgame
                     else
                     {
                         PlaceObjectOnAdjacentTile(survivor, defenderTile);
+                        defenderTile.SetObject(null);
                     }
 
                     UpdateVisibleAndRangeableTilesForObject(survivor);
                 }
-
-                defenderTile.SetObject(null);
             }
             else
             {
@@ -769,17 +843,17 @@ namespace AoeBoardgame
                 {
                     Map.MoveMover((ICanMove)attacker, defenderTile);
 
-                    if (((PlayerObject)attacker).IsFrenchCavalry())
-                    {
-                        ((ICanMove)attacker).StepsTakenThisTurn++;
-                    }
-
                     UpdateVisibleAndRangeableTilesForObject((PlayerObject)attacker);
                 }
             }
 
             if (defender is PlayerObject playerObject)
             {
+                if (defender is Wonder)
+                {
+                    playerObject.Owner.WonderTimer = null;
+                }
+
                 playerObject.Owner.OwnedObjects.Remove(playerObject);
             }
             else if (defender is GaiaObject && attacker is ICanMove)
@@ -790,9 +864,11 @@ namespace AoeBoardgame
                 }
                 else if (defender is Boar)
                 {
-                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 300;
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 200;
                 }
             }
+
+            CheckForMilitaryVictory();
         }
 
         protected void DestroyBuilding(Tile buildingTile)
@@ -810,23 +886,52 @@ namespace AoeBoardgame
             });
         }
 
-        protected void CancelBuilding(ICanMakeBuildings builder)
+        protected void CancelQueue(IHasQueue queuer)
         {
-            PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(builder.BuildingTypeQueued);
-
-            builder.StopConstruction();
-
-            // Reimburse 50% of the cost
-            foreach (ResourceCollection cost in factory.Cost)
+            if (queuer is ICanMakeBuildings builder)
             {
-                ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount / 2;
+                PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(builder.BuildingTypeQueued);
+
+                builder.StopConstruction();
+
+                // Reimburse 50% of the cost
+                foreach (ResourceCollection cost in factory.Cost)
+                {
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount / 2;
+                }
+            }
+            else if (queuer is ICanMakeUnits trainer && trainer.HasUnitQueued())
+            {
+                PlaceableObjectFactory factory = ActivePlayer.GetFactoryByObjectType(trainer.UnitTypeQueued);
+
+                trainer.StopQueue();
+
+                // Reimburse 100%
+                // TODO it's possible to "create" resources this way if combined with techs that reduce cost
+                foreach (ResourceCollection cost in factory.Cost)
+                {
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount;
+                }
+            }
+            else if (queuer is ICanMakeResearch researcher && researcher.HasResearchQueued())
+            {
+                // Reimburse 100%
+                // TODO it's possible to "create" resources this way if combined with techs that reduce cost
+                foreach (ResourceCollection cost in researcher.ResearchQueued.Cost)
+                {
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount;
+                }
+
+                AllowResearch(researcher.GetType(), researcher.ResearchQueued.ResearchEnum);
+                
+                researcher.StopQueue();
             }
 
             AddMove(new GameMove
             {
                 PlayerName = ActivePlayer.Name,
-                IsCancelBuilding = true,
-                OriginTileId = Map.GetTileContainingObject((PlayerObject)builder).Id
+                IsCancel = true,
+                OriginTileId = Map.GetTileContainingObject((PlayerObject)queuer).Id
             });
         }
 
@@ -846,8 +951,7 @@ namespace AoeBoardgame
                 
                 if (defenderDied)
                 {
-                    attackerTile.SetObject(null);
-                    defender.Owner.OwnedObjects.Remove(defender);
+                    HandleObjectKilled(defender, boar, attackerTile);
                 }
 
                 return true;
@@ -951,13 +1055,7 @@ namespace AoeBoardgame
             researcher.ResearchQueued = research;
             researcher.QueueTurnsLeft = research.TurnsToComplete;
 
-            foreach (ICanMakeResearch similarResearcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcher.GetType()))
-            {
-                similarResearcher.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
-            }
-
-            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcher.GetType());
-            factory.ResearchAllowedToMake.Remove(researcher.ResearchQueued.ResearchEnum);
+            DisallowResearch(researcher.GetType(), research.ResearchEnum);
 
             AddMove(new GameMove
             {
@@ -966,6 +1064,28 @@ namespace AoeBoardgame
                 IsQueueResearch = true,
                 ResearchId = research.ResearchEnum
             });
+        }
+
+        private void DisallowResearch(Type researcherType, ResearchEnum researchEnum)
+        {
+            foreach (ICanMakeResearch researcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcherType))
+            {
+                researcher.ResearchAllowedToMake.Remove(researchEnum);
+            }
+
+            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcherType);
+            factory.ResearchAllowedToMake.Remove(researchEnum);
+        }
+
+        private void AllowResearch(Type researcherType, ResearchEnum researchEnum)
+        {
+            foreach (ICanMakeResearch researcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcherType))
+            {
+                researcher.ResearchAllowedToMake.Add(researchEnum);
+            }
+
+            ICanMakeResearchFactory factory = (ICanMakeResearchFactory)ActivePlayer.GetFactoryByObjectType(researcherType);
+            factory.ResearchAllowedToMake.Add(researchEnum);
         }
 
         public void HoverOverTileByLocation(Point location)
@@ -1026,7 +1146,7 @@ namespace AoeBoardgame
                     }
                     else
                     {
-                        path.Highlight(TileColor.Orange);
+                        path.SetTemporaryColor(TileColor.Orange);
                     }
                 }
 
@@ -1039,7 +1159,7 @@ namespace AoeBoardgame
 
                 if (pathFromSelectedToHovered != null)
                 {
-                    pathFromSelectedToHovered.Highlight(TileColor.Teal);
+                    pathFromSelectedToHovered.SetTemporaryColor(TileColor.Teal);
                 }
             }
         }
@@ -1295,6 +1415,7 @@ namespace AoeBoardgame
                 {
                     army.Units.Add((ICanFormGroup)mover);
                     army.StepsTakenThisTurn = army.Units.Max(e => e.StepsTakenThisTurn);
+                    ((PlayerObject)mover).VisibleTiles.Clear();
                 }
                 else if (mover is Army army2)
                 {
@@ -1310,6 +1431,11 @@ namespace AoeBoardgame
                 endTile.SetObject((PlaceableObject)newGroup);
 
                 newGroup.Units.ForEach(e => e.DestinationTile = null);
+
+                foreach (PlayerObject unit in newGroup.Units)
+                {
+                    unit.VisibleTiles.Clear();
+                }
 
                 UpdateVisibleAndRangeableTilesForObject((PlayerObject)newGroup);
             }
@@ -1353,7 +1479,7 @@ namespace AoeBoardgame
 
         public virtual void Update(SpriteBatch spriteBatch)
         {
-            Map.Draw(spriteBatch);
+            Map.Draw(spriteBatch, ActivePlayer);
 
             if (_textNotification != null)
             {
@@ -1369,23 +1495,75 @@ namespace AoeBoardgame
             ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
             ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
 
-            DrawEconomy();
-            if (!DrawObjectInformation())
+            if (Popup != null)
             {
-                ImGui.Dummy(new System.Numerics.Vector2(500, 180));
-            }
+                Popup.Draw();
 
-            if (IsMyTurn)
-            {
-                if (!DrawObjectContents() && !DrawObjectActions())
+                if (Popup.IsInteractedWith)
                 {
-                    ImGui.Dummy(new System.Numerics.Vector2(10, 10));
+                    Popup = null;
+                }
+            }
+            else
+            {
+                DrawEconomy();
+                if (!DrawObjectInformation())
+                {
+                    ImGui.Dummy(new System.Numerics.Vector2(500, 190));
                 }
 
-                Texture2D endTurnButton = _textureLibrary.GetUiTextureByType(UiType.EndTurnButton);
-                if (ImGui.ImageButton(_textureLibrary.TextureToIntPtr(endTurnButton), new System.Numerics.Vector2(170, 170)))
+                if (IsMyTurn)
                 {
-                    EndTurn();
+                    if (!DrawObjectContents() && !DrawObjectActions())
+                    {
+                        ImGui.Dummy(new System.Numerics.Vector2(500, 400));
+                    }
+
+                	Texture2D endTurnButton = _textureLibrary.GetUiTextureByType(UiType.EndTurnButton);
+                    if (ImGui.ImageButton(_textureLibrary.TextureToIntPtr(endTurnButton), new System.Numerics.Vector2(170, 170)))
+                    {
+                        EndTurn();
+                    }
+
+                    if (this is MultiplayerGame && !IsEnded)
+                    {
+                        ImGui.Dummy(new System.Numerics.Vector2(500, 120));
+
+                        if (ImGui.Button("Resign", new System.Numerics.Vector2(200, 40)))
+                        {
+                            Popup = new Popup
+                            {
+                                Message = "Are you sure?",
+                                ActionOnConfirm = delegate
+                                {
+                                    Resign();
+                                }
+                            };
+                        }
+                    }
+                    else
+                    {
+                        ImGui.Dummy(new System.Numerics.Vector2(500, 120));
+                    }
+                }
+                else
+                {
+                    ImGui.Dummy(new System.Numerics.Vector2(500, 560));
+                }
+
+                if (this is Sandbox || IsEnded)
+                {
+                    if (ImGui.Button("Return to menu", new System.Numerics.Vector2(200, 40)))
+                    {
+                        Popup = new Popup
+                        {
+                            Message = "This exits the current game. Are you sure?",
+                            ActionOnConfirm = delegate
+                            {
+                                NewUiState = UiState.MainMenu;
+                            }
+                        };
+                    }
                 }
             }
             if (ImGui.IsItemHovered())
@@ -1394,6 +1572,19 @@ namespace AoeBoardgame
             }
 
             ImGui.End();
+        }
+
+        protected virtual void Resign()
+        {
+            Result = ActivePlayer.Color == TileColor.Blue ? "r+r" : "b+r";
+
+            AddMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                IsResign = true
+            });
+
+            EndGame();
         }
 
         protected virtual void AddMove(GameMove move)
@@ -1414,6 +1605,15 @@ namespace AoeBoardgame
             int foodCount = resources.Single(e => e.Resource == Resource.Food).Amount;
             int foodGathered = resourcesGathered.Single(e => e.Resource == Resource.Food).Amount;
             DrawResourceLine("Food", foodCount, foodGathered, new System.Numerics.Vector4(1, 0, 0, 1));
+
+            int activePlayerTurnCount = MoveHistory
+                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
+                .Count() + 1;
+
+            ImGui.SameLine();
+            ImGui.Dummy(new System.Numerics.Vector2(86, 0));
+            ImGui.SameLine();
+            ImGui.Text($"Turn {activePlayerTurnCount}");
 
             int woodCount = resources.Single(e => e.Resource == Resource.Wood).Amount;
             int woodGathered = resourcesGathered.Single(e => e.Resource == Resource.Wood).Amount;
@@ -1480,7 +1680,7 @@ namespace AoeBoardgame
                 return false;
             }
 
-            ImGui.BeginChild("Information", new System.Numerics.Vector2(500, 180));
+            ImGui.BeginChild("Information", new System.Numerics.Vector2(500, 190));
 
             ImGui.Text(obj.UiName ?? "??NAME NOT SET??");
 
@@ -1502,7 +1702,7 @@ namespace AoeBoardgame
                 ImGui.SameLine();
                 if (ImGui.Button("Show", new System.Numerics.Vector2(40, 20)))
                 {
-                    ranger.RangeableTiles.Highlight(TileColor.Pink);
+                    ranger.RangeableTiles.SetTemporaryColor(TileColor.Pink);
                 }
 
                 if (ranger.HasMinimumRange)
@@ -1549,7 +1749,7 @@ namespace AoeBoardgame
                 return false;
             }
 
-            ImGui.BeginChild("Contents", new System.Numerics.Vector2(500, 500));
+            ImGui.BeginChild("Contents", new System.Numerics.Vector2(500, 400));
 
             ImGui.Text("Units");
 
@@ -1592,7 +1792,7 @@ namespace AoeBoardgame
             }
 
             var defaultButtonSize = new System.Numerics.Vector2(80, 40);
-            ImGui.BeginChild("Actions", new System.Numerics.Vector2(500, 500));
+            ImGui.BeginChild("Actions", new System.Numerics.Vector2(500, 400));
 
             bool isBusy = false;
 
@@ -1607,13 +1807,6 @@ namespace AoeBoardgame
                     string str = $"\n\nBuilding a {buildingName.Replace('\n', ' ')}, {builder2.QueueTurnsLeft} turn(s) left";
 
                     ImGui.Text(str);
-
-                    ImGui.NewLine();
-
-                    if (ImGui.Button("Cancel"))
-                    {
-                        CancelBuilding(builder2);
-                    }
                 }
                 else if (SelectedObject is ICanMakeUnits trainer && trainer.HasUnitQueued())
                 {
@@ -1627,7 +1820,12 @@ namespace AoeBoardgame
                     ImGui.Text($"\n\nResearching {researcher.ResearchQueued.UiName.Replace('\n', ' ')}, {researcher.QueueTurnsLeft} turn(s) left");
                 }
 
-                // TODO draw hourglass?
+                ImGui.NewLine();
+
+                if (ImGui.Button("Cancel"))
+                {
+                    CancelQueue((IHasQueue)SelectedObject);
+                }
             }
 
             if (!isBusy)
@@ -1666,12 +1864,12 @@ namespace AoeBoardgame
 
                         i++;
                     }
-                }
 
-                ImGui.NewLine();
+                    if (i % 4 != 0)
+                    {
+                        ImGui.NewLine();
+                    }
 
-                if (i % 4 != 0)
-                {
                     ImGui.NewLine();
                 }
 
@@ -1708,12 +1906,12 @@ namespace AoeBoardgame
 
                         i++;
                     }
-                }
 
-                ImGui.NewLine();
+                    if (i % 4 != 0)
+                    {
+                        ImGui.NewLine();
+                    }
 
-                if (i % 4 != 0)
-                {
                     ImGui.NewLine();
                 }
 
@@ -1756,34 +1954,27 @@ namespace AoeBoardgame
 
                 if (!(SelectedObject is ICanMove))
                 {
-                    ImGui.NewLine();
-                    ImGui.NewLine();
-                    ImGui.NewLine();
-
                     if (i % 4 != 0)
                     {
                         ImGui.NewLine();
                     }
 
+                    ImGui.Dummy(new System.Numerics.Vector2(500, 100));
+
                     if (ImGui.Button("Destroy"))
                     {
-                        if (_destroyBuildingName.GetString().ToLower() == SelectedObject.UiName.ToLower())
-                        {
-                            DestroyBuilding(Map.SelectedTile);
-                        }
-                        else
-                        {
-                            _textNotification = new TextNotification
-                            {
-                                FontColor = Color.Red,
-                                Message = "If you want to destroy the building, type its name (shown above its stats) in the field next to the button and click it again"
-                            };
-                        }
-                    }
+                        var tile = Map.SelectedTile;
 
-                    ImGui.SameLine();
-                    ImGui.SetNextItemWidth(80);
-                    ImGui.InputText("", _destroyBuildingName, (uint)_destroyBuildingName.Length);
+                        Popup = new Popup
+                        {
+                            Message = "Are you sure?",
+                            IsInformational = false,
+                            ActionOnConfirm = delegate
+                            {
+                                DestroyBuilding(tile);
+                            }
+                        };
+                    }
                 }
             }
 
