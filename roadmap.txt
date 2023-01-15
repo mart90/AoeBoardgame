@@ -1,14 +1,13 @@
 ﻿BUGS
-- If a researching building is destroyed it makes the research impossible to restart anywhere else
 - Temporary tile color doesn't clear when setting new waypoint
 - FoW wrong with restored games
 - Back should cancel lobby
 
 FEATURES
-- Cancel units & research
 - Show player names somewhere, incl scores, wonder timer
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
+- Show where an opponent's attack was (currently only showing damage)
 - Show current age
 - Show when opponent aged up?
 - Replay viewer
@@ -24,4 +23,4 @@ FEATURES
 - Auto-updater
 - Water
 - New object textures
-- Replace ImGui?
+- Replace ImGui with own UI library?

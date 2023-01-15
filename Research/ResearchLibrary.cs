@@ -611,7 +611,7 @@ namespace AoeBoardgame
                 {
                     ResearchEnum = ResearchEnum.BodkinArrow,
                     UiName = "Bodkin arrow",
-                    UiDescription = "Archers +1 attack",
+                    UiDescription = "Archers +2 armor pierce",
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Gold, 50),
@@ -622,12 +622,12 @@ namespace AoeBoardgame
                     {
                         foreach (IMilitaryUnit factory in player.Factories.Where(e => e is IArcher).Cast<IMilitaryUnit>())
                         {
-                            factory.AttackDamage++;
+                            factory.ArmorPierce += 2;
                         }
 
                         foreach (IMilitaryUnit unit in player.OwnedObjects.Where(e => e is IArcher))
                         {
-                            unit.AttackDamage++;
+                            unit.ArmorPierce += 2;
                         }
                     }
                 },

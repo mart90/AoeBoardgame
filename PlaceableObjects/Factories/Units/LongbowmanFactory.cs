@@ -6,6 +6,7 @@ namespace AoeBoardgame
     {
         public int HitPoints { get; set; }
         public int AttackDamage { get; set; }
+        public int ArmorPierce { get; set; }
         public int RangedArmor { get; set; }
         public int MeleeArmor { get; set; }
         
@@ -54,6 +55,7 @@ namespace AoeBoardgame
                 Speed = _speed,
                 LineOfSight = _lineOfSight,
                 AttackDamage = AttackDamage,
+                ArmorPierce = ArmorPierce,
                 Range = _range,
                 FoodConsumption = 1,
                 UpgradeLevel = UpgradeLevel,

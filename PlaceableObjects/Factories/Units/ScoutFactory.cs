@@ -9,6 +9,7 @@ namespace AoeBoardgame
         public int AttackDamage { get; set; }
         public int RangedArmor { get; set; }
         public int MeleeArmor { get; set; }
+        public int ArmorPierce { get; set; }
 
         private int _lineOfSight;
 
@@ -50,6 +51,7 @@ namespace AoeBoardgame
                 Speed = Speed,
                 LineOfSight = _lineOfSight,
                 AttackDamage = AttackDamage,
+                ArmorPierce = ArmorPierce,
                 FoodConsumption = 2,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor

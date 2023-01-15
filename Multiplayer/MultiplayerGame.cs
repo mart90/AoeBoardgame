@@ -149,9 +149,9 @@ namespace AoeBoardgame
             };
         }
 
-        public override void Update(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Update(spriteBatch);
+            base.Draw(spriteBatch);
 
             if (IsEnded)
             {
@@ -289,7 +289,7 @@ namespace AoeBoardgame
             else if (newMove.IsDestroyBuilding)
             {
                 Tile tile = Map.Tiles[newMove.OriginTileId.Value];
-                DestroyBuilding(tile);
+                DestroyOwnBuilding(tile);
             }
         }
     }

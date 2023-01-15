@@ -1,4 +1,7 @@
-﻿0.3.1.0
+﻿0.3.2.0
+- Bodkin arrow now gives archers +2 armor pierce instead of +1 attack
+
+0.3.1.0
 - French military bonus replaced with: Cavalry +1 speed
 - Knight HP reduced from 50 to 40, attack reduced from 9 to 8
 - Farm HP increased from 8 to 10

@@ -63,8 +63,20 @@ namespace AoeBoardgame
             set { }
         }
 
+        public int StepsTakenThisTurn 
+        {
+            get
+            {
+                return Units.Max(e => e.StepsTakenThisTurn);
+            }
+            set
+            {
+                int stepsAdded = value - StepsTakenThisTurn;
+                Units.ForEach(e => e.StepsTakenThisTurn += stepsAdded);
+            } 
+        }
+
         public Tile DestinationTile { get; set; }
-        public int StepsTakenThisTurn { get; set; }
 
         public List<ICanFormGroup> Units { get; private set; }
         public int MaxUnits { get; set; }

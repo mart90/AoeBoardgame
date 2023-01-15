@@ -33,9 +33,9 @@ namespace AoeBoardgame
             StartTurn();
         }
 
-        public override void Update(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
-            base.Update(spriteBatch);
+            base.Draw(spriteBatch);
         }
 
         public override void StartTurn()
