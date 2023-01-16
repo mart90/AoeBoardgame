@@ -5,7 +5,7 @@
         ICanMove,
         ICanFormGroup,
         IAttacker,
-        IConsumesFood,
+        IConsumesGold,
         ICavalry
     {
         public int Speed { get; set; }
@@ -16,7 +16,7 @@
         public Tile DestinationTile { get; set; }
         public int StepsTakenThisTurn { get; set; }
 
-        public int FoodConsumption { get; set; }
+        public int GoldConsumption { get; set; }
 
         public bool IsSubSelected { get; set; }
 

@@ -4,7 +4,7 @@
 - Back should cancel lobby
 
 FEATURES
-- Show player names somewhere, incl scores, wonder timer
+- Show player names somewhere, incl scores?, wonder timer
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
 - Show where an opponent's attack was (currently only showing damage)

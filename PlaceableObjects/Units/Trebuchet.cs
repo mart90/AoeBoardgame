@@ -5,12 +5,14 @@ namespace AoeBoardgame
     class Trebuchet : PlayerObject,
         ICanMove,
         IAttacker,
-        IHasRange
+        IHasRange,
+        IConsumesGold
     {
         public int Speed { get; set; }
         public int AttackDamage { get; set; }
         public int ArmorPierce { get; set; }
         public bool HasAttackedThisTurn { get; set; }
+        public int GoldConsumption { get; set; }
 
         public Tile DestinationTile { get; set; }
         public int StepsTakenThisTurn { get; set; }

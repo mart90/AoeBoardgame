@@ -118,7 +118,7 @@ namespace AoeBoardgame
             ActivePlayer.ResetResourcesGatheredLastTurn();
 
             GatherResources();
-            //ConsumeFood();
+            ConsumeGold();
 
             AddMove(new GameMove
             {
@@ -153,10 +153,10 @@ namespace AoeBoardgame
 
             UpdateQueues();
 
-            //if (ActivePlayer.IsPopulationRevolting)
-            //{
-            //    HandleRevolt();
-            //}
+            if (ActivePlayer.IsPopulationRevolting)
+            {
+                HandleRevolt();
+            }
         }
 
         private void GatherResources()
@@ -210,12 +210,12 @@ namespace AoeBoardgame
         /// All walking units consume 1 food each turn, cavalry 2
         /// </summary>
         // TODO overhaul or remove this mechanic
-        private void ConsumeFood()
+        private void ConsumeGold()
         {
-            foreach (IConsumesFood consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesFood>())
+            foreach (IConsumesGold consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesGold>())
             {
-                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
-                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
+                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount -= consumer.GoldConsumption;
+                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Food).Amount -= consumer.GoldConsumption;
             }
         }
 

@@ -167,7 +167,7 @@
     <Compile Include="Attributes\ICanGatherResources.cs" />
     <Compile Include="Attributes\ICanMakeUnits.cs" />
     <Compile Include="Attributes\IAttacker.cs" />
-    <Compile Include="Attributes\IConsumesFood.cs" />
+    <Compile Include="Attributes\IConsumesGold.cs" />
     <Compile Include="Attributes\IHasRange.cs" />
     <Compile Include="Attributes\ICanMove.cs" />
     <Compile Include="PlaceableObjects\PlayerObject.cs" />

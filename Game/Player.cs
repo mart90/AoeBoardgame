@@ -25,7 +25,7 @@ namespace AoeBoardgame
 
         public IEnumerable<PlaceableObjectFactory> Factories { get; private set; }
 
-        public bool IsPopulationRevolting => ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount < 0;
+        public bool IsPopulationRevolting => ResourceStockpile.Single(e => e.Resource == Resource.Gold).Amount < 0;
 
         public Player(string name, Civilization civilization, TileColor color, TileColor usedUnitColor)
         {

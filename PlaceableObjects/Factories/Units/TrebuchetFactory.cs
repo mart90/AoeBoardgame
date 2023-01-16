@@ -56,6 +56,7 @@ namespace AoeBoardgame
                 ArmorPierce = ArmorPierce,
                 Range = Range,
                 HasMinimumRange = true,
+                GoldConsumption = 1,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor
             };

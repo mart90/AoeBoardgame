@@ -54,7 +54,7 @@ namespace AoeBoardgame
                 LineOfSight = _lineOfSight,
                 AttackDamage = AttackDamage,
                 ArmorPierce = ArmorPierce,
-                FoodConsumption = 1,
+                GoldConsumption = 1,
                 UpgradeLevel = UpgradeLevel,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor

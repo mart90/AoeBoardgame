@@ -60,6 +60,7 @@ namespace AoeBoardgame
                 Range = Range,
                 UpgradeLevel = UpgradeLevel,
                 HasMinimumRange = true,
+                GoldConsumption = 1,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor
             };

@@ -77,7 +77,7 @@ namespace AoeBoardgame
                 //new ResourceCollection(Resource.Stone, 9999)
                 new ResourceCollection(Resource.Food, 200),
                 new ResourceCollection(Resource.Wood, 100),
-                new ResourceCollection(Resource.Gold, 0),
+                new ResourceCollection(Resource.Gold, 30),
                 new ResourceCollection(Resource.Iron, 0),
                 new ResourceCollection(Resource.Stone, 0)
             };

@@ -58,7 +58,7 @@ namespace AoeBoardgame
                 AttackDamage = AttackDamage,
                 ArmorPierce = ArmorPierce,
                 Range = _range,
-                FoodConsumption = 1,
+                GoldConsumption = 1,
                 UpgradeLevel = UpgradeLevel,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor
