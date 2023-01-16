@@ -286,6 +286,11 @@ namespace AoeBoardgame
                 UiType = UiType.EndTurnButton,
                 Texture = contentManager.Load<Texture2D>("UI/EndTurnButton")
             });
+            _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.SidePanelBackground,
+                Texture = contentManager.Load<Texture2D>("UI/SidePanelBackground")
+            });
         }
     }
 }

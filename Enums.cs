@@ -130,6 +130,7 @@
 
     enum UiType
     {
-        EndTurnButton
+        EndTurnButton,
+        SidePanelBackground
     }
 }

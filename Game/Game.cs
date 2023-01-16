@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.ImGui;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AoeBoardgame
@@ -1479,6 +1480,14 @@ namespace AoeBoardgame
 
         public virtual void Update(SpriteBatch spriteBatch)
         {
+            ImGui.Begin("UI", ImGuiWindowFlags.NoMove);
+            ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
+            ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 0));
+            Texture2D windowBg = _textureLibrary.GetUiTextureByType(UiType.SidePanelBackground);
+            ImGui.Image(_textureLibrary.TextureToIntPtr(windowBg), new System.Numerics.Vector2(430, 1000));
+            ImGui.End();
             Map.Draw(spriteBatch, ActivePlayer);
 
             if (_textNotification != null)
@@ -1490,10 +1499,6 @@ namespace AoeBoardgame
             {
                 return;
             }
-
-            ImGui.Begin("UI");
-            ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
-            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
 
             if (Popup != null)
             {
@@ -1509,20 +1514,29 @@ namespace AoeBoardgame
                 DrawEconomy();
                 if (!DrawObjectInformation())
                 {
-                    ImGui.Dummy(new System.Numerics.Vector2(500, 190));
+                    ImGui.Dummy(new System.Numerics.Vector2(500, 10));
                 }
 
                 if (IsMyTurn)
                 {
                     if (!DrawObjectContents() && !DrawObjectActions())
                     {
-                        ImGui.Dummy(new System.Numerics.Vector2(500, 400));
+                        ImGui.Dummy(new System.Numerics.Vector2(500, 10));
                     }
 
-                	Texture2D endTurnButton = _textureLibrary.GetUiTextureByType(UiType.EndTurnButton);
-                    if (ImGui.ImageButton(_textureLibrary.TextureToIntPtr(endTurnButton), new System.Numerics.Vector2(170, 170)))
+                    ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0, 0, 0, 0));
+                    ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(0, 0, 0, 0));
+                    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(0, 0, 0, 0));
+                    Texture2D endTurnButton = _textureLibrary.GetUiTextureByType(UiType.EndTurnButton);
+                    ImGui.ImageButton(_textureLibrary.TextureToIntPtr(endTurnButton), new System.Numerics.Vector2(100, 90));
+                    ImGui.PopStyleColor();
+                    if (ImGui.IsItemActive())
                     {
                         EndTurn();
+                    }
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.SetTooltip("End turn");
                     }
 
                     if (this is MultiplayerGame && !IsEnded)
@@ -1566,10 +1580,6 @@ namespace AoeBoardgame
                     }
                 }
             }
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip("End turn");
-            }
 
             ImGui.End();
         }
@@ -1599,8 +1609,9 @@ namespace AoeBoardgame
             IEnumerable<ResourceCollection> resources = VisiblePlayer.ResourceStockpile;
             IEnumerable<ResourceCollection> resourcesGathered = VisiblePlayer.ResourcesGatheredLastTurn;
 
-            ImGui.BeginChild("Resources", new System.Numerics.Vector2(500, 180));
-            ImGui.SetWindowFontScale(2f);
+            ImGui.Begin("Resources", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoTitleBar);
+            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, 30));
+            ImGui.SetWindowFontScale(1.8f);
 
             int foodCount = resources.Single(e => e.Resource == Resource.Food).Amount;
             int foodGathered = resourcesGathered.Single(e => e.Resource == Resource.Food).Amount;
@@ -1631,7 +1642,7 @@ namespace AoeBoardgame
             int stoneGathered = resourcesGathered.Single(e => e.Resource == Resource.Stone).Amount;
             DrawResourceLine("Stone", stoneCount, stoneGathered, new System.Numerics.Vector4(.5f, .5f, .5f, 1));
 
-            ImGui.EndChild();
+            ImGui.End();
         }
 
         private void DrawResourceLine(string resourceName, int resourceCount, int gatheredLastTurn, System.Numerics.Vector4 colorVector)
