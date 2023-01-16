@@ -8,7 +8,7 @@ using System.Linq;
 namespace AoeBoardgame
 {
     /// <summary>
-    /// Contains most game engine logic<br/>
+    /// Contains most of the game engine logic<br/>
     /// Inherited by Sandbox (single player) and MultiplayerGame
     /// </summary>
     abstract class Game : IUiWindow
@@ -118,7 +118,7 @@ namespace AoeBoardgame
             ActivePlayer.ResetResourcesGatheredLastTurn();
 
             GatherResources();
-            ConsumeFood();
+            //ConsumeFood();
 
             AddMove(new GameMove
             {
@@ -153,10 +153,10 @@ namespace AoeBoardgame
 
             UpdateQueues();
 
-            if (ActivePlayer.IsPopulationRevolting)
-            {
-                HandleRevolt();
-            }
+            //if (ActivePlayer.IsPopulationRevolting)
+            //{
+            //    HandleRevolt();
+            //}
         }
 
         private void GatherResources()
