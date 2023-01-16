@@ -47,7 +47,7 @@ namespace AoeBoardgame
                 }
                 else if (army.Units.Count == 1)
                 {
-                    // Disband army
+                    // Disband army. TODO move this to caller somehow
                     defenderTile.SetObject((PlayerObject)army.Units[0]);
                     army.Owner.OwnedObjects.Remove(army);
                 }

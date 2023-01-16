@@ -102,7 +102,7 @@ namespace AoeBoardgame
             };
         }
 
-        public void Update(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             if (!WindowUtils.ApplicationIsActivated())
             {

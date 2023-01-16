@@ -10,6 +10,10 @@ using System.Linq;
 
 namespace AoeBoardgame
 {
+    /// <summary>
+    /// Contains most of the game engine logic<br/>
+    /// Inherited by Sandbox (single player) and MultiplayerGame
+    /// </summary>
     abstract class Game : IUiWindow
     {
         public int WidthPixels { get; set; }
@@ -18,7 +22,12 @@ namespace AoeBoardgame
         public UiState CorrespondingUiState { get; set; }
         public UiState? NewUiState { get; set; }
 
+        /// <summary>
+        /// State of the on-map UI, barely used
+        /// </summary>
+        // TODO remove or expand to include all UI states
         public GameState State { get; set; }
+        
         public List<Player> Players { get; set; }
         public List<GameMove> MoveHistory { get; set; }
 
@@ -28,8 +37,14 @@ namespace AoeBoardgame
         protected Map Map { get; set; }
         protected Popup Popup { get; set; }
 
+        /// <summary>
+        /// Appears below the map. Not rendered by ImGui
+        /// </summary>
         private TextNotification _textNotification;
 
+        /// <summary>
+        /// Relevant when GameState = PlacingBuilding
+        /// </summary>
         private Type _placingBuildingType;
 
         private readonly TextureLibrary _textureLibrary;
@@ -55,12 +70,21 @@ namespace AoeBoardgame
         }
 
         protected Player ActivePlayer => Players.Single(e => e.IsActive);
+        
         protected Player InActivePlayer => Players.Single(e => !e.IsActive);
+
+        /// <summary>
+        /// Controls which player's economy is drawn in the top right
+        /// </summary>
         protected virtual Player VisiblePlayer => ActivePlayer;
+        
         protected bool IsMyTurn => ActivePlayer.IsLocalPlayer;
 
         private Tile GetTileByLocation(Point location) => Map.GetTileByLocation(location);
 
+        /// <summary>
+        /// For if we are viewing stats of an enemy unit/building
+        /// </summary>
         private PlaceableObject ViewedObject => Map.ViewedTile?.Object;
 
         private PlaceableObject SelectedObject
@@ -84,6 +108,48 @@ namespace AoeBoardgame
             }
         }
 
+        protected virtual void EndTurn()
+        {
+            ClearCurrentSelection();
+
+            MoversTakeSteps();
+
+            // TODO remove, shouldn't be needed
+            DestroyEmptyArmies();
+
+            ActivePlayer.ResetMovement();
+            ActivePlayer.ResetResourcesGatheredLastTurn();
+
+            GatherResources();
+            ConsumeGold();
+
+            AddMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                IsEndOfTurn = true
+            });
+
+            PassTurnToNextPlayer();
+        }
+
+        private void PassTurnToNextPlayer()
+        {
+            var activePlayerId = Players.IndexOf(ActivePlayer);
+
+            ActivePlayer.IsActive = false;
+
+            if (activePlayerId == Players.Count - 1)
+            {
+                Players[0].IsActive = true;
+            }
+            else
+            {
+                Players[activePlayerId + 1].IsActive = true;
+            }
+
+            StartTurn();
+        }
+
         public virtual void StartTurn()
         {
             UpdateWonderTimer();
@@ -94,29 +160,6 @@ namespace AoeBoardgame
             {
                 HandleRevolt();
             }
-        }
-
-        protected virtual void EndTurn()
-        {
-            ClearCurrentSelection();
-
-            MoversTakeSteps();
-
-            DestroyEmptyArmies();
-
-            ActivePlayer.ResetAttackers();
-            ActivePlayer.ResetResourcesGatheredLastTurn();
-
-            GatherResources();
-            ConsumeFood();
-
-            AddMove(new GameMove
-            {
-                PlayerName = ActivePlayer.Name,
-                IsEndOfTurn = true
-            });
-
-            PassTurnToNextPlayer();
         }
 
         private void GatherResources()
@@ -166,12 +209,15 @@ namespace AoeBoardgame
             }
         }
 
-        private void ConsumeFood()
+        /// <summary>
+        /// All military units consume 1 gold per turn
+        /// </summary>
+        private void ConsumeGold()
         {
-            foreach (IConsumesFood consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesFood>())
+            foreach (IConsumesGold consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesGold>())
             {
-                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
-                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Food).Amount -= consumer.FoodConsumption;
+                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Gold).Amount -= consumer.GoldConsumption;
+                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Gold).Amount -= consumer.GoldConsumption;
             }
         }
 
@@ -195,6 +241,9 @@ namespace AoeBoardgame
             }
         }
 
+        /// <summary>
+        /// Sets VisibleTiles and RangeableTiles (if applicable) on the object
+        /// </summary>
         private void UpdateVisibleAndRangeableTilesForObject(PlayerObject obj)
         {
             obj.VisibleTiles.Clear();
@@ -232,6 +281,7 @@ namespace AoeBoardgame
         {
             int currentOwnedObjectsCount = ActivePlayer.OwnedObjects.Count();
 
+            // Not foreach because we may be adding owned objects during the loop
             for (int i = 0; i < currentOwnedObjectsCount; i++)
             {
                 if (ActivePlayer.OwnedObjects[i] is IHasQueue queuer && queuer.HasSomethingQueued())
@@ -262,7 +312,9 @@ namespace AoeBoardgame
             }
             else if (queuer is ICanMakeResearch researcher && researcher.ResearchQueued != null)
             {
+                // Effects are in ResearchLibrary
                 researcher.ResearchQueued.Effect(ActivePlayer);
+                
                 researcher.ResearchQueued = null;
             }
         }
@@ -284,6 +336,8 @@ namespace AoeBoardgame
             if (building is Wonder)
             {
                 ActivePlayer.WonderTimer = 25;
+
+                // Reveals the tile for the opponent (in fog of war)
                 destinationTile.IsScouted = true;
 
                 if (!IsMyTurn)
@@ -309,8 +363,9 @@ namespace AoeBoardgame
             {
                 IEnumerable<Tile> path = Map.FindPath(originTile, destinationTile, mover);
 
-                if (path == null)
+                if (path == null) // There's no path to the waypoint (usually because there's another object on it)
                 {
+                    // TODO improve user-friendliness
                     _textNotification = new TextNotification
                     {
                         FontColor = Color.Red,
@@ -330,7 +385,7 @@ namespace AoeBoardgame
                         mover.DestinationTile = destinationTile;
                     }
                 }
-                else if (!unit.CanMergeWith(path.First().Object))
+                else if (!unit.CanMergeWith(path.First().Object)) // TODO (Why) is this needed?
                 {
                     _textNotification = new TextNotification
                     {
@@ -341,7 +396,7 @@ namespace AoeBoardgame
                     destinationTile = null;
                     trainer.WayPoint = null;
                 }
-                else
+                else // There's a unit on the first tile in the path, and we can merge with it
                 {
                     MergeMoverWithDestination(originTile, destinationTile, mover);
                 }
@@ -355,6 +410,9 @@ namespace AoeBoardgame
             UpdateVisibleAndRangeableTilesForObject(unit);
         }
 
+        /// <summary>
+        /// Searches for an available adjacent tile starting NorthEast and going clockwise
+        /// </summary>
         private Tile PlaceObjectOnAdjacentTile(PlayerObject unit, Tile originTile)
         {
             Tile destinationTile;
@@ -373,6 +431,8 @@ namespace AoeBoardgame
                     Message = "A created unit had no possible tiles to spawn on"
                 };
 
+                // TODO money back?
+
                 ActivePlayer.OwnedObjects.Remove(unit);
             }
             else if (destinationTile.IsEmpty)
@@ -387,6 +447,9 @@ namespace AoeBoardgame
             return destinationTile;
         }
 
+        /// <summary>
+        /// Moves units towards their destinations if they still have steps left
+        /// </summary>
         private void MoversTakeSteps()
         {
             List<ICanMove> movers = ActivePlayer.OwnedObjects.FilterByType<ICanMove>().ToList();
@@ -415,13 +478,6 @@ namespace AoeBoardgame
 
                     ProgressOnPath(mover, path);
                     UpdateVisibleAndRangeableTilesForObject((PlayerObject)mover);
-                }
-
-                mover.StepsTakenThisTurn = 0;
-
-                if (mover is IContainsUnits group)
-                {
-                    group.Units.ForEach(e => e.StepsTakenThisTurn = 0);
                 }
             }
         }
@@ -454,6 +510,7 @@ namespace AoeBoardgame
                 UpdateVisibleAndRangeableTilesForObject(obj);
             }
 
+            // Bandaid to fix the issue where enemy tiles were set to IsScouted=true for the ActivePlayer by the above method call
             Map.Tiles[255].IsScouted = false;
             Map.Tiles[270].IsScouted = false;
             Map.Tiles[254].IsScouted = false;
@@ -466,6 +523,9 @@ namespace AoeBoardgame
             Map.Tiles[244].IsScouted = false;
         }
 
+        /// <summary>
+        /// Called when the user left clicks somewhere on the map
+        /// </summary>
         public void LeftClickTileByLocation(Point location)
         {
             Tile tile = GetTileByLocation(location);
@@ -540,6 +600,9 @@ namespace AoeBoardgame
             }
         }
 
+        /// <summary>
+        /// Called when the user right clicks somewhere on the map
+        /// </summary>
         public void RightClickTileByLocation(Point location)
         {
             if (SelectedObject == null)
@@ -567,6 +630,7 @@ namespace AoeBoardgame
                 SetWaypoint(trainer, originTile, destinationTile);
             }
 
+            // TODO is this redundant?
             if (State != GameState.MovingObject)
             {
                 return;
@@ -588,6 +652,9 @@ namespace AoeBoardgame
             TryMoveObject(originTile, destinationTile, mover);
         }
 
+        /// <summary>
+        /// Sets the destination tile of units spawned from the given trainer (building)
+        /// </summary>
         protected virtual void SetWaypoint(ICanMakeUnits trainer, Tile originTile, Tile destinationTile)
         {
             trainer.WayPoint = destinationTile;
@@ -602,6 +669,9 @@ namespace AoeBoardgame
             });
         }
 
+        /// <summary>
+        /// Called when the user selects a moving unit and right clicks on an empty tile
+        /// </summary>
         protected virtual void TryMoveObject(Tile originTile, Tile destinationTile, ICanMove mover)
         {
             var path = Map.FindPath(originTile, destinationTile, mover);
@@ -613,7 +683,8 @@ namespace AoeBoardgame
 
             if (mover.HasSpentAllMovementPoints() && originTile.Object != mover)
             {
-                // Don't move a unit out of a group unless we can do so immediately
+                // This means we are trying to move a unit out of a group
+                // To prevent unexpected behavior, only allow this if they have movement points left (don't set a destination that they will automatically move towards next turn)
                 return;
             }
 
@@ -646,6 +717,9 @@ namespace AoeBoardgame
             });
         }
 
+        /// <summary>
+        /// Called when the user selects an attacking object and right clicks a tile with an enemy or neutral unit
+        /// </summary>
         protected virtual void TryAttackObject(Tile originTile, Tile destinationTile, IAttacker attacker, IAttackable defender)
         {
             if (attacker.HasAttackedThisTurn)
@@ -696,6 +770,7 @@ namespace AoeBoardgame
                 damage -= (armor > 0 ? armor : 0);
             }
 
+            // TODO might be redundant, we should already know which tiles we can range
             IEnumerable<Tile> tilesInRange = Map.FindTilesInRangeOfTile(originTile, range, attacker is IHasRange ranger2 && ranger2.HasMinimumRange);
 
             if (!tilesInRange.Contains(destinationTile))
@@ -719,7 +794,7 @@ namespace AoeBoardgame
 
             if (!defenderDied && defenderWasArmy && !(destinationTile.Object is Army))
             {
-                // The army was disbanded
+                // The army was disbanded but there is a survivor
                 UpdateVisibleAndRangeableTilesForObject((PlayerObject)destinationTile.Object);
             }
 
@@ -741,6 +816,7 @@ namespace AoeBoardgame
 
             if (attacker is ICanMove mover3)
             {
+                // Spend all movement points
                 mover3.StepsTakenThisTurn = mover3.Speed;
             }
 
@@ -767,6 +843,9 @@ namespace AoeBoardgame
             });
         }
 
+        /// <summary>
+        /// Military victory is when one player has nothing left (no buildings or units)
+        /// </summary>
         private void CheckForMilitaryVictory()
         {
             foreach (Player player in Players)
@@ -784,6 +863,7 @@ namespace AoeBoardgame
         {
             IsEnded = true;
 
+            // Reveal the map
             Map.Tiles.ForEach(e => e.HasFogOfWar = false);
         }
 
@@ -791,11 +871,14 @@ namespace AoeBoardgame
         {
             if (defender is Villager vill && vill.HasBuildingQueued())
             {
+                // Removes the hammer
                 vill.BuildingDestinationTile.BuildingUnderConstruction = false;
             }
 
             if (defender is IEconomicBuilding economicBuilding && economicBuilding.Units.Any())
             {
+                // An economic building with (a) unit(s) in it died
+
                 if (economicBuilding.Units.Count > 1)
                 {
                     GathererGroup newGroup = InActivePlayer.AddAndGetPlaceableObject<GathererGroup>();
@@ -856,6 +939,8 @@ namespace AoeBoardgame
                 }
 
                 playerObject.Owner.OwnedObjects.Remove(playerObject);
+                
+                CheckForMilitaryVictory();
             }
             else if (defender is GaiaObject && attacker is ICanMove)
             {
@@ -868,11 +953,12 @@ namespace AoeBoardgame
                     ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 200;
                 }
             }
-
-            CheckForMilitaryVictory();
         }
 
-        protected void DestroyBuilding(Tile buildingTile)
+        /// <summary>
+        /// Called when user destroys their own building voluntarily
+        /// </summary>
+        protected void DestroyOwnBuilding(Tile buildingTile)
         {
             PlayerObject building = (PlayerObject)buildingTile.Object;
 
@@ -923,6 +1009,8 @@ namespace AoeBoardgame
                     ActivePlayer.ResourceStockpile.Single(e => e.Resource == cost.Resource).Amount += cost.Amount;
                 }
 
+                // When we queue research it gets disabled so that we can't queue it again in a similar building
+                // When we cancel, we need to re-allow it or it will forever be disabled
                 AllowResearch(researcher.GetType(), researcher.ResearchQueued.ResearchEnum);
                 
                 researcher.StopQueue();
@@ -943,7 +1031,8 @@ namespace AoeBoardgame
 
             if (pathFinder.GetAdjacentTiles(boarTile).Contains(attackerTile))
             {
-                // Fight back
+                // Fight back if the attacker is within reach
+
                 var defender = (PlayerObject)attackerTile.Object;
 
                 int damage = boar.AttackDamage - defender.MeleeArmor;
@@ -1067,6 +1156,9 @@ namespace AoeBoardgame
             });
         }
 
+        /// <summary>
+        /// Called when starting the research, so that we can't queue it again somewhere else
+        /// </summary>
         private void DisallowResearch(Type researcherType, ResearchEnum researchEnum)
         {
             foreach (ICanMakeResearch researcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcherType))
@@ -1078,6 +1170,9 @@ namespace AoeBoardgame
             factory.ResearchAllowedToMake.Remove(researchEnum);
         }
 
+        /// <summary>
+        /// Called when cancelling research
+        /// </summary>
         private void AllowResearch(Type researcherType, ResearchEnum researchEnum)
         {
             foreach (ICanMakeResearch researcher in ActivePlayer.OwnedObjects.Where(e => e.GetType() == researcherType))
@@ -1089,6 +1184,9 @@ namespace AoeBoardgame
             factory.ResearchAllowedToMake.Add(researchEnum);
         }
 
+        /// <summary>
+        /// Called every frame, if the user is not currently clicking a mouse button
+        /// </summary>
         public void HoverOverTileByLocation(Point location)
         {
             ClearCurrentHover();
@@ -1134,6 +1232,7 @@ namespace AoeBoardgame
             {
                 if (mover.DestinationTile != null)
                 {
+                    // TODO do we have to do this every frame?
                     var path = Map.FindPath(originTile, mover.DestinationTile, mover);
 
                     if (path == null)
@@ -1211,30 +1310,15 @@ namespace AoeBoardgame
             }
         }
 
+        /// <summary>
+        /// Pink is the color shown when the user presses the "show range" button
+        /// </summary>
         protected void ClearTemporaryTileColorsExceptPink()
         {
             foreach (var tile in Map.Tiles.Where(e => e.TemporaryColor != TileColor.Pink))
             {
                 tile.SetTemporaryColor(TileColor.Default);
             }
-        }
-
-        private void PassTurnToNextPlayer()
-        {
-            var activePlayerId = Players.IndexOf(ActivePlayer);
-
-            ActivePlayer.IsActive = false;
-
-            if (activePlayerId == Players.Count - 1)
-            {
-                Players[0].IsActive = true;
-            }
-            else
-            {
-                Players[activePlayerId + 1].IsActive = true;
-            }
-
-            StartTurn();
         }
 
         private void ShowValidBuildingDestinations(Type buildingType)
@@ -1304,11 +1388,6 @@ namespace AoeBoardgame
             Tile originTile = Map.GetTileContainingObject((PlaceableObject)mover);
 
             int steps = path.Count() >= mover.Speed - mover.StepsTakenThisTurn ? mover.Speed - mover.StepsTakenThisTurn : path.Count();
-
-            if (mover is Army army)
-            {
-                army.Units.ForEach(e => e.StepsTakenThisTurn += steps);
-            }
 
             Tile endTile = path.ToList()[-1 + steps]; // Path does not contain origin tile
 
@@ -1382,12 +1461,14 @@ namespace AoeBoardgame
 
         private void HandleDestinationInvalid(ICanMove mover)
         {
-            // TODO highlight unit?
-            _textNotification = new TextNotification
+            if (IsMyTurn)
             {
-                Message = "Some units' destinations have become invalid. Their paths were reset",
-                FontColor = Color.Red
-            };
+                _textNotification = new TextNotification
+                {
+                    Message = "Some units' destinations have become invalid. Their paths were reset",
+                    FontColor = Color.Red
+                };
+            }
 
             mover.DestinationTile = null;
         }
@@ -1478,7 +1559,7 @@ namespace AoeBoardgame
             return newGroup;
         }
 
-        public virtual void Update(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             ImGui.Begin("UI", ImGuiWindowFlags.NoMove);
             ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
@@ -1982,7 +2063,7 @@ namespace AoeBoardgame
                             IsInformational = false,
                             ActionOnConfirm = delegate
                             {
-                                DestroyBuilding(tile);
+                                DestroyOwnBuilding(tile);
                             }
                         };
                     }

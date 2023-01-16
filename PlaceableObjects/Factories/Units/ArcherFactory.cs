@@ -8,6 +8,7 @@ namespace AoeBoardgame
         public int Speed { get; set; }
         public int AttackDamage { get; set; }
         public int Range { get; set; }
+        public int ArmorPierce { get; set; }
         public int LineOfSight { get; set; }
         public int MeleeArmor { get; set; }
         public int RangedArmor { get; set; }
@@ -31,8 +32,6 @@ namespace AoeBoardgame
             AttackDamage = 4;
             Range = 2;
             LineOfSight = 3;
-            MeleeArmor = 0;
-            RangedArmor = 0;
 
             Cost = new List<ResourceCollection> 
             {
@@ -53,7 +52,8 @@ namespace AoeBoardgame
                 LineOfSight = LineOfSight,
                 AttackDamage = AttackDamage,
                 Range = Range,
-                FoodConsumption = 1,
+                ArmorPierce = ArmorPierce,
+                GoldConsumption = 1,
                 UpgradeLevel = UpgradeLevel,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor

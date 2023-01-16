@@ -9,8 +9,7 @@ namespace AoeBoardgame
         IAttacker,
         ICanGatherResources,
         ICanMakeBuildings,
-        IHasQueue,
-        IConsumesFood
+        IHasQueue
     {
         public int Speed { get; set; }
         public int AttackDamage { get; set; }
@@ -19,7 +18,6 @@ namespace AoeBoardgame
         public Tile DestinationTile { get; set; }
         public int StepsTakenThisTurn { get; set; }
         public Resource? ResourceGathering { get; set; }
-        public int FoodConsumption { get; set; }
 
         public List<Type> BuildingTypesAllowedToMake { get; set; }
         public Type BuildingTypeQueued { get; set; }
