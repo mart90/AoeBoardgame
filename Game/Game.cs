@@ -207,15 +207,14 @@ namespace AoeBoardgame
         }
 
         /// <summary>
-        /// All walking units consume 1 food each turn, cavalry 2
+        /// All military units consume 1 gold per turn
         /// </summary>
-        // TODO overhaul or remove this mechanic
         private void ConsumeGold()
         {
             foreach (IConsumesGold consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesGold>())
             {
-                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount -= consumer.GoldConsumption;
-                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Food).Amount -= consumer.GoldConsumption;
+                ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Gold).Amount -= consumer.GoldConsumption;
+                ActivePlayer.ResourcesGatheredLastTurn.Single(e => e.Resource == Resource.Gold).Amount -= consumer.GoldConsumption;
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿0.3.2.0
-- Food consumption of all units removed and replaced with gold consumption, 1 per turn per military unit. (This should speed up the early game)
+- Food consumption of all units replaced with gold consumption, 1 per turn per military unit. (This speeds up the early game)
 - 30 gold added to starting resources
 - All research sped up by one turn except blacksmith upgrades
 - Bodkin arrow now gives archers +2 armor pierce instead of +1 attack
