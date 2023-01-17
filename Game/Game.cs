@@ -332,7 +332,7 @@ namespace AoeBoardgame
 
             if (building is Wonder)
             {
-                ActivePlayer.WonderTimer = 25;
+                ActivePlayer.WonderTimer = 20;
 
                 // Reveals the tile for the opponent (in fog of war)
                 destinationTile.IsScouted = true;
@@ -341,7 +341,7 @@ namespace AoeBoardgame
                 {
                     Popup = new Popup
                     {
-                        Message = "Your opponent built a wonder. If you don't destroy it within 25 turns, they will win the game.",
+                        Message = "Your opponent built a wonder. If you don't destroy it within 20 turns, they will win the game.",
                         IsInformational = true
                     };
                 }

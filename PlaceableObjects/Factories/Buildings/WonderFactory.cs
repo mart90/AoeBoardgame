@@ -11,7 +11,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Wonder);
-            TurnsToComplete = 10;
+            TurnsToComplete = 5;
         }
 
         public override PlaceableObject Get(Player player)
@@ -30,7 +30,7 @@ namespace AoeBoardgame
         protected override void SetBaseValues()
         {
             UiName = "Wonder";
-            UiDescription = "If you defend this building for 30 turns, you win the game";
+            UiDescription = "If you defend this building for 20 turns, you win the game";
 
             _hitPoints = 150;
 

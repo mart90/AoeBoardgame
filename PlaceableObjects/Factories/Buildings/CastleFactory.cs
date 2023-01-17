@@ -19,7 +19,7 @@ namespace AoeBoardgame
             : base(textureLibrary)
         {
             Type = typeof(Castle);
-            TurnsToComplete = 5;
+            TurnsToComplete = 4;
             HasMinimumRange = true;
         }
 

@@ -1,9 +1,12 @@
 ﻿BUGS
+- Deer name = Boar
+- Turn 10x off map
 - Temporary tile color doesn't clear when setting new waypoint
 - FoW wrong with restored games
 - Back should cancel lobby
 
 FEATURES
+- Challenges
 - Handle revolt (military units use all movement points?)
 - Show player names somewhere, incl scores?, wonder timer
 - Highlight units whose destination became invalid
@@ -14,7 +17,6 @@ FEATURES
 - Replay viewer
 - Queueing stuff
 - Map from seed
-- Overhaul food consumption (change to gold?)
 - Ranking system (see backed up trigger for ELO calcs)
 - Map generation: Make sure all tiles are reachable
 - Time control

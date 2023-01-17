@@ -736,7 +736,7 @@ namespace AoeBoardgame
                     UiDescription = "Wood gather rate +1 per turn per gatherer",
                     Cost = new List<ResourceCollection>
                     {
-                        new ResourceCollection(Resource.Wood, 100),
+                        new ResourceCollection(Resource.Wood, 50),
                         new ResourceCollection(Resource.Iron, 50)
                     },
                     TurnsToComplete = 1,
@@ -822,7 +822,7 @@ namespace AoeBoardgame
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Gold, 50),
-                        new ResourceCollection(Resource.Iron, 150)
+                        new ResourceCollection(Resource.Iron, 100)
                     },
                     TurnsToComplete = 2,
                     Effect = player =>
