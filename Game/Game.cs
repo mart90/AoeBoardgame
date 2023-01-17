@@ -1685,7 +1685,7 @@ namespace AoeBoardgame
                 .Count() + 1;
 
             ImGui.SameLine();
-            ImGui.Dummy(new System.Numerics.Vector2(86, 0));
+            ImGui.Dummy(new System.Numerics.Vector2(77, 0));
             ImGui.SameLine();
             ImGui.Text($"Turn {activePlayerTurnCount}");
 

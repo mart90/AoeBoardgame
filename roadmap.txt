@@ -1,6 +1,4 @@
 ﻿BUGS
-- Deer name = Boar
-- Turn 10x off map
 - Temporary tile color doesn't clear when setting new waypoint
 - FoW wrong with restored games
 - Back should cancel lobby

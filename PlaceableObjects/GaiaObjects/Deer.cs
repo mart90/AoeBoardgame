@@ -9,7 +9,7 @@
         
         public Deer(TextureLibrary textureLibrary) : base(textureLibrary)
         {
-            UiName = "Boar";
+            UiName = "Deer";
             HitPoints = 4;
             MaxHitPoints = 4;
             MeleeArmor = 0;
