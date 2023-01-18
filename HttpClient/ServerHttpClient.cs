@@ -9,7 +9,7 @@ namespace AoeBoardgame
 {
     class ServerHttpClient
     {
-        const string OUR_VERSION = "0.3.1.0";
+        const string OUR_VERSION = "0.3.2.0";
 
         public User AuthenticatedUser { get; set; }
 
@@ -273,7 +273,7 @@ namespace AoeBoardgame
                 isQueueBuilding = dto.IsQueueBuilding,
                 isQueueUnit = dto.IsQueueUnit,
                 isQueueResearch = dto.IsQueueResearch,
-                isCancelBuilding = dto.IsCancelBuilding,
+                isCancel = dto.IsCancel,
                 isDestroyBuilding = dto.IsDestroyBuilding,
                 subselectedUnitHitpoints = dto.SubselectedUnitHitpoints,
                 buildingTypeName = dto.BuildingTypeName,

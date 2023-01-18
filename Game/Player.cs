@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -87,8 +88,18 @@ namespace AoeBoardgame
             };
         }
 
-        public void ResetAttackers()
+        public void ResetMovement()
         {
+            foreach (ICanMove mover in OwnedObjects.Where(e => e is ICanMove))
+            {
+                mover.StepsTakenThisTurn = 0;
+
+                if (mover is IContainsUnits group)
+                {
+                    group.Units.ForEach(e => e.StepsTakenThisTurn = 0);
+                }
+            }
+
             foreach (IAttacker attacker in OwnedObjects.Where(e => e is IAttacker))
             {
                 attacker.HasAttackedThisTurn = false;

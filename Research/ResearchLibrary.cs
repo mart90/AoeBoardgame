@@ -25,7 +25,7 @@ namespace AoeBoardgame
                     {
                         new ResourceCollection(Resource.Food, 300)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player => 
                     {
                         player.Age = 2;
@@ -49,7 +49,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 300),
                         new ResourceCollection(Resource.Gold, 300)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         player.Age = 3;
@@ -68,7 +68,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 300),
                         new ResourceCollection(Resource.Iron, 300)
                     },
-                    TurnsToComplete = 5,
+                    TurnsToComplete = 4,
                     Effect = player =>
                     {
                         player.Age = 4;
@@ -86,7 +86,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 50)
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
@@ -123,7 +123,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 50),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
@@ -164,7 +164,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 100),
                         new ResourceCollection(Resource.Iron, 200)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
@@ -198,7 +198,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Iron, 50),
 
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         ArcherFactory factory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
@@ -235,7 +235,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 250),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         ArcherFactory factory = (ArcherFactory)player.GetFactoryByObjectType(typeof(Archer));
@@ -265,7 +265,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Iron, 100),
 
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         PikemanFactory factory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
@@ -302,7 +302,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         PikemanFactory factory = (PikemanFactory)player.GetFactoryByObjectType(typeof(Pikeman));
@@ -331,7 +331,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 300),
                         new ResourceCollection(Resource.Iron, 200)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         KnightFactory factory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
@@ -364,7 +364,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 100),
                         new ResourceCollection(Resource.Gold, 50)
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         KnightFactory knightFactory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
@@ -397,7 +397,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 100),
                         new ResourceCollection(Resource.Gold, 200)
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         KnightFactory knightFactory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));
@@ -428,7 +428,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 250),
                         new ResourceCollection(Resource.Iron, 400)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         CatapultFactory factory = (CatapultFactory)player.GetFactoryByObjectType(typeof(Catapult));
@@ -459,7 +459,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 100),
                         new ResourceCollection(Resource.Iron, 250)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         CatapultFactory catapultFactory = (CatapultFactory)player.GetFactoryByObjectType(typeof(Catapult));
@@ -611,7 +611,7 @@ namespace AoeBoardgame
                 {
                     ResearchEnum = ResearchEnum.BodkinArrow,
                     UiName = "Bodkin arrow",
-                    UiDescription = "Archers +1 attack",
+                    UiDescription = "Archers +2 armor pierce",
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Gold, 50),
@@ -622,12 +622,12 @@ namespace AoeBoardgame
                     {
                         foreach (IMilitaryUnit factory in player.Factories.Where(e => e is IArcher).Cast<IMilitaryUnit>())
                         {
-                            factory.AttackDamage++;
+                            factory.ArmorPierce += 2;
                         }
 
                         foreach (IMilitaryUnit unit in player.OwnedObjects.Where(e => e is IArcher))
                         {
-                            unit.AttackDamage++;
+                            unit.ArmorPierce += 2;
                         }
                     }
                 },
@@ -693,7 +693,7 @@ namespace AoeBoardgame
                     {
                         new ResourceCollection(Resource.Gold, 50)
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         VillagerFactory factory = (VillagerFactory)player.GetFactoryByObjectType(typeof(Villager));
@@ -719,7 +719,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         foreach (ResourceGatherRate gatherRate in player.GatherRates)
@@ -736,10 +736,10 @@ namespace AoeBoardgame
                     UiDescription = "Wood gather rate +1 per turn per gatherer",
                     Cost = new List<ResourceCollection>
                     {
-                        new ResourceCollection(Resource.Wood, 100),
+                        new ResourceCollection(Resource.Wood, 50),
                         new ResourceCollection(Resource.Iron, 50)
                     },
-                    TurnsToComplete = 2,
+                    TurnsToComplete = 1,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Wood).GatherRate++;
@@ -756,7 +756,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 200),
                         new ResourceCollection(Resource.Stone, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         MineFactory mineFactory = (MineFactory)player.GetFactoryByObjectType(typeof(Mine));
@@ -787,7 +787,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 100),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Wood).GatherRate += 2;
@@ -804,7 +804,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Gold, 200),
                         new ResourceCollection(Resource.Iron, 200)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         foreach (ResourceGatherRate gatherRate in player.GatherRates)
@@ -822,9 +822,9 @@ namespace AoeBoardgame
                     Cost = new List<ResourceCollection>
                     {
                         new ResourceCollection(Resource.Gold, 50),
-                        new ResourceCollection(Resource.Iron, 150)
+                        new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Gold).GatherRate++;
@@ -843,7 +843,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 50),
                         new ResourceCollection(Resource.Iron, 100)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         TowerFactory towerFactory = (TowerFactory)player.GetFactoryByObjectType(typeof(Tower));
@@ -882,7 +882,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 150),
                         new ResourceCollection(Resource.Stone, 150)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         TownCenterFactory townCenterFactory = (TownCenterFactory)player.GetFactoryByObjectType(typeof(TownCenter));
@@ -941,7 +941,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 150),
                         new ResourceCollection(Resource.Gold, 150)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         FarmFactory factory = (FarmFactory)player.GetFactoryByObjectType(typeof(Farm));
@@ -964,7 +964,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 250),
                         new ResourceCollection(Resource.Gold, 300)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         SwordsmanFactory factory = (SwordsmanFactory)player.GetFactoryByObjectType(typeof(Swordsman));
@@ -983,7 +983,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 200),
                         new ResourceCollection(Resource.Gold, 300)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         ArmyFactory factory = (ArmyFactory)player.GetFactoryByObjectType(typeof(Army));
@@ -1009,7 +1009,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 300),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         LongbowmanFactory factory = (LongbowmanFactory)player.GetFactoryByObjectType(typeof(Longbowman));
@@ -1038,7 +1038,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 150),
                         new ResourceCollection(Resource.Gold, 250)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         player.GatherRates.Single(e => e.Resource == Resource.Food).GatherRate += 5;
@@ -1055,7 +1055,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Wood, 300),
                         new ResourceCollection(Resource.Iron, 150)
                     },
-                    TurnsToComplete = 3,
+                    TurnsToComplete = 2,
                     Effect = player =>
                     {
                         ThrowingAxemanFactory factory = (ThrowingAxemanFactory)player.GetFactoryByObjectType(typeof(ThrowingAxeman));
@@ -1086,7 +1086,7 @@ namespace AoeBoardgame
                         new ResourceCollection(Resource.Food, 200),
                         new ResourceCollection(Resource.Gold, 200)
                     },
-                    TurnsToComplete = 4,
+                    TurnsToComplete = 3,
                     Effect = player =>
                     {
                         KnightFactory factory = (KnightFactory)player.GetFactoryByObjectType(typeof(Knight));

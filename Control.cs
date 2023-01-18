@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace AoeBoardgame
 {
+    /// <summary>
+    /// "Main" class
+    /// </summary>
     class Control : Microsoft.Xna.Framework.Game
     {
         private ImGUIRenderer _guiRenderer;
@@ -35,11 +38,17 @@ namespace AoeBoardgame
             TargetElapsedTime = new TimeSpan(100000); // 100 updates p/s
         }
 
+        /// <summary>
+        /// Called on start
+        /// </summary>
         protected override void Initialize()
         {
             base.Initialize();
         }
-
+        
+        /// <summary>
+        /// Called on start
+        /// </summary>
         protected override void LoadContent()
         {
             _httpClient = new ServerHttpClient();
@@ -64,8 +73,13 @@ namespace AoeBoardgame
 
         protected override void UnloadContent() { }
 
+        /// <summary>
+        /// Main loop. Runs every frame
+        /// </summary>
         protected override void Update(GameTime gameTime)
         {
+            // NewUiState is set in the active window if we want to switch to another one
+            // The window corresponding to the new UI state is then loaded and set as the new active
             if (_activeWindow.NewUiState != null)
             {
                 if (_activeWindow.NewUiState == UiState.Sandbox)
@@ -80,7 +94,7 @@ namespace AoeBoardgame
 
                 if (_activeWindow.NewUiState == UiState.LoginScreen)
                 {
-                    if (_httpClient.AuthenticatedUser != null)
+                    if (_httpClient.AuthenticatedUser != null) // Skip login if already authenticated
                     {
                         _activeWindow.NewUiState = UiState.LobbyBrowser;
                     }
@@ -89,11 +103,13 @@ namespace AoeBoardgame
                 var newWindow = GetUiWindowByState(_activeWindow.NewUiState.Value);
                 _activeWindow.NewUiState = null;
 
+                // TODO probably a bug here: That we went back to lobby browser doesn't necessarily mean we created a lobby
                 if (_activeWindow is CreateLobbyForm form && newWindow is LobbyBrowser)
                 {
                     ((LobbyBrowser)newWindow).CreatedLobby = form.CreatedLobby;
                 }
 
+                // If we went from a game window back to menu, destroy the game window
                 if (_activeWindow is Game)
                 {
                     _uiWindows.Remove(_activeWindow);
@@ -143,7 +159,7 @@ namespace AoeBoardgame
             _spriteBatch.Begin();
             _guiRenderer.BeginLayout(gameTime);
 
-            _activeWindow.Update(_spriteBatch);
+            _activeWindow.Draw(_spriteBatch);
 
             _guiRenderer.EndLayout();
             _spriteBatch.End();
@@ -165,6 +181,9 @@ namespace AoeBoardgame
             return _uiWindows.Single(e => e.CorrespondingUiState == uiState);
         }
 
+        /// <summary>
+        /// Make sure we cancel any hosted lobby when exiting, otherwise we get ghost lobbies
+        /// </summary>
         protected override void OnExiting(object sender, EventArgs args)
         {
             if (_activeWindow is LobbyBrowser browser && browser.CreatedLobby != null)

@@ -5,7 +5,7 @@
         ICanMove,
         ICanFormGroup,
         IAttacker,
-        IConsumesFood,
+        IConsumesGold,
         ICanBeUpgraded,
         IInfantry
     {
@@ -17,7 +17,7 @@
         public Tile DestinationTile { get; set; }
         public int StepsTakenThisTurn { get; set; }
 
-        public int FoodConsumption { get; set; }
+        public int GoldConsumption { get; set; }
 
         public bool IsSubSelected { get; set; }
         public int UpgradeLevel { get; set; }

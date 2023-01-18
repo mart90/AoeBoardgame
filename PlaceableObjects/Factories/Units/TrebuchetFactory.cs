@@ -6,6 +6,7 @@ namespace AoeBoardgame
     {
         public int Range { get; set; }
         public int AttackDamage { get; set; }
+        public int ArmorPierce { get; set; }
         public int RangedArmor { get; set; }
         public int MeleeArmor { get; set; }
 
@@ -28,6 +29,7 @@ namespace AoeBoardgame
             _hitPoints = 40;
             _speed = 1;
             AttackDamage = 80;
+            ArmorPierce = 100;
             Range = 5;
             _lineOfSight = 5;
             MeleeArmor = 0;
@@ -51,9 +53,10 @@ namespace AoeBoardgame
                 Speed = _speed,
                 LineOfSight = _lineOfSight,
                 AttackDamage = AttackDamage,
-                ArmorPierce = 100,
+                ArmorPierce = ArmorPierce,
                 Range = Range,
                 HasMinimumRange = true,
+                GoldConsumption = 1,
                 RangedArmor = RangedArmor,
                 MeleeArmor = MeleeArmor
             };

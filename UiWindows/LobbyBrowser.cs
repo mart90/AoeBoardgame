@@ -161,7 +161,7 @@ namespace AoeBoardgame
             NewUiState = UiState.MultiplayerGame;
         }
 
-        public void Update(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
             if ((DateTime.Now - LastRefresh).TotalSeconds > 5)
             {

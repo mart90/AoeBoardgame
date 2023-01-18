@@ -59,7 +59,6 @@ namespace AoeBoardgame
                 LineOfSight = _lineOfSight,
                 AttackDamage = AttackDamage,
                 BuildingTypesAllowedToMake = new List<Type>(BuildingTypesAllowedToMake),
-                FoodConsumption = 1,
                 RangedArmor = _rangedArmor,
                 MeleeArmor = _meleeArmor
             };

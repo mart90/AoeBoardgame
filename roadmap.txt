@@ -1,20 +1,20 @@
 ﻿BUGS
-- If a researching building is destroyed it makes the research impossible to restart anywhere else
 - Temporary tile color doesn't clear when setting new waypoint
 - FoW wrong with restored games
 - Back should cancel lobby
 
 FEATURES
-- Cancel units & research
-- Show player names somewhere, incl scores, wonder timer
+- Challenges
+- Handle revolt (military units use all movement points?)
+- Show player names somewhere, incl scores?, wonder timer
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
+- Show where an opponent's attack was (currently only showing damage)
 - Show current age
 - Show when opponent aged up?
 - Replay viewer
 - Queueing stuff
 - Map from seed
-- Game.HandleRevolt()
 - Ranking system (see backed up trigger for ELO calcs)
 - Map generation: Make sure all tiles are reachable
 - Time control
@@ -24,4 +24,4 @@ FEATURES
 - Auto-updater
 - Water
 - New object textures
-- Replace ImGui?
+- Replace ImGui with own UI library?
