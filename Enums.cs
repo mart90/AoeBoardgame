@@ -5,7 +5,7 @@
         MainMenu,
         Sandbox,
         ChallengeBrowser,
-        Challenge,
+        ChallengeAttempt,
         LoginScreen,
         LobbyBrowser,
         MultiplayerGame,
@@ -128,5 +128,12 @@
         SouthEast,
         SouthWest,
         West
+    }
+
+    enum ChallengeType
+    {
+        EarlyRush = 0,
+        WonderRush = 1,
+        Boom = 2
     }
 }

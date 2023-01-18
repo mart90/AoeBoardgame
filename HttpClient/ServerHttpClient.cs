@@ -304,13 +304,20 @@ namespace AoeBoardgame
             });
         }
 
-        public string GetChallenges()
+        public List<Challenge> GetChallenges()
         {
-            return Post("get_challenges", new
+            string result = Post("get_challenges", new
             {
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password
             });
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<GetChallengesDto>(result).Challenges;
         }
 
         //public LeaderboardDto GetLeaderboard()

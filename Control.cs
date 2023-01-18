@@ -87,9 +87,26 @@ namespace AoeBoardgame
                     _uiWindows.Add(new Sandbox(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary));
                 }
 
-                if (_activeWindow is LobbyBrowser browser && _activeWindow.NewUiState == UiState.MultiplayerGame)
+                if (_activeWindow.NewUiState == UiState.ChallengeBrowser)
                 {
-                    _uiWindows.Add(browser.CreatedGame);
+                    _uiWindows.Add(new ChallengeBrowser(_httpClient, _fontLibrary));
+                }
+
+                if (_activeWindow.NewUiState == UiState.ChallengeAttempt)
+                {
+                    ChallengeBrowser challengeBrowser = (ChallengeBrowser)_activeWindow;
+
+                    _uiWindows.Add(new ChallengeAttempt(
+                        _textureLibrary, 
+                        _fontLibrary, 
+                        _researchLibrary, 
+                        _soundEffectLibrary, 
+                        challengeBrowser.ChosenChallenge));
+                }
+
+                if (_activeWindow is LobbyBrowser lobbyBrowser && _activeWindow.NewUiState == UiState.MultiplayerGame)
+                {
+                    _uiWindows.Add(lobbyBrowser.CreatedGame);
                 }
 
                 if (_activeWindow.NewUiState == UiState.LoginScreen)
@@ -109,8 +126,7 @@ namespace AoeBoardgame
                     ((LobbyBrowser)newWindow).CreatedLobby = form.CreatedLobby;
                 }
 
-                // If we went from a game window back to menu, destroy the game window
-                if (_activeWindow is Game)
+                if (_activeWindow is Game || _activeWindow is ChallengeBrowser)
                 {
                     _uiWindows.Remove(_activeWindow);
                     _activeWindow = null;

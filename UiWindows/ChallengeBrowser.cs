@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace AoeBoardgame
 {
@@ -10,6 +11,9 @@ namespace AoeBoardgame
         public UiState? NewUiState { get; set; }
         public int WidthPixels { get; set; }
         public int HeightPixels { get; set; }
+
+        public List<Challenge> PossibleChallenges { get; set; }
+        public Challenge ChosenChallenge { get; set; }
 
         private TextNotification _textNotification;
 
@@ -24,6 +28,8 @@ namespace AoeBoardgame
 
             _httpClient = httpClient;
             _fontLibrary = fontLibrary;
+
+            PossibleChallenges = _httpClient.GetChallenges();
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -33,36 +39,30 @@ namespace AoeBoardgame
                 return;
             }
 
-            ImGui.Begin("Menu");
+            ImGui.Begin("ChallengeBrowser");
 
-            ImGui.SetWindowFontScale(2f);
             ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels + 60));
-            ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(0, -20));
 
-            if (ImGui.Button("Sandbox", new System.Numerics.Vector2(200, 50)))
+            foreach (var challenge in PossibleChallenges)
             {
-                NewUiState = UiState.Sandbox;
-            }
-
-            if (ImGui.Button("Multiplayer", new System.Numerics.Vector2(200, 50)))
-            {
-                if (_httpClient.RunningLatestVersion())
+                if (ImGui.Button(challenge.UiName, new System.Numerics.Vector2(200, 50)))
                 {
-                    NewUiState = UiState.LobbyBrowser;
+                    ChosenChallenge = challenge;
+                    NewUiState = UiState.ChallengeAttempt;
                 }
-                else
+
+                if (ImGui.IsItemHovered())
                 {
-                    _textNotification = new TextNotification
-                    {
-                        FontColor = Color.Red,
-                        Message = "Version mismatch. Get the latest from the discord"
-                    };
+                    ImGui.SetTooltip(challenge.Description);
                 }
             }
 
-            if (ImGui.Button("Challenges", new System.Numerics.Vector2(200, 50)))
+            ImGui.Dummy(new System.Numerics.Vector2(1, 400 - PossibleChallenges.Count * 55));
+
+            if (ImGui.Button("Back", new System.Numerics.Vector2(200, 50)))
             {
-                NewUiState = UiState.ChallengeBrowser;
+                NewUiState = UiState.MainMenu;
             }
 
             ImGui.End();

@@ -4,7 +4,6 @@
 - Back should cancel lobby
 
 FEATURES
-- Challenges
 - Handle revolt (military units use all movement points?)
 - Show player names somewhere, incl scores?, wonder timer
 - Highlight units whose destination became invalid
