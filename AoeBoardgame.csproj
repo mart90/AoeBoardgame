@@ -157,7 +157,7 @@
     <Compile Include="Popup.cs" />
     <Compile Include="SoundEffectLibrary.cs" />
     <Compile Include="Control.cs" />
-    <Compile Include="Textures\GUITexture.cs" />
+    <Compile Include="Textures\UITexture.cs" />
     <Compile Include="Map\Map.cs" />
     <Compile Include="Map\MapGenerator.cs" />
     <Compile Include="Pathing\PathFinderNode.cs" />
@@ -231,6 +231,9 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="Content\Fonts\Hamlet-Tertia18.otf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

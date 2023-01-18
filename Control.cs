@@ -1,10 +1,12 @@
 ﻿using AoeBoardgame.Multiplayer;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.ImGui;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace AoeBoardgame
@@ -58,12 +60,13 @@ namespace AoeBoardgame
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _textureLibrary = new TextureLibrary(Content, _guiRenderer);
             _fontLibrary = new FontLibrary(Content);
+            _guiRenderer.RebuildFontAtlas();
             _researchLibrary = new ResearchLibrary();
             _soundEffectLibrary = new SoundEffectLibrary(Content);
 
             _uiWindows = new List<IUiWindow>
             {
-                new MainMenu(_httpClient, _fontLibrary),
+                new MainMenu(_httpClient, _fontLibrary, _textureLibrary),
                 new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary, _httpClient),
                 new LoginScreen(_fontLibrary, _httpClient),
                 new CreateLobbyForm(_fontLibrary, _httpClient)
