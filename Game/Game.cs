@@ -130,6 +130,8 @@ namespace AoeBoardgame
             });
 
             PassTurnToNextPlayer();
+
+            StartTurn();
         }
 
         private void PassTurnToNextPlayer()
@@ -146,8 +148,6 @@ namespace AoeBoardgame
             {
                 Players[activePlayerId + 1].IsActive = true;
             }
-
-            StartTurn();
         }
 
         public virtual void StartTurn()
@@ -162,7 +162,7 @@ namespace AoeBoardgame
             }
         }
 
-        private void GatherResources()
+        protected void GatherResources()
         {
             foreach (ICanGatherResources gatherer in ActivePlayer.OwnedObjects.FilterByType<ICanGatherResources>())
             {
@@ -180,7 +180,7 @@ namespace AoeBoardgame
             }
         }
 
-        private void DestroyEmptyArmies()
+        protected void DestroyEmptyArmies()
         {
             IEnumerable<PlayerObject> allArmies = Players
                 .SelectMany(e => e.OwnedObjects)
@@ -212,7 +212,7 @@ namespace AoeBoardgame
         /// <summary>
         /// All military units consume 1 gold per turn
         /// </summary>
-        private void ConsumeGold()
+        protected void ConsumeGold()
         {
             foreach (IConsumesGold consumer in ActivePlayer.OwnedObjects.FilterByType<IConsumesGold>())
             {
@@ -244,7 +244,7 @@ namespace AoeBoardgame
         /// <summary>
         /// Sets VisibleTiles and RangeableTiles (if applicable) on the object
         /// </summary>
-        private void UpdateVisibleAndRangeableTilesForObject(PlayerObject obj)
+        protected void UpdateVisibleAndRangeableTilesForObject(PlayerObject obj)
         {
             obj.VisibleTiles.Clear();
 
@@ -335,7 +335,7 @@ namespace AoeBoardgame
 
             if (building is Wonder)
             {
-                ActivePlayer.WonderTimer = 25;
+                ActivePlayer.WonderTimer = 20;
 
                 // Reveals the tile for the opponent (in fog of war)
                 destinationTile.IsScouted = true;
@@ -344,7 +344,7 @@ namespace AoeBoardgame
                 {
                     Popup = new Popup
                     {
-                        Message = "Your opponent built a wonder. If you don't destroy it within 25 turns, they will win the game.",
+                        Message = "Your opponent built a wonder. If you don't destroy it within 20 turns, they will win the game.",
                         IsInformational = true
                     };
                 }
@@ -450,7 +450,7 @@ namespace AoeBoardgame
         /// <summary>
         /// Moves units towards their destinations if they still have steps left
         /// </summary>
-        private void MoversTakeSteps()
+        protected void MoversTakeSteps()
         {
             List<ICanMove> movers = ActivePlayer.OwnedObjects.FilterByType<ICanMove>().ToList();
 
@@ -482,7 +482,7 @@ namespace AoeBoardgame
             }
         }
 
-        protected void PlaceStartingUnits()
+        protected virtual void PlaceStartingUnits()
         {
             Map.Tiles[255].SetObject(Players[0].AddAndGetPlaceableObject(typeof(TownCenter)));
             Map.Tiles[270].SetObject(Players[1].AddAndGetPlaceableObject(typeof(TownCenter)));
@@ -846,7 +846,7 @@ namespace AoeBoardgame
         /// <summary>
         /// Military victory is when one player has nothing left (no buildings or units)
         /// </summary>
-        private void CheckForMilitaryVictory()
+        protected virtual void CheckForMilitaryVictory()
         {
             foreach (Player player in Players)
             {
@@ -862,9 +862,7 @@ namespace AoeBoardgame
         protected virtual void EndGame()
         {
             IsEnded = true;
-
-            // Reveal the map
-            Map.Tiles.ForEach(e => e.HasFogOfWar = false);
+            RevealMap();
         }
 
         private void HandleObjectKilled(IAttackable defender, IAttacker attacker, Tile defenderTile)
@@ -950,7 +948,7 @@ namespace AoeBoardgame
                 }
                 else if (defender is Boar)
                 {
-                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 200;
+                    ActivePlayer.ResourceStockpile.Single(e => e.Resource == Resource.Food).Amount += 150;
                 }
             }
         }
@@ -1559,6 +1557,11 @@ namespace AoeBoardgame
             return newGroup;
         }
 
+        protected void RevealMap()
+        {
+            Map.Tiles.ForEach(e => e.HasFogOfWar = false);
+        }
+
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             ImGui.Begin("UI", ImGuiWindowFlags.NoMove);
@@ -1638,15 +1641,15 @@ namespace AoeBoardgame
                     }
                     else
                     {
-                        ImGui.Dummy(new System.Numerics.Vector2(500, 120));
+                        ImGui.Dummy(new System.Numerics.Vector2(500, 110));
                     }
                 }
                 else
                 {
-                    ImGui.Dummy(new System.Numerics.Vector2(500, 560));
+                    ImGui.Dummy(new System.Numerics.Vector2(500, 550));
                 }
 
-                if (this is Sandbox || IsEnded)
+                if (this is Sandbox || this is ChallengeAttempt || IsEnded)
                 {
                     if (ImGui.Button("Return to menu", new System.Numerics.Vector2(200, 40)))
                     {
@@ -1684,28 +1687,30 @@ namespace AoeBoardgame
             MoveHistory.Add(move);
         }
 
+        protected int ActivePlayerTurnCount()
+        {
+            return MoveHistory
+                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
+                .Count() + 1;
+        }
+
         #region Control panel
         protected virtual void DrawEconomy()
         {
             IEnumerable<ResourceCollection> resources = VisiblePlayer.ResourceStockpile;
             IEnumerable<ResourceCollection> resourcesGathered = VisiblePlayer.ResourcesGatheredLastTurn;
 
-            ImGui.Begin("Resources", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoTitleBar);
-            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, 30));
-            ImGui.SetWindowFontScale(1.8f);
+            ImGui.BeginChild("Resources", new System.Numerics.Vector2(500, 200));
+            ImGui.SetWindowFontScale(2f);
 
             int foodCount = resources.Single(e => e.Resource == Resource.Food).Amount;
             int foodGathered = resourcesGathered.Single(e => e.Resource == Resource.Food).Amount;
             DrawResourceLine("Food", foodCount, foodGathered, new System.Numerics.Vector4(1, 0, 0, 1));
 
-            int activePlayerTurnCount = MoveHistory
-                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
-                .Count() + 1;
-
             ImGui.SameLine();
-            ImGui.Dummy(new System.Numerics.Vector2(86, 0));
+            ImGui.Dummy(new System.Numerics.Vector2(77, 0));
             ImGui.SameLine();
-            ImGui.Text($"Turn {activePlayerTurnCount}");
+            ImGui.Text($"Turn {ActivePlayerTurnCount()}");
 
             int woodCount = resources.Single(e => e.Resource == Resource.Wood).Amount;
             int woodGathered = resourcesGathered.Single(e => e.Resource == Resource.Wood).Amount;
@@ -1723,7 +1728,10 @@ namespace AoeBoardgame
             int stoneGathered = resourcesGathered.Single(e => e.Resource == Resource.Stone).Amount;
             DrawResourceLine("Stone", stoneCount, stoneGathered, new System.Numerics.Vector4(.5f, .5f, .5f, 1));
 
-            ImGui.End();
+            int allResourcesGathered = woodGathered + goldGathered + ironGathered + stoneGathered;
+            DrawResourceLine("", VisiblePlayer.OwnedObjects.Count(e => e is Villager), allResourcesGathered, new System.Numerics.Vector4(1, 1, 1, 1));
+
+            ImGui.EndChild();
         }
 
         private void DrawResourceLine(string resourceName, int resourceCount, int gatheredLastTurn, System.Numerics.Vector4 colorVector)
@@ -1734,9 +1742,15 @@ namespace AoeBoardgame
                 text += " ";
             }
             ImGui.Text(text);
+
             ImGui.SameLine();
 
             ImGui.TextColored(colorVector, resourceCount.ToString());
+            if (resourceName == "" && ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip("Villager count");
+            }
+
             ImGui.SameLine();
 
             text = "(";
@@ -1748,7 +1762,13 @@ namespace AoeBoardgame
             ImGui.TextColored(colorVector, text);
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip("Gained or lost last turn");
+                string toolTip = "Gained or lost last turn";
+                if (resourceName == "")
+                {
+                    toolTip += " (total)";
+                }
+
+                ImGui.SetTooltip(toolTip);
             }
             ImGui.SameLine();
 

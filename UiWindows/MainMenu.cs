@@ -1,5 +1,4 @@
-﻿using AoeBoardgame.Multiplayer;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static System.Net.Mime.MediaTypeNames;
@@ -14,16 +13,18 @@ namespace AoeBoardgame
         public int HeightPixels { get; set; }
 
         private TextNotification _textNotification;
+        private string title;
 
-        private readonly MultiplayerHttpClient _httpClient;
+        private readonly ServerHttpClient _httpClient;
         private readonly FontLibrary _fontLibrary;
         private readonly TextureLibrary _textureLibrary;
 
-        public MainMenu(MultiplayerHttpClient httpClient, FontLibrary fontLibrary, TextureLibrary textureLibrary)
+        public MainMenu(ServerHttpClient httpClient, FontLibrary fontLibrary, TextureLibrary textureLibrary)
         {
             CorrespondingUiState = UiState.MainMenu;
             WidthPixels = 500;
             HeightPixels = 500;
+            title = "Untitled Boardgame";
 
             _httpClient = httpClient;
             _fontLibrary = fontLibrary;
@@ -42,27 +43,24 @@ namespace AoeBoardgame
             ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
 
             ImGui.PushFont(_fontLibrary.TitleFont);
-            string title = "Untitled Boardgame";
-            float windowWidth = ImGui.GetWindowSize().X;
-            float textWidth = ImGui.CalcTextSize(title).X;
             ImGui.SetCursorPosY(100f);
-            ImGui.SetCursorPosX((windowWidth - textWidth) * 0.5f);
+            ImGui.SetCursorPosX((WidthPixels - ImGui.CalcTextSize(title).X) * 0.5f);
             ImGui.Text(title);
             ImGui.PopFont();
             ImGui.Dummy(new System.Numerics.Vector2(500, 40));
 
-            ImGui.SetCursorPosX((windowWidth - 200) * 0.5f);
+            ImGui.SetCursorPosX((WidthPixels - 200) * 0.5f);
             if (ImGui.Button("Sandbox", new System.Numerics.Vector2(200, 50)))
             {
                 NewUiState = UiState.Sandbox;
             }
 
-            ImGui.SetCursorPosX((windowWidth - 200) * 0.5f);
+            ImGui.SetCursorPosX((WidthPixels - 200) * 0.5f);
             if (ImGui.Button("Multiplayer", new System.Numerics.Vector2(200, 50)))
             {
                 if (_httpClient.RunningLatestVersion())
                 {
-                    NewUiState = UiState.LoginScreen;
+                    NewUiState = UiState.LobbyBrowser;
                 }
                 else
                 {
@@ -72,6 +70,12 @@ namespace AoeBoardgame
                         Message = "Version mismatch. Get the latest from the discord"
                     };
                 }
+            }
+
+            ImGui.SetCursorPosX((WidthPixels - 200) * 0.5f);
+            if (ImGui.Button("Challenges", new System.Numerics.Vector2(200, 50)))
+            {
+                NewUiState = UiState.ChallengeBrowser;
             }
 
             ImGui.End();

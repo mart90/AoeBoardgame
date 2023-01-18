@@ -14,7 +14,6 @@ FEATURES
 - Replay viewer
 - Queueing stuff
 - Map from seed
-- Overhaul food consumption (change to gold?)
 - Ranking system (see backed up trigger for ELO calcs)
 - Map generation: Make sure all tiles are reachable
 - Time control

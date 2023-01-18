@@ -1,5 +1,4 @@
-﻿using AoeBoardgame.Multiplayer;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace AoeBoardgame
         private User _opponent;
         private bool _restoringGame;
 
-        private readonly MultiplayerHttpClient _httpClient;
+        private readonly ServerHttpClient _httpClient;
 
         private DateTime _lastPoll;
 
@@ -29,7 +28,7 @@ namespace AoeBoardgame
             FontLibrary fontLibrary, 
             ResearchLibrary researchLibrary,
             SoundEffectLibrary soundEffectLibrary,
-            MultiplayerHttpClient httpClient) : base(textureLibrary, fontLibrary, researchLibrary, soundEffectLibrary)
+            ServerHttpClient httpClient) : base(textureLibrary, fontLibrary, researchLibrary, soundEffectLibrary)
         {
             CorrespondingUiState = UiState.MultiplayerGame;
             _httpClient = httpClient;

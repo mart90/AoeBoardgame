@@ -4,6 +4,8 @@
     {
         MainMenu,
         Sandbox,
+        ChallengeBrowser,
+        ChallengeAttempt,
         LoginScreen,
         LobbyBrowser,
         MultiplayerGame,
@@ -128,6 +130,13 @@
         West
     }
 
+    enum ChallengeType
+    {
+        EarlyRush = 0,
+        WonderRush = 1,
+        Boom = 2
+    }
+    
     enum UiType
     {
         EndTurnButton,

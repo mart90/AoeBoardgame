@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace AoeBoardgame.Multiplayer
+namespace AoeBoardgame
 {
     class LoginScreen : IUiWindow
     {
@@ -17,9 +17,9 @@ namespace AoeBoardgame.Multiplayer
         private TextNotification _textNotification;
 
         private readonly FontLibrary _fontLibrary;
-        private readonly MultiplayerHttpClient _httpClient;
+        private readonly ServerHttpClient _httpClient;
 
-        public LoginScreen(FontLibrary fontLibrary, MultiplayerHttpClient httpClient)
+        public LoginScreen(FontLibrary fontLibrary, ServerHttpClient httpClient)
         {
             CorrespondingUiState = UiState.LoginScreen;
             WidthPixels = 500;
@@ -66,7 +66,7 @@ namespace AoeBoardgame.Multiplayer
 
             _httpClient.RegisterUser(username, plainTextPassword);
 
-            NewUiState = UiState.LobbyBrowser;
+            NewUiState = UiState.MainMenu;
         }
 
         public void TryLogin()
@@ -75,7 +75,7 @@ namespace AoeBoardgame.Multiplayer
 
             if (loginSuccess)
             {
-                NewUiState = UiState.LobbyBrowser;
+                NewUiState = UiState.MainMenu;
             }
             else
             {
@@ -111,11 +111,6 @@ namespace AoeBoardgame.Multiplayer
             if (ImGui.Button("Register"))
             {
                 TryRegister();
-            }
-
-            if (ImGui.Button("Back"))
-            {
-                NewUiState = UiState.MainMenu;
             }
 
             ImGui.End();

@@ -23,7 +23,7 @@ namespace AoeBoardgame
         {
             string message = Message;
 
-            if (message.Length > 60)
+            if (message.Length > 60 && !message.Substring(0, 60).Contains("\n"))
             {
                 for (int i = 0; i < 50; i++)
                 {

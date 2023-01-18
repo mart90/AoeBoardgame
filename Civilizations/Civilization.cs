@@ -58,7 +58,7 @@ namespace AoeBoardgame
         {
             return new List<ResourceGatherRate>
             {
-                new ResourceGatherRate(Resource.Food, 8),
+                new ResourceGatherRate(Resource.Food, 7),
                 new ResourceGatherRate(Resource.Wood, 5),
                 new ResourceGatherRate(Resource.Gold, 5),
                 new ResourceGatherRate(Resource.Iron, 5),

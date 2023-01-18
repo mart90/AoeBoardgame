@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AoeBoardgame.Multiplayer
+namespace AoeBoardgame
 {
     class Lobby
     {

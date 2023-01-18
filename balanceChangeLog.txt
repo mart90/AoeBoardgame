@@ -1,4 +1,12 @@
-﻿0.3.2.0
+﻿0.4.0.0
+- Farm base gather rate reduced from 8 food per turn to 7 food per turn
+- Food gained from collecting boar reduced from 200 to 150
+- Double-bit axe cost reduced from 100w, 50i to 50w, 50i
+- Iron pickaxes cost reduced from 50g, 150i to 50g, 100i
+- Wonder timer reduced from 30 to 20 turns, build time reduced from 10 to 5 turns
+- Castle build time reduced from 5 to 4 turns
+
+0.3.2.0
 - Food consumption of all units replaced with gold consumption, 1 per turn per military unit. (This speeds up the early game)
 - 30 gold added to starting resources
 - All research sped up by one turn except blacksmith upgrades

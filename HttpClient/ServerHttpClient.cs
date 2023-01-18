@@ -5,18 +5,18 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace AoeBoardgame.Multiplayer
+namespace AoeBoardgame
 {
-    class MultiplayerHttpClient
+    class ServerHttpClient
     {
-        const string OUR_VERSION = "0.3.2.0";
+        const string OUR_VERSION = "0.4.0.0";
 
         public User AuthenticatedUser { get; set; }
 
         private readonly HttpClient _client;
         private readonly string _baseUrl;
 
-        public MultiplayerHttpClient()
+        public ServerHttpClient()
         {
             _baseUrl = "http://85.146.99.136:7275/";
             //_baseUrl = "http://localhost:5000/";
@@ -302,6 +302,22 @@ namespace AoeBoardgame.Multiplayer
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password
             });
+        }
+
+        public List<Challenge> GetChallenges()
+        {
+            string result = Post("get_challenges", new
+            {
+                username = AuthenticatedUser.Username,
+                password = AuthenticatedUser.Password
+            });
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            return JsonConvert.DeserializeObject<GetChallengesDto>(result).Challenges;
         }
 
         //public LeaderboardDto GetLeaderboard()
