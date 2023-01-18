@@ -1,4 +1,4 @@
-﻿namespace AoeBoardgame.Multiplayer
+﻿namespace AoeBoardgame
 {
     class User
     {

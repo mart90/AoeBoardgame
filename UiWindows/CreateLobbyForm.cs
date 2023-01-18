@@ -1,5 +1,4 @@
-﻿using AoeBoardgame.Multiplayer;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Text;
@@ -16,7 +15,7 @@ namespace AoeBoardgame
         public TextNotification TextNotification { get; private set; }
 
         private readonly FontLibrary _fontLibrary;
-        private readonly MultiplayerHttpClient _httpClient;
+        private readonly ServerHttpClient _httpClient;
 
         private readonly byte[] _restoreGameIdBuffer;
         private readonly byte[] _restoreMoveNumberBuffer;
@@ -28,7 +27,7 @@ namespace AoeBoardgame
 
         public CreateLobbyForm(
             FontLibrary fontLibrary,
-            MultiplayerHttpClient httpClient)
+            ServerHttpClient httpClient)
         {
             CorrespondingUiState = UiState.CreatingLobby;
             WidthPixels = 800;

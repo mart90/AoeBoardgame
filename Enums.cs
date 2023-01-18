@@ -4,6 +4,8 @@
     {
         MainMenu,
         Sandbox,
+        ChallengeBrowser,
+        Challenge,
         LoginScreen,
         LobbyBrowser,
         MultiplayerGame,

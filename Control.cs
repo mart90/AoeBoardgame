@@ -1,5 +1,4 @@
-﻿using AoeBoardgame.Multiplayer;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.ImGui;
@@ -26,7 +25,7 @@ namespace AoeBoardgame
         private bool _leftMouseHeld;
         private bool _rightMouseHeld;
 
-        private MultiplayerHttpClient _httpClient;
+        private ServerHttpClient _httpClient;
 
         public Control()
         {
@@ -43,7 +42,7 @@ namespace AoeBoardgame
 
         protected override void LoadContent()
         {
-            _httpClient = new MultiplayerHttpClient();
+            _httpClient = new ServerHttpClient();
             _guiRenderer = new ImGUIRenderer(this).Initialize().RebuildFontAtlas();
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -60,7 +59,7 @@ namespace AoeBoardgame
                 new CreateLobbyForm(_fontLibrary, _httpClient)
             };
 
-            ChangeUiWindow(_uiWindows.Single(e => e is MainMenu));
+            ChangeUiWindow(_uiWindows.Single(e => e is LoginScreen));
         }
 
         protected override void UnloadContent() { }

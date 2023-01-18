@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace AoeBoardgame.Multiplayer
+namespace AoeBoardgame
 {
-    class MultiplayerHttpClient
+    class ServerHttpClient
     {
         const string OUR_VERSION = "0.3.1.0";
 
@@ -16,7 +16,7 @@ namespace AoeBoardgame.Multiplayer
         private readonly HttpClient _client;
         private readonly string _baseUrl;
 
-        public MultiplayerHttpClient()
+        public ServerHttpClient()
         {
             _baseUrl = "http://85.146.99.136:7275/";
             //_baseUrl = "http://localhost:5000/";
@@ -298,6 +298,15 @@ namespace AoeBoardgame.Multiplayer
         public string GetMyLastGameId()
         {
             return Post("get_my_last_game_id", new
+            {
+                username = AuthenticatedUser.Username,
+                password = AuthenticatedUser.Password
+            });
+        }
+
+        public string GetChallenges()
+        {
+            return Post("get_challenges", new
             {
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password

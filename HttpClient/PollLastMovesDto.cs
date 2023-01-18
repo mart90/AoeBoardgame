@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AoeBoardgame.Multiplayer
+namespace AoeBoardgame
 {
     class PollLastMovesDto
     {

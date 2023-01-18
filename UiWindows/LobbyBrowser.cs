@@ -1,5 +1,4 @@
-﻿using AoeBoardgame.Multiplayer;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
 using System;
@@ -26,7 +25,7 @@ namespace AoeBoardgame
         private readonly TextureLibrary _textureLibrary;
         private readonly ResearchLibrary _researchLibrary;
         private readonly SoundEffectLibrary _soundEffectLibrary;
-        private readonly MultiplayerHttpClient _httpClient;
+        private readonly ServerHttpClient _httpClient;
 
         public MultiplayerGame CreatedGame { get; private set; }
 
@@ -35,7 +34,7 @@ namespace AoeBoardgame
             FontLibrary fontLibrary,
             ResearchLibrary researchLibrary,
             SoundEffectLibrary soundEffectLibrary,
-            MultiplayerHttpClient httpClient)
+            ServerHttpClient httpClient)
         {
             CorrespondingUiState = UiState.LobbyBrowser;
             WidthPixels = 800;

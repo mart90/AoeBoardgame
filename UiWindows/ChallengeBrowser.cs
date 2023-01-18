@@ -1,11 +1,10 @@
-﻿using AoeBoardgame.Multiplayer;
-using ImGuiNET;
+﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace AoeBoardgame
 {
-    class MainMenu : IUiWindow
+    class ChallengeBrowser : IUiWindow
     {
         public UiState CorrespondingUiState { get; set; }
         public UiState? NewUiState { get; set; }
@@ -14,12 +13,12 @@ namespace AoeBoardgame
 
         private TextNotification _textNotification;
 
-        private readonly MultiplayerHttpClient _httpClient;
+        private readonly ServerHttpClient _httpClient;
         private readonly FontLibrary _fontLibrary;
 
-        public MainMenu(MultiplayerHttpClient httpClient, FontLibrary fontLibrary)
+        public ChallengeBrowser(ServerHttpClient httpClient, FontLibrary fontLibrary)
         {
-            CorrespondingUiState = UiState.MainMenu;
+            CorrespondingUiState = UiState.ChallengeBrowser;
             WidthPixels = 500;
             HeightPixels = 500;
 
@@ -49,7 +48,7 @@ namespace AoeBoardgame
             {
                 if (_httpClient.RunningLatestVersion())
                 {
-                    NewUiState = UiState.LoginScreen;
+                    NewUiState = UiState.LobbyBrowser;
                 }
                 else
                 {
@@ -59,6 +58,11 @@ namespace AoeBoardgame
                         Message = "Version mismatch. Get the latest from the discord"
                     };
                 }
+            }
+
+            if (ImGui.Button("Challenges", new System.Numerics.Vector2(200, 50)))
+            {
+                NewUiState = UiState.ChallengeBrowser;
             }
 
             ImGui.End();
