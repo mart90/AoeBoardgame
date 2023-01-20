@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +17,8 @@ namespace AoeBoardgame
         public IEnumerable<ResourceCollection> ResourcesGatheredLastTurn { get; private set; }
         public IEnumerable<ResourceGatherRate> GatherRates { get; }
         public List<PlayerObject> OwnedObjects { get; }
-        public int Age { get; set; }
+        public Age Age { get; set; }
+        public int TimeMiliseconds { get; set; }
         public int? WonderTimer { get; set; }
 
         public List<Tile> VisibleTiles => OwnedObjects.SelectMany(e => e.VisibleTiles).Distinct().ToList();
@@ -27,10 +27,12 @@ namespace AoeBoardgame
 
         public bool IsPopulationRevolting => ResourceStockpile.Single(e => e.Resource == Resource.Gold).Amount < 0;
 
+        public bool IsBlue => Color == TileColor.Blue;
+
         public Player(string name, Civilization civilization, TileColor color, TileColor usedUnitColor)
         {
             Name = name;
-            Age = 1;
+            Age = Age.Dark;
             Color = color;
             UsedUnitColor = usedUnitColor;
             Civilization = civilization;

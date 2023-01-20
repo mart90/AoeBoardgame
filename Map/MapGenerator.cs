@@ -161,7 +161,7 @@ namespace AoeBoardgame
                 for (var x = 0; x < _map.Width; x++)
                 {
                     bool evenRow = y % 2 == 0;
-                    var tileLocation = new Point(_tileDimensions * x + 2 * x + (evenRow ? 0 : oddRowTileOffset), y * verticalTileOffset);
+                    var tileLocation = new Point(_tileDimensions * x + 2 * x + (evenRow ? 0 : oddRowTileOffset), y * verticalTileOffset + 50);
                     var tileSize = new Point(_tileDimensions, _tileDimensions);
 
                     var tile = new Tile(_textureLibrary, new Rectangle(tileLocation, tileSize));

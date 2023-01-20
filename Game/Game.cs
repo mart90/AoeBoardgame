@@ -34,6 +34,11 @@ namespace AoeBoardgame
         protected Map Map { get; set; }
         protected Popup Popup { get; set; }
 
+        protected bool IsTimeControlEnabled { get; set; }
+        protected int? MainTimeSeconds { get; set; }
+        protected int? TimeIncrementSeconds { get; set; }
+        protected DateTime? LastEndTurnTimestamp { get; set; }
+
         /// <summary>
         /// Appears below the map. Not rendered by ImGui
         /// </summary>
@@ -107,6 +112,16 @@ namespace AoeBoardgame
 
         protected virtual void EndTurn()
         {
+            if (IsTimeControlEnabled)
+            {
+                ActivePlayer.TimeMiliseconds -= (int)Math.Floor((DateTime.Now - LastEndTurnTimestamp.Value).TotalMilliseconds);
+
+                if (TimeIncrementSeconds != null)
+                {
+                    ActivePlayer.TimeMiliseconds += TimeIncrementSeconds.Value * 1000;
+                }
+            }
+
             ClearCurrentSelection();
 
             MoversTakeSteps();
@@ -129,6 +144,11 @@ namespace AoeBoardgame
             PassTurnToNextPlayer();
 
             StartTurn();
+
+            if (IsTimeControlEnabled)
+            {
+                LastEndTurnTimestamp = DateTime.Now;
+            }
         }
 
         private void PassTurnToNextPlayer()
@@ -1559,6 +1579,38 @@ namespace AoeBoardgame
             Map.Tiles.ForEach(e => e.HasFogOfWar = false);
         }
 
+        protected virtual void Resign()
+        {
+            Result = ActivePlayer.Color == TileColor.Blue ? "r+r" : "b+r";
+
+            AddMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                IsResign = true
+            });
+
+            EndGame();
+        }
+
+        protected virtual void AddMove(GameMove move)
+        {
+            move.MoveNumber = MoveHistory.Count;
+            MoveHistory.Add(move);
+        }
+
+        protected int ActivePlayerTurnCount()
+        {
+            return MoveHistory
+                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
+                .Count() + 1;
+        }
+
+        private void HandleTimeRanOut()
+        {
+            // TODO
+        }
+
+        #region Drawing logic
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             Map.Draw(spriteBatch, ActivePlayer);
@@ -1573,7 +1625,9 @@ namespace AoeBoardgame
                 return;
             }
 
-            ImGui.Begin("UI");
+            DrawGameInfo();
+
+            ImGui.Begin("Control panel");
             ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
             ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
 
@@ -1651,33 +1705,66 @@ namespace AoeBoardgame
             ImGui.End();
         }
 
-        protected virtual void Resign()
+        protected virtual void DrawGameInfo()
         {
-            Result = ActivePlayer.Color == TileColor.Blue ? "r+r" : "b+r";
+            ImGui.Begin("Game info");
+            ImGui.SetWindowFontScale(2f);
+            ImGui.SetWindowSize(new System.Numerics.Vector2(1480, 1110));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
 
-            AddMove(new GameMove
+            if (this is ChallengeAttempt challengeAttempt)
             {
-                PlayerName = ActivePlayer.Name,
-                IsResign = true
-            });
+                ImGui.Text($"Challenge: {challengeAttempt.Challenge.UiName}");
+            }
+            else
+            {
+                Player blue = Players.Single(e => e.IsBlue);
+                Player red = Players.Single(e => !e.IsBlue);
 
-            EndGame();
+                string blueTimeStr = "";
+                string redTimeStr = "";
+
+                if (IsTimeControlEnabled)
+                {
+                    double timeSpentMiliseconds = (DateTime.Now - LastEndTurnTimestamp.Value).TotalMilliseconds;
+
+                    TimeSpan blueTime = TimeSpan.FromMilliseconds(blue.TimeMiliseconds - (ActivePlayer.IsBlue ? timeSpentMiliseconds : 0));
+                    TimeSpan redTime = TimeSpan.FromMilliseconds(red.TimeMiliseconds - (!ActivePlayer.IsBlue ? timeSpentMiliseconds : 0));
+
+                    if (blueTime.TotalSeconds < 0)
+                    {
+                        HandleTimeRanOut();
+                        blueTime = new TimeSpan(0);
+                    }
+                    else if (redTime.TotalSeconds < 0)
+                    {
+                        HandleTimeRanOut();
+                        redTime = new TimeSpan(0);
+                    }
+
+                    blueTimeStr = blueTime.ToString(@"hh\:mm\:ss");
+                    redTimeStr = redTime.ToString(@"hh\:mm\:ss");
+                }
+
+                ImGui.SetCursorPosX(380);
+                ImGui.Text(blue.Name);
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(545f);
+                ImGui.Text(blueTimeStr);
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(712f);
+                ImGui.Text("vs");
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(795f);
+                ImGui.Text(redTimeStr);
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(1020f);
+                ImGui.Text(red.Name);
+            }
+
+            ImGui.End();
         }
 
-        protected virtual void AddMove(GameMove move)
-        {
-            move.MoveNumber = MoveHistory.Count;
-            MoveHistory.Add(move);
-        }
-
-        protected int ActivePlayerTurnCount()
-        {
-            return MoveHistory
-                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
-                .Count() + 1;
-        }
-
-        #region Control panel
         protected virtual void DrawEconomy()
         {
             IEnumerable<ResourceCollection> resources = VisiblePlayer.ResourceStockpile;
@@ -1698,6 +1785,12 @@ namespace AoeBoardgame
             int woodCount = resources.Single(e => e.Resource == Resource.Wood).Amount;
             int woodGathered = resourcesGathered.Single(e => e.Resource == Resource.Wood).Amount;
             DrawResourceLine("Wood", woodCount, woodGathered, new System.Numerics.Vector4(.4f, .2f, .2f, 1));
+
+            string age = VisiblePlayer.Age.ToString();
+            ImGui.SameLine();
+            ImGui.Dummy(new System.Numerics.Vector2(65 - 8 * (age.Length - 4), 0));
+            ImGui.SameLine();
+            ImGui.Text($"{age} age");
 
             int goldCount = resources.Single(e => e.Resource == Resource.Gold).Amount;
             int goldGathered = resourcesGathered.Single(e => e.Resource == Resource.Gold).Amount;

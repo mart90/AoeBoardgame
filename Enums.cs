@@ -28,6 +28,14 @@
         Stone
     }
 
+    enum Age
+    {
+        Dark = 1,
+        Feudal = 2,
+        Castle = 3,
+        Imperial = 4
+    }
+
     enum ResearchEnum
     {
         // Town center
