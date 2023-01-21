@@ -9,7 +9,7 @@ namespace AoeBoardgame
 {
     class ServerHttpClient
     {
-        const string OUR_VERSION = "0.4.0.0";
+        const string OUR_VERSION = "0.5.0.0";
 
         public User AuthenticatedUser { get; set; }
 
