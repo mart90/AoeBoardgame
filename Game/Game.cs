@@ -35,7 +35,7 @@ namespace AoeBoardgame
         protected Popup Popup { get; set; }
 
         protected bool IsTimeControlEnabled { get; set; }
-        protected int? MainTimeSeconds { get; set; }
+        protected int? StartTimeMinutes { get; set; }
         protected int? TimeIncrementSeconds { get; set; }
         protected DateTime? LastEndTurnTimestamp { get; set; }
 
@@ -1617,7 +1617,7 @@ namespace AoeBoardgame
 
             if (_textNotification != null)
             {
-                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(10, Map.Height * 45 + 5), _textNotification.FontColor);
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(10, Map.Height * 45 + 50), _textNotification.FontColor);
             }
 
             if (!WindowUtils.ApplicationIsActivated())
@@ -1746,8 +1746,11 @@ namespace AoeBoardgame
                     redTimeStr = redTime.ToString(@"hh\:mm\:ss");
                 }
 
-                ImGui.SetCursorPosX(380);
-                ImGui.Text(blue.Name);
+                string bluePlayerString = $"{blue.Name} ({blue.Civilization.GetType().Name})";
+                string redPlayerString = $"{red.Name} ({red.Civilization.GetType().Name})";
+
+                ImGui.SetCursorPosX(500 - bluePlayerString.Length * 14);
+                ImGui.Text(bluePlayerString);
                 ImGui.SameLine();
                 ImGui.SetCursorPosX(545f);
                 ImGui.Text(blueTimeStr);
@@ -1758,8 +1761,8 @@ namespace AoeBoardgame
                 ImGui.SetCursorPosX(795f);
                 ImGui.Text(redTimeStr);
                 ImGui.SameLine();
-                ImGui.SetCursorPosX(1020f);
-                ImGui.Text(red.Name);
+                ImGui.SetCursorPosX(950f);
+                ImGui.Text(redPlayerString);
             }
 
             ImGui.End();

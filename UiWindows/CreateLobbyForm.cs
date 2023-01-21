@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System.Text;
 
 namespace AoeBoardgame
@@ -19,9 +20,12 @@ namespace AoeBoardgame
 
         private readonly byte[] _restoreGameIdBuffer;
         private readonly byte[] _restoreMoveNumberBuffer;
+        private readonly byte[] _startTimeMinutesBuffer;
+        private readonly byte[] _timeIncrementSecondsBuffer;
 
         private bool _hostPlaysBlue;
         private bool _restoreGame;
+        private bool _isTimeControlEnabled;
 
         public Lobby CreatedLobby { get; set; }
 
@@ -36,21 +40,62 @@ namespace AoeBoardgame
             _restoreGameIdBuffer = new byte[10];
             _restoreMoveNumberBuffer = new byte[10];
 
+            _startTimeMinutesBuffer = new byte[10];
+            _timeIncrementSecondsBuffer = new byte[10];
+
+            Encoding.ASCII.GetBytes("10").CopyTo(_startTimeMinutesBuffer, 0);
+            Encoding.ASCII.GetBytes("30").CopyTo(_timeIncrementSecondsBuffer, 0);
+
             _httpClient = httpClient;
             _fontLibrary = fontLibrary;
 
             _hostPlaysBlue = true;
         }
         
-        private void CreateLobby()
+        private bool CreateLobby()
         {
             var settings = new MultiplayerGameSettings();
 
-            string restoreGameIdStr = _restoreGameIdBuffer.GetString();
-
-            if (restoreGameIdStr != "")
+            if (_isTimeControlEnabled)
             {
-                if (int.TryParse(restoreGameIdStr, out int restoreGameId))
+                settings.IsTimeControlEnabled = true;
+
+                string startTimeMinutesStr = _startTimeMinutesBuffer.GetString();
+                if (int.TryParse(startTimeMinutesStr, out int startTimeMinutes))
+                {
+                    settings.StartTimeMinutes = startTimeMinutes;
+                }
+                else
+                {
+                    TextNotification = new TextNotification
+                    {
+                        FontColor = Color.Red,
+                        Message = "Start time must be a number"
+                    };
+
+                    return false;
+                }
+
+                string timeIncrementSecondsStr = _timeIncrementSecondsBuffer.GetString();
+                if (int.TryParse(timeIncrementSecondsStr, out int timeIncrementSeconds))
+                {
+                    settings.TimeIncrementSeconds = timeIncrementSeconds;
+                }
+                else
+                {
+                    TextNotification = new TextNotification
+                    {
+                        FontColor = Color.Red,
+                        Message = "Time increment must be a number"
+                    };
+
+                    return false;
+                }
+            }
+
+            if (_restoreGame)
+            {
+                if (int.TryParse(_restoreGameIdBuffer.GetString(), out int restoreGameId))
                 {
                     settings.RestoreGameId = restoreGameId;
                 }
@@ -62,7 +107,7 @@ namespace AoeBoardgame
                         Message = "Game id to restore must be a number"
                     };
 
-                    return;
+                    return false;
                 }
 
                 string restoreGameMoveNumberStr = _restoreMoveNumberBuffer.GetString();
@@ -85,7 +130,7 @@ namespace AoeBoardgame
                             Message = "Move number to restore to must be a number"
                         };
 
-                        return;
+                        return false;
                     }
                 }
 
@@ -99,6 +144,8 @@ namespace AoeBoardgame
                 Id = _httpClient.CreateLobby(settings),
                 Settings = settings
             };
+
+            return true;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -117,6 +164,19 @@ namespace AoeBoardgame
             ImGui.BeginChild("Form", new System.Numerics.Vector2(800, 400));
 
             ImGui.Checkbox("Host plays England", ref _hostPlaysBlue);
+
+            ImGui.NewLine();
+
+            ImGui.Checkbox("Time control", ref _isTimeControlEnabled);
+
+            if (_isTimeControlEnabled)
+            {
+                ImGui.SetNextItemWidth(70);
+                ImGui.InputText("Main time (minutes)", _startTimeMinutesBuffer, (uint)_startTimeMinutesBuffer.Length);
+
+                ImGui.SetNextItemWidth(70);
+                ImGui.InputText("Time increment (seconds)", _timeIncrementSecondsBuffer, (uint)_timeIncrementSecondsBuffer.Length);
+            }
 
             ImGui.NewLine();
             
@@ -156,8 +216,10 @@ namespace AoeBoardgame
             {
                 if (ImGui.Button("Create"))
                 {
-                    CreateLobby();
-                    NewUiState = UiState.LobbyBrowser;
+                    if (CreateLobby())
+                    {
+                        NewUiState = UiState.LobbyBrowser;
+                    }
                 }
             }
 
@@ -165,7 +227,7 @@ namespace AoeBoardgame
 
             if (TextNotification != null)
             {
-                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, TextNotification.Message, new Vector2(20, HeightPixels - 60), TextNotification.FontColor);
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, TextNotification.Message, new Vector2(10, HeightPixels - 40), TextNotification.FontColor);
             }
         }
     }

@@ -16,8 +16,8 @@ namespace AoeBoardgame
 
             IsTimeControlEnabled = true;
             LastEndTurnTimestamp = DateTime.Now;
-            TimeIncrementSeconds = 30;
-            MainTimeSeconds = 3600;
+            TimeIncrementSeconds = 0;
+            StartTimeMinutes = 600;
 
             Players = new List<Player>
             {
@@ -25,12 +25,12 @@ namespace AoeBoardgame
                 {
                     IsActive = true,
                     IsLocalPlayer = true,
-                    TimeMiliseconds = MainTimeSeconds.Value * 1000
+                    TimeMiliseconds = StartTimeMinutes.Value * 60000
                 },
                 new Player("Red", new France(textureLibrary, researchLibrary), TileColor.Red, TileColor.RedUsed)
                 {
                     IsLocalPlayer = true,
-                    TimeMiliseconds = MainTimeSeconds.Value * 1000
+                    TimeMiliseconds = StartTimeMinutes.Value * 60000
                 }
             };
 

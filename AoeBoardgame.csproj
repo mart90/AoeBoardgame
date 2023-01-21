@@ -102,9 +102,9 @@
     <Compile Include="Game\Player.cs" />
     <Compile Include="Game\ResourceCollection.cs" />
     <Compile Include="Game\ResourceGatherRate.cs" />
-    <Compile Include="Game\Settings.cs" />
     <Compile Include="HttpClient\GetChallengesDto.cs" />
     <Compile Include="HttpClient\LobbyDto.cs" />
+    <Compile Include="HttpClient\PlayerTimesDto.cs" />
     <Compile Include="HttpClient\PollLastMovesDto.cs" />
     <Compile Include="HttpClient\ServerHttpClient.cs" />
     <Compile Include="HttpClient\UserDto.cs" />

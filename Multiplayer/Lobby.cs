@@ -31,7 +31,7 @@ namespace AoeBoardgame
                 title = "Generated - ";
             }
 
-            if (Settings.TimeControlEnabled)
+            if (Settings.IsTimeControlEnabled)
             {
                 title += $"{Settings.StartTimeMinutes}+{Settings.TimeIncrementSeconds} - ";
             }
