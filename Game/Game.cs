@@ -610,6 +610,11 @@ namespace AoeBoardgame
                     }
                 }
             }
+            else if (tile.Object is IEconomicBuilding economicBuilding && economicBuilding.Units.Any())
+            {
+                // Enable one-click movement from economic buildings
+                State = GameState.MovingObject;
+            }
 
             if (tile.Object is ICanMakeBuildings builder2 && builder2.HasBuildingQueued())
             {
@@ -647,13 +652,28 @@ namespace AoeBoardgame
                 SetWaypoint(trainer, originTile, destinationTile);
             }
 
-            // TODO is this redundant?
             if (State != GameState.MovingObject)
             {
                 return;
             }
 
-            ICanMove mover = (ICanMove)SelectedObject;
+            var selectedObject = (PlayerObject)SelectedObject;
+
+            // Enable units to move out of economic buildings without having to sub-select them first, but don't allow attacks
+            if (selectedObject is IEconomicBuilding economicBuilding)
+            {
+                if (destinationTile.Object != null && (destinationTile.Object is GaiaObject || ((PlayerObject)destinationTile.Object).Owner != ActivePlayer))
+                {
+                    return;
+                }
+
+                // Automatically sub-select the unit with the highest movement points left
+                selectedObject = (PlayerObject)economicBuilding.Units
+                    .OrderBy(e => e.StepsTakenThisTurn)
+                    .First();
+            }
+
+            ICanMove mover = (ICanMove)selectedObject;
 
             if (mover is ICanFormGroup && originTile.Object is IContainsUnits && mover.HasSpentAllMovementPoints())
             {
@@ -1226,6 +1246,11 @@ namespace AoeBoardgame
             if (State != GameState.PlacingBuilding && !(selectedObject is ICanMakeUnits))
             {
                 ClearTemporaryTileColorsExceptPink();
+            }
+
+            if (selectedObject is IEconomicBuilding economicBuilding && State == GameState.MovingObject)
+            {
+                selectedObject = (PlayerObject)economicBuilding.Units.First();
             }
 
             Tile originTile = Map.SelectedTile;
