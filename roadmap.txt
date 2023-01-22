@@ -5,7 +5,7 @@
 
 FEATURES
 - Handle revolt (military units use all movement points?)
-- Show player names somewhere, incl scores?, wonder timer
+- Action on time-out
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
 - Show where an opponent's attack was (currently only showing damage)
@@ -16,7 +16,6 @@ FEATURES
 - Map from seed
 - Ranking system (see backed up trigger for ELO calcs)
 - Map generation: Make sure all tiles are reachable
-- Time control
 - More civs
 - More maps
 - Ingame chat

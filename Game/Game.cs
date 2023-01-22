@@ -37,6 +37,11 @@ namespace AoeBoardgame
         protected Map Map { get; set; }
         protected Popup Popup { get; set; }
 
+        protected bool IsTimeControlEnabled { get; set; }
+        protected int? StartTimeMinutes { get; set; }
+        protected int? TimeIncrementSeconds { get; set; }
+        protected DateTime? LastEndTurnTimestamp { get; set; }
+
         /// <summary>
         /// Appears below the map. Not rendered by ImGui
         /// </summary>
@@ -110,6 +115,16 @@ namespace AoeBoardgame
 
         protected virtual void EndTurn()
         {
+            if (IsTimeControlEnabled)
+            {
+                ActivePlayer.TimeMiliseconds -= (int)Math.Floor((DateTime.Now - LastEndTurnTimestamp.Value).TotalMilliseconds);
+
+                if (TimeIncrementSeconds != null)
+                {
+                    ActivePlayer.TimeMiliseconds += TimeIncrementSeconds.Value * 1000;
+                }
+            }
+
             ClearCurrentSelection();
 
             MoversTakeSteps();
@@ -132,6 +147,11 @@ namespace AoeBoardgame
             PassTurnToNextPlayer();
 
             StartTurn();
+
+            if (IsTimeControlEnabled)
+            {
+                LastEndTurnTimestamp = DateTime.Now;
+            }
         }
 
         private void PassTurnToNextPlayer()
@@ -593,6 +613,11 @@ namespace AoeBoardgame
                     }
                 }
             }
+            else if (tile.Object is IEconomicBuilding economicBuilding && economicBuilding.Units.Any())
+            {
+                // Enable one-click movement from economic buildings
+                State = GameState.MovingObject;
+            }
 
             if (tile.Object is ICanMakeBuildings builder2 && builder2.HasBuildingQueued())
             {
@@ -630,13 +655,28 @@ namespace AoeBoardgame
                 SetWaypoint(trainer, originTile, destinationTile);
             }
 
-            // TODO is this redundant?
             if (State != GameState.MovingObject)
             {
                 return;
             }
 
-            ICanMove mover = (ICanMove)SelectedObject;
+            var selectedObject = (PlayerObject)SelectedObject;
+
+            // Enable units to move out of economic buildings without having to sub-select them first, but don't allow attacks
+            if (selectedObject is IEconomicBuilding economicBuilding)
+            {
+                if (destinationTile.Object != null && (destinationTile.Object is GaiaObject || ((PlayerObject)destinationTile.Object).Owner != ActivePlayer))
+                {
+                    return;
+                }
+
+                // Automatically sub-select the unit with the highest movement points left
+                selectedObject = (PlayerObject)economicBuilding.Units
+                    .OrderBy(e => e.StepsTakenThisTurn)
+                    .First();
+            }
+
+            ICanMove mover = (ICanMove)selectedObject;
 
             if (mover is ICanFormGroup && originTile.Object is IContainsUnits && mover.HasSpentAllMovementPoints())
             {
@@ -1211,6 +1251,11 @@ namespace AoeBoardgame
                 ClearTemporaryTileColorsExceptPink();
             }
 
+            if (selectedObject is IEconomicBuilding economicBuilding && State == GameState.MovingObject)
+            {
+                selectedObject = (PlayerObject)economicBuilding.Units.First();
+            }
+
             Tile originTile = Map.SelectedTile;
 
             if (selectedObject is IHasRange ranger 
@@ -1562,6 +1607,38 @@ namespace AoeBoardgame
             Map.Tiles.ForEach(e => e.HasFogOfWar = false);
         }
 
+        protected virtual void Resign()
+        {
+            Result = ActivePlayer.Color == TileColor.Blue ? "r+r" : "b+r";
+
+            AddMove(new GameMove
+            {
+                PlayerName = ActivePlayer.Name,
+                IsResign = true
+            });
+
+            EndGame();
+        }
+
+        protected virtual void AddMove(GameMove move)
+        {
+            move.MoveNumber = MoveHistory.Count;
+            MoveHistory.Add(move);
+        }
+
+        protected int ActivePlayerTurnCount()
+        {
+            return MoveHistory
+                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
+                .Count() + 1;
+        }
+
+        private void HandleTimeRanOut()
+        {
+            // TODO
+        }
+
+        #region Drawing logic
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             ImGui.Begin("UI", ImGuiWindowFlags.NoMove);
@@ -1576,13 +1653,19 @@ namespace AoeBoardgame
 
             if (_textNotification != null)
             {
-                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(10, Map.Height * 45 + 5), _textNotification.FontColor);
+                spriteBatch.DrawString(_fontLibrary.DefaultFontBold, _textNotification.Message, new Vector2(10, Map.Height * 45 + 50), _textNotification.FontColor);
             }
 
             if (!WindowUtils.ApplicationIsActivated())
             {
                 return;
             }
+
+            DrawGameInfo();
+
+            ImGui.Begin("Control panel");
+            ImGui.SetWindowSize(new System.Numerics.Vector2(500, 1060));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
 
             if (Popup != null)
             {
@@ -1668,33 +1751,69 @@ namespace AoeBoardgame
             ImGui.End();
         }
 
-        protected virtual void Resign()
+        protected virtual void DrawGameInfo()
         {
-            Result = ActivePlayer.Color == TileColor.Blue ? "r+r" : "b+r";
+            ImGui.Begin("Game info");
+            ImGui.SetWindowFontScale(2f);
+            ImGui.SetWindowSize(new System.Numerics.Vector2(1480, 1110));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
 
-            AddMove(new GameMove
+            if (this is ChallengeAttempt challengeAttempt)
             {
-                PlayerName = ActivePlayer.Name,
-                IsResign = true
-            });
+                ImGui.Text($"Challenge: {challengeAttempt.Challenge.UiName}");
+            }
+            else
+            {
+                Player blue = Players.Single(e => e.IsBlue);
+                Player red = Players.Single(e => !e.IsBlue);
 
-            EndGame();
+                string blueTimeStr = "";
+                string redTimeStr = "";
+
+                if (IsTimeControlEnabled)
+                {
+                    double timeSpentMiliseconds = (DateTime.Now - LastEndTurnTimestamp.Value).TotalMilliseconds;
+
+                    TimeSpan blueTime = TimeSpan.FromMilliseconds(blue.TimeMiliseconds - (ActivePlayer.IsBlue ? timeSpentMiliseconds : 0));
+                    TimeSpan redTime = TimeSpan.FromMilliseconds(red.TimeMiliseconds - (!ActivePlayer.IsBlue ? timeSpentMiliseconds : 0));
+
+                    if (blueTime.TotalSeconds < 0)
+                    {
+                        HandleTimeRanOut();
+                        blueTime = new TimeSpan(0);
+                    }
+                    else if (redTime.TotalSeconds < 0)
+                    {
+                        HandleTimeRanOut();
+                        redTime = new TimeSpan(0);
+                    }
+
+                    blueTimeStr = blueTime.ToString(@"hh\:mm\:ss");
+                    redTimeStr = redTime.ToString(@"hh\:mm\:ss");
+                }
+
+                string bluePlayerString = $"{blue.Name} ({blue.Civilization.GetType().Name})";
+                string redPlayerString = $"{red.Name} ({red.Civilization.GetType().Name})";
+
+                ImGui.SetCursorPosX(500 - bluePlayerString.Length * 14);
+                ImGui.Text(bluePlayerString);
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(545f);
+                ImGui.Text(blueTimeStr);
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(712f);
+                ImGui.Text("vs");
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(795f);
+                ImGui.Text(redTimeStr);
+                ImGui.SameLine();
+                ImGui.SetCursorPosX(950f);
+                ImGui.Text(redPlayerString);
+            }
+
+            ImGui.End();
         }
 
-        protected virtual void AddMove(GameMove move)
-        {
-            move.MoveNumber = MoveHistory.Count;
-            MoveHistory.Add(move);
-        }
-
-        protected int ActivePlayerTurnCount()
-        {
-            return MoveHistory
-                .Where(e => e.IsEndOfTurn && e.PlayerName == ActivePlayer.Name)
-                .Count() + 1;
-        }
-
-        #region Control panel
         protected virtual void DrawEconomy()
         {
             IEnumerable<ResourceCollection> resources = VisiblePlayer.ResourceStockpile;
@@ -1715,6 +1834,12 @@ namespace AoeBoardgame
             int woodCount = resources.Single(e => e.Resource == Resource.Wood).Amount;
             int woodGathered = resourcesGathered.Single(e => e.Resource == Resource.Wood).Amount;
             DrawResourceLine("Wood", woodCount, woodGathered, new System.Numerics.Vector4(.4f, .2f, .2f, 1));
+
+            string age = VisiblePlayer.Age.ToString();
+            ImGui.SameLine();
+            ImGui.Dummy(new System.Numerics.Vector2(65 - 8 * (age.Length - 4), 0));
+            ImGui.SameLine();
+            ImGui.Text($"{age} age");
 
             int goldCount = resources.Single(e => e.Resource == Resource.Gold).Amount;
             int goldGathered = resourcesGathered.Single(e => e.Resource == Resource.Gold).Amount;

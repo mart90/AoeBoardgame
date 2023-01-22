@@ -72,9 +72,11 @@ namespace AoeBoardgame
         {
             _httpClient.CancelLobby(CreatedLobby.Id);
             CreatedLobby = null;
+
+            Refresh();
         }
 
-        public bool PlayerJoinedMyLobby()
+        public bool PlayerHasJoinedMyLobby()
         {
             return CreatedLobby != null && !Lobbies.Any(e => e.Id == CreatedLobby.Id);
         }
@@ -111,7 +113,8 @@ namespace AoeBoardgame
 
             Thread.Sleep(1000);
 
-            CreatedGame.SetOpponent();
+            CreatedGame.SetOpponentUser();
+            CreatedGame.SetPlayerNames();
 
             if (CreatedLobby.Settings.RestoreGameId != null)
             {
@@ -150,7 +153,8 @@ namespace AoeBoardgame
             }
 
             CreatedGame.SetLocalPlayer(!lobby.Settings.HostPlaysBlue);
-            CreatedGame.SetOpponent();
+            CreatedGame.SetOpponentUser();
+            CreatedGame.SetPlayerNames();
 
             if (lobby.Settings.RestoreGameId != null)
             {
@@ -167,7 +171,7 @@ namespace AoeBoardgame
             {
                 Refresh();
 
-                if (CreatedLobby != null && PlayerJoinedMyLobby())
+                if (CreatedLobby != null && PlayerHasJoinedMyLobby())
                 {
                     HandlePlayerJoined();
                     return;

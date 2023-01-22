@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace AoeBoardgame
@@ -13,21 +14,27 @@ namespace AoeBoardgame
             var mapGenerator = new MapGenerator(textureLibrary, 14);
             Map = mapGenerator.GenerateRandom(25, 21);
 
+            IsTimeControlEnabled = true;
+            LastEndTurnTimestamp = DateTime.Now;
+            TimeIncrementSeconds = 0;
+            StartTimeMinutes = 600;
+
             Players = new List<Player>
             {
-                new Player("Blue", new England(textureLibrary, researchLibrary), TileColor.Blue, TileColor.BlueUsed) 
-                { 
+                new Player("Blue", new England(textureLibrary, researchLibrary), TileColor.Blue, TileColor.BlueUsed)
+                {
                     IsActive = true,
-                    IsLocalPlayer = true
+                    IsLocalPlayer = true,
+                    TimeMiliseconds = StartTimeMinutes.Value * 60000
                 },
                 new Player("Red", new France(textureLibrary, researchLibrary), TileColor.Red, TileColor.RedUsed)
                 {
-                    IsLocalPlayer = true
+                    IsLocalPlayer = true,
+                    TimeMiliseconds = StartTimeMinutes.Value * 60000
                 }
             };
 
             PlaceStartingUnits();
-
             State = GameState.Default;
 
             StartTurn();

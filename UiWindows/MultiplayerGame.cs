@@ -10,7 +10,7 @@ namespace AoeBoardgame
         public int Id { get; set; }
 
         private readonly User _us;
-        private User _opponent;
+        private User _opponentUser;
         private bool _restoringGame;
 
         private readonly ServerHttpClient _httpClient;
@@ -19,8 +19,10 @@ namespace AoeBoardgame
 
         public string MapSeed => Map.Seed;
 
-        private Player _localPlayer => Players.Single(e => e.IsLocalPlayer);
-        protected override Player VisiblePlayer => _localPlayer;
+        private Player LocalPlayer => Players.Single(e => e.IsLocalPlayer);
+        private Player RemotePlayer => Players.Single(e => !e.IsLocalPlayer);
+
+        protected override Player VisiblePlayer => LocalPlayer;
 
         public MultiplayerGame(
             MultiplayerGameSettings settings,
@@ -56,26 +58,45 @@ namespace AoeBoardgame
                 Map = mapGenerator.GenerateRandom(25, 21);
             }
 
+            if (settings.IsTimeControlEnabled)
+            {
+                IsTimeControlEnabled = true;
+                LastEndTurnTimestamp = DateTime.Now;
+                TimeIncrementSeconds = settings.TimeIncrementSeconds;
+                Players.ForEach(e => e.TimeMiliseconds = settings.StartTimeMinutes.Value * 60000);
+            }
+
             PlaceStartingUnits();
 
             _lastPoll = DateTime.Now.AddMinutes(-1);
         }
 
-        public void SetOpponent()
+        public void SetOpponentUser()
         {
-            _opponent = _httpClient.GetOpponent(Id);
+            _opponentUser = _httpClient.GetOpponent(Id);
+        }
+
+        public void SetPlayerNames()
+        {
+            LocalPlayer.Name = _us.Username;
+            RemotePlayer.Name = _opponentUser.Username;
         }
 
         protected override void AddMove(GameMove move)
         {
             move.GameId = Id;
-            move.PlayerId = ActivePlayer == _localPlayer ? _us.Id : _opponent.Id;
+            move.PlayerId = ActivePlayer == LocalPlayer ? _us.Id : _opponentUser.Id;
 
             base.AddMove(move);
 
             if (IsMyTurn && !_restoringGame)
             {
                 _httpClient.MakeMove(move);
+
+                if (move.IsEndOfTurn)
+                {
+                    PushOurTimeToServer();
+                }
             }
         }
 
@@ -83,7 +104,7 @@ namespace AoeBoardgame
         {
             base.EndTurn();
 
-            SetFogOfWar(_localPlayer); // TODO Make this not needed
+            SetFogOfWar(LocalPlayer); // TODO Make this not needed
         }
 
         public void SetLocalPlayer(bool blueIsLocal)
@@ -97,20 +118,20 @@ namespace AoeBoardgame
                 Players.Single(e => e.Color == TileColor.Red).IsLocalPlayer = true;
             }
 
-            SetFogOfWar(_localPlayer);
+            SetFogOfWar(LocalPlayer);
         }
 
         protected override void EndGame()
         {
             base.EndGame();
 
-            if (ActivePlayer == _localPlayer)
+            if (ActivePlayer == LocalPlayer)
             {
                 // Active player communicates the result
                 _httpClient.SetResult(Id, Result);
             }
 
-            if (ActivePlayer == _localPlayer && Result[2] == 'r')
+            if (ActivePlayer == LocalPlayer && Result[2] == 'r')
             {
                 // No need to notify the player that just resigned that the game ended
                 return;
@@ -118,8 +139,8 @@ namespace AoeBoardgame
 
             string message = "The game has ended. ";
 
-            if ((Result[0] == 'b' && _localPlayer.Color == TileColor.Blue)
-                || (Result[0] == 'r' && _localPlayer.Color == TileColor.Red))
+            if ((Result[0] == 'b' && LocalPlayer.Color == TileColor.Blue)
+                || (Result[0] == 'r' && LocalPlayer.Color == TileColor.Red))
             {
                 message += "You have achieved victory by ";
             }
@@ -146,6 +167,25 @@ namespace AoeBoardgame
                 IsInformational = true,
                 Message = message
             };
+        }
+
+        private void PushOurTimeToServer()
+        {
+            _httpClient.SetTime(LocalPlayer.IsBlue, Id, LocalPlayer.TimeMiliseconds);
+        }
+
+        private void SetOpponentTime()
+        {
+            var times = _httpClient.GetPlayerTimes(Id);
+
+            if (RemotePlayer.IsBlue)
+            {
+                RemotePlayer.TimeMiliseconds = times.BlueTimeMs;
+            }
+            else
+            {
+                RemotePlayer.TimeMiliseconds = times.RedTimeMs;
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -183,7 +223,7 @@ namespace AoeBoardgame
                 ApplyMove(newMove);
             }
 
-            SetFogOfWar(_localPlayer);
+            SetFogOfWar(LocalPlayer);
 
             ClearTemporaryTileColorsExceptPink();
         }
@@ -223,6 +263,7 @@ namespace AoeBoardgame
                 if (!_restoringGame)
                 {
                     SoundEffectLibrary.YourTurn.Play();
+                    SetOpponentTime();
                 }
             }
             else if (newMove.IsResign)

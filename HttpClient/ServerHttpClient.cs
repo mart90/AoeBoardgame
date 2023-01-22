@@ -9,7 +9,7 @@ namespace AoeBoardgame
 {
     class ServerHttpClient
     {
-        const string OUR_VERSION = "0.4.0.0";
+        const string OUR_VERSION = "0.5.0.0";
 
         public User AuthenticatedUser { get; set; }
 
@@ -93,7 +93,7 @@ namespace AoeBoardgame
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password,
 
-                timeControlEnabled = settings.TimeControlEnabled,
+                timeControlEnabled = settings.IsTimeControlEnabled,
                 startTimeMinutes = settings.StartTimeMinutes,
                 timeIncrementSeconds = settings.TimeIncrementSeconds,
                 minRating = settings.MinRating,
@@ -195,29 +195,29 @@ namespace AoeBoardgame
             });
         }
 
-        public void SetTime(bool isWhite, int gameId, int timeMs)
+        public void SetTime(bool isBlue, int gameId, int timeMs)
         {
             Post("set_time", new
             {
                 username = AuthenticatedUser.Username,
                 password = AuthenticatedUser.Password,
                 gameId,
-                isWhite,
+                isBlue,
                 timeMs
             });
         }
 
-        //public PlayerTimesDto GetTimes(int gameId)
-        //{
-        //    string result = Post("get_player_times", new
-        //    {
-        //        username = AuthenticatedUser.Username,
-        //        password = AuthenticatedUser.Password,
-        //        gameId
-        //    });
+        public PlayerTimesDto GetPlayerTimes(int gameId)
+        {
+            string result = Post("get_player_times", new
+            {
+                username = AuthenticatedUser.Username,
+                password = AuthenticatedUser.Password,
+                gameId
+            });
 
-        //    return JsonConvert.DeserializeObject<PlayerTimesDto>(result);
-        //}
+            return JsonConvert.DeserializeObject<PlayerTimesDto>(result);
+        }
 
         public List<Lobby> GetActiveLobbies()
         {

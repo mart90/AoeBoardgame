@@ -28,7 +28,7 @@ namespace AoeBoardgame
                     TurnsToComplete = 2,
                     Effect = player => 
                     {
-                        player.Age = 2;
+                        player.Age = Age.Feudal;
 
                         foreach (Scout scout in player.OwnedObjects.Where(e => e is Scout))
                         {
@@ -52,7 +52,7 @@ namespace AoeBoardgame
                     TurnsToComplete = 3,
                     Effect = player =>
                     {
-                        player.Age = 3;
+                        player.Age = Age.Castle;
                         player.Civilization.UnlockCastleAge(player);
                     }
                 },
@@ -71,7 +71,7 @@ namespace AoeBoardgame
                     TurnsToComplete = 4,
                     Effect = player =>
                     {
-                        player.Age = 4;
+                        player.Age = Age.Imperial;
                         player.Civilization.UnlockImperialAge(player);
                     }
                 },
@@ -103,7 +103,7 @@ namespace AoeBoardgame
                             unit.AttackDamage += 2;
                         }
 
-                        if (player.Age > 2)
+                        if ((int)player.Age > 2)
                         {
                             player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                             {
@@ -144,7 +144,7 @@ namespace AoeBoardgame
                             unit.RangedArmor += 1;
                         }
 
-                        if (player.Age > 3)
+                        if ((int)player.Age > 3)
                         {
                             player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                             {
@@ -215,7 +215,7 @@ namespace AoeBoardgame
                             unit.AttackDamage += 3;
                         }
 
-                        if (player.Age > 3)
+                        if ((int)player.Age > 3)
                         {
                             player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                             {
@@ -282,7 +282,7 @@ namespace AoeBoardgame
                             unit.AttackDamage += 2;
                         }
 
-                        if (player.Age > 3)
+                        if ((int)player.Age > 3)
                         {
                             player.AddAllowedResearch<Barracks>(new List<ResearchEnum>
                             {

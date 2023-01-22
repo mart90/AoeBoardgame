@@ -122,10 +122,14 @@ namespace AoeBoardgame
                 var newWindow = GetUiWindowByState(_activeWindow.NewUiState.Value);
                 _activeWindow.NewUiState = null;
 
-                // TODO probably a bug here: That we went back to lobby browser doesn't necessarily mean we created a lobby
                 if (_activeWindow is CreateLobbyForm form && newWindow is LobbyBrowser)
                 {
                     ((LobbyBrowser)newWindow).CreatedLobby = form.CreatedLobby;
+                }
+
+                if (_activeWindow is LobbyBrowser && newWindow is CreateLobbyForm form2)
+                {
+                    form2.CreatedLobby = null;
                 }
 
                 if (_activeWindow is Game || _activeWindow is ChallengeBrowser)

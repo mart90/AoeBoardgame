@@ -30,7 +30,7 @@ namespace AoeBoardgame
                 Status = Status,
                 Settings = new MultiplayerGameSettings
                 {
-                    TimeControlEnabled = TimeControlEnabled,
+                    IsTimeControlEnabled = TimeControlEnabled,
                     StartTimeMinutes = StartTimeMinutes,
                     TimeIncrementSeconds = TimeIncrementSeconds,
                     MapSeed = MapSeed,
