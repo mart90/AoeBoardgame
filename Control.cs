@@ -66,7 +66,7 @@ namespace AoeBoardgame
             {
                 new MainMenu(_httpClient, _fontLibrary, _textureLibrary),
                 new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary, _httpClient),
-                new LoginScreen(_fontLibrary, _httpClient),
+                new LoginScreen(_fontLibrary, _httpClient, _textureLibrary),
                 new CreateLobbyForm(_fontLibrary, _httpClient)
             };
 

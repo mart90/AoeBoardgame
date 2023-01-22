@@ -283,6 +283,16 @@ namespace AoeBoardgame
         {
             _UiTextures.Add(new UiTexture
             {
+                UiType = UiType.LoginButton,
+                Texture = contentManager.Load<Texture2D>("UI/LoginButton")
+            }); 
+            _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.RegisterButton,
+                Texture = contentManager.Load<Texture2D>("UI/RegisterButton")
+            });
+            _UiTextures.Add(new UiTexture
+            {
                 UiType = UiType.EndTurnButton,
                 Texture = contentManager.Load<Texture2D>("UI/EndTurnButton")
             });

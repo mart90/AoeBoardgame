@@ -139,7 +139,12 @@
     
     enum UiType
     {
+        // Buttons
+        LoginButton,
+        RegisterButton,
         EndTurnButton,
+
+        // Interface
         SidePanelBackground
     }
 }
