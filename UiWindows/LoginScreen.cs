@@ -103,11 +103,7 @@ namespace AoeBoardgame
             ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
 
             ImGui.InputText("Username", _usernameBuffer, (uint)_usernameBuffer.Length, (ImGuiInputTextFlags.AutoSelectAll));
-            ImGui.InputText("Password", _passwordBuffer, (uint)_passwordBuffer.Length, (ImGuiInputTextFlags.Password|ImGuiInputTextFlags.EnterReturnsTrue));
-            if (ImGui.IsItemActive())
-            {
-                TryLogin();
-            }
+            ImGui.InputText("Password", _passwordBuffer, (uint)_passwordBuffer.Length, (ImGuiInputTextFlags.Password));
 
             ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(0, 0, 0, 0));
