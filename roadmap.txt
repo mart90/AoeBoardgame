@@ -9,7 +9,6 @@ FEATURES
 - Highlight units whose destination became invalid
 - Show how much damage attacks WOULD do on hover
 - Show where an opponent's attack was (currently only showing damage)
-- Show current age
 - Show when opponent aged up?
 - Replay viewer
 - Queueing stuff
