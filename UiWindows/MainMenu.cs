@@ -42,8 +42,8 @@ namespace AoeBoardgame
             ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels + 60));
             ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
 
-            ImGui.PushFont(_fontLibrary.TitleFont);
-            ImGui.SetCursorPosY(100f);
+            ImGui.PushFont(_fontLibrary.MedievalFont);
+            ImGui.SetCursorPosY(100);
             ImGui.SetCursorPosX((WidthPixels - ImGui.CalcTextSize(title).X) * 0.5f);
             ImGui.Text(title);
             ImGui.PopFont();

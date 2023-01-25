@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using MonoGame.ImGui;
 using System;
 using System.Collections.Generic;
@@ -66,11 +67,15 @@ namespace AoeBoardgame
             {
                 new MainMenu(_httpClient, _fontLibrary, _textureLibrary),
                 new LobbyBrowser(_textureLibrary, _fontLibrary, _researchLibrary, _soundEffectLibrary, _httpClient),
-                new LoginScreen(_fontLibrary, _httpClient, _textureLibrary),
+                new LoginScreen(_fontLibrary, _httpClient, _soundEffectLibrary, _textureLibrary),
                 new CreateLobbyForm(_fontLibrary, _httpClient)
             };
 
             ChangeUiWindow(_uiWindows.Single(e => e is LoginScreen));
+
+            MediaPlayer.Play(_soundEffectLibrary.ThemeSong);
+            MediaPlayer.Volume = 0.4f;
+            MediaPlayer.IsRepeating = true;
         }
 
         protected override void UnloadContent() { }

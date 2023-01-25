@@ -1,6 +1,7 @@
 ﻿using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 
 namespace AoeBoardgame
 {
@@ -17,18 +18,20 @@ namespace AoeBoardgame
         private TextNotification _textNotification;
 
         private readonly FontLibrary _fontLibrary;
+        private readonly SoundEffectLibrary _soundEffectLibrary;
         private readonly TextureLibrary _textureLibrary;
         private readonly ServerHttpClient _httpClient;
 
-        public LoginScreen(FontLibrary fontLibrary, ServerHttpClient httpClient, TextureLibrary textureLibrary)
+        public LoginScreen(FontLibrary fontLibrary, ServerHttpClient httpClient, SoundEffectLibrary soundEffectLibrary, TextureLibrary textureLibrary)
         {
             CorrespondingUiState = UiState.LoginScreen;
-            WidthPixels = 500;
+            WidthPixels = 505;
             HeightPixels = 500;
 
             _httpClient = httpClient;
             _fontLibrary = fontLibrary;
             _textureLibrary = textureLibrary;
+            _soundEffectLibrary = soundEffectLibrary;
 
             _usernameBuffer = new byte[100];
             _passwordBuffer = new byte[100];
@@ -96,38 +99,75 @@ namespace AoeBoardgame
                 return;
             }
 
-            ImGui.Begin("LoginScreen");
+            ImGui.Begin("LoginScreen", ImGuiWindowFlags.NoBackground|ImGuiWindowFlags.NoMove|ImGuiWindowFlags.NoTitleBar|ImGuiWindowFlags.NoResize);
+            ImGui.PushFont(_fontLibrary.MedievalFont);
+            ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels));
+            ImGui.SetWindowPos(new System.Numerics.Vector2(0, 0));
+            ImGui.GetWindowDrawList().AddImage(_textureLibrary.TextureToIntPtr(_textureLibrary.GetUiTextureByType(UiType.LoginScreenBackground)), new System.Numerics.Vector2(0, 0), new System.Numerics.Vector2(WidthPixels, HeightPixels));
 
-            ImGui.SetWindowFontScale(2f);
-            ImGui.SetWindowSize(new System.Numerics.Vector2(WidthPixels, HeightPixels + 60));
-            ImGui.SetWindowPos(new System.Numerics.Vector2(0, -30));
+            // Logo
+            ImGui.SetCursorPosX((WidthPixels - 344) * 0.5f);
+            ImGui.SetCursorPosY(20);
+            ImGui.Image(_textureLibrary.TextureToIntPtr(_textureLibrary.GetUiTextureByType(UiType.Logo)), new System.Numerics.Vector2(344, 46));
 
-            ImGui.InputText("Username", _usernameBuffer, (uint)_usernameBuffer.Length, (ImGuiInputTextFlags.AutoSelectAll));
-            ImGui.InputText("Password", _passwordBuffer, (uint)_passwordBuffer.Length, (ImGuiInputTextFlags.Password));
+            ImGui.SetCursorPosX((WidthPixels - 300) * 0.5f);
+            ImGui.SetCursorPosY(20);
+            ImGui.Image(_textureLibrary.TextureToIntPtr(_textureLibrary.GetUiTextureByType(UiType.Shields)), new System.Numerics.Vector2(265, 269));
 
+            // Username input
+            float inputWidth = 300f;
+            float inputHeight = 30f;
+            float locationX = 100;
+            float locationY = 250;
+            ImGui.GetWindowDrawList().AddImage(_textureLibrary.TextureToIntPtr(_textureLibrary.GetUiTextureByType(UiType.InputText)), new System.Numerics.Vector2(locationX, locationY), new System.Numerics.Vector2(locationX + inputWidth, locationY + inputHeight));
+            ImGui.SetCursorScreenPos(new System.Numerics.Vector2(locationX, locationY));
+            ImGui.SetNextItemWidth(inputWidth);
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, new System.Numerics.Vector4(0, 0, 0, 0));
+            ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(0.8f, 0.7f, 0.5f, 1));
+            ImGui.InputText("##username", _usernameBuffer, (uint)_usernameBuffer.Length, ImGuiInputTextFlags.AutoSelectAll);
+            ImGui.PopStyleColor();
+
+            // Password input
+            locationY += 40;
+            ImGui.GetWindowDrawList().AddImage(_textureLibrary.TextureToIntPtr(_textureLibrary.GetUiTextureByType(UiType.InputText)), new System.Numerics.Vector2(locationX, locationY), new System.Numerics.Vector2(locationX + inputWidth, locationY + inputHeight));
+            ImGui.SetCursorScreenPos(new System.Numerics.Vector2(locationX, locationY));
+            ImGui.SetNextItemWidth(inputWidth);
+            ImGui.PushStyleColor(ImGuiCol.FrameBg, new System.Numerics.Vector4(0, 0, 0, 0));
+            ImGui.InputText("##password", _passwordBuffer, (uint)_passwordBuffer.Length, ImGuiInputTextFlags.Password);
+            ImGui.PopStyleColor();
+
+            // Login button
+            locationY += 40;
             ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(0, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(0, 0, 0, 0));
-            Texture2D loginButton = _textureLibrary.GetUiTextureByType(UiType.LoginButton);
-            ImGui.ImageButton(_textureLibrary.TextureToIntPtr(loginButton), new System.Numerics.Vector2(178, 61));
-            ImGui.PopStyleColor();
+            ImGui.SetCursorScreenPos(new System.Numerics.Vector2(locationX, locationY));
+            ImGui.ImageButton(_textureLibrary.TextureToIntPtr(_textureLibrary.GetUiTextureByType(UiType.LoginButton)), new System.Numerics.Vector2(180, 60));
 
-            if (ImGui.IsItemActive())
+            if (ImGui.IsItemClicked())
             {
+                _soundEffectLibrary.ButtonClick.Play();
                 TryLogin();
             }
 
+            ImGui.PopStyleColor(3);
+
+            // Register button
+            locationY += 40;
             ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(0, 0, 0, 0));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(0, 0, 0, 0));
+            ImGui.SetCursorScreenPos(new System.Numerics.Vector2(locationX, locationY));
             Texture2D registerButton = _textureLibrary.GetUiTextureByType(UiType.RegisterButton);
             ImGui.ImageButton(_textureLibrary.TextureToIntPtr(registerButton), new System.Numerics.Vector2(178, 81));
-            ImGui.PopStyleColor();
-            if (ImGui.IsItemActive())
-            {
+            if (ImGui.IsItemClicked()) { 
+                _soundEffectLibrary.ButtonClick.Play();
                 TryRegister();
             }
 
+            ImGui.PopStyleColor(3);
+
+            ImGui.PopFont();
             ImGui.End();
 
             if (_textNotification != null)

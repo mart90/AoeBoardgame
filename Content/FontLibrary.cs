@@ -9,7 +9,7 @@ namespace AoeBoardgame
     {
         public SpriteFont DefaultFont { get; }
         public SpriteFont DefaultFontBold { get; }
-        public ImFontPtr TitleFont { get; }
+        public ImFontPtr MedievalFont { get; }
 
         public FontLibrary(ContentManager contentManager)
         {
@@ -17,7 +17,7 @@ namespace AoeBoardgame
             DefaultFontBold = contentManager.Load<SpriteFont>("fonts/defaultFontBold");
 
             // create the object on the native side
-            TitleFont = ImGui.GetIO().Fonts.AddFontFromFileTTF("Content/Fonts/Hamlet-Tertia18.otf", 64);
+            MedievalFont = ImGui.GetIO().Fonts.AddFontFromFileTTF("Content/Fonts/Almendra-Regular.otf", 28);
         }
     }
 }

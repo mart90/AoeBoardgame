@@ -288,6 +288,15 @@ namespace AoeBoardgame
             }); 
             _UiTextures.Add(new UiTexture
             {
+                UiType = UiType.LoginButtonActive,
+                Texture = contentManager.Load<Texture2D>("UI/LoginButtonActive")
+            }); _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.LoginButtonHover,
+                Texture = contentManager.Load<Texture2D>("UI/LoginButtonHover")
+            }); 
+            _UiTextures.Add(new UiTexture
+            {
                 UiType = UiType.RegisterButton,
                 Texture = contentManager.Load<Texture2D>("UI/RegisterButton")
             });
@@ -298,8 +307,28 @@ namespace AoeBoardgame
             });
             _UiTextures.Add(new UiTexture
             {
+                UiType = UiType.InputText,
+                Texture = contentManager.Load<Texture2D>("UI/InputText")
+            });
+            _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.Logo,
+                Texture = contentManager.Load<Texture2D>("UI/Logo")
+            });
+            _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.Shields,
+                Texture = contentManager.Load<Texture2D>("UI/Shields")
+            });
+            _UiTextures.Add(new UiTexture
+            {
                 UiType = UiType.SidePanelBackground,
                 Texture = contentManager.Load<Texture2D>("UI/SidePanelBackground")
+            });
+            _UiTextures.Add(new UiTexture
+            {
+                UiType = UiType.LoginScreenBackground,
+                Texture = contentManager.Load<Texture2D>("UI/LoginScreenBackground")
             });
         }
     }

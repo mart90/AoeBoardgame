@@ -149,10 +149,18 @@
     {
         // Buttons
         LoginButton,
+        LoginButtonActive,
+        LoginButtonHover,
         RegisterButton,
         EndTurnButton,
 
+        // InputText
+        InputText,
+
         // Interface
-        SidePanelBackground
+        Logo,
+        Shields,
+        SidePanelBackground,
+        LoginScreenBackground
     }
 }

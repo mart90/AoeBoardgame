@@ -195,6 +195,12 @@
 /processorParam:TextureFormat=Color
 /build:Misc/star.png
 
+#begin Music/ThemeSong.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/ThemeSong.mp3
+
 #begin Objects/archer.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -495,6 +501,12 @@
 /processorParam:TextureFormat=Color
 /build:Objects/watertower.png
 
+#begin SoundEffects/button_click.ogg
+/importer:OggImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundEffects/button_click.ogg
+
 #begin SoundEffects/your_turn.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -573,6 +585,18 @@
 /processorParam:TextureFormat=Color
 /build:UI/endTurnButton.png
 
+#begin UI/inputText.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/inputText.png
+
 #begin UI/loginButton.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -585,6 +609,54 @@
 /processorParam:TextureFormat=Color
 /build:UI/loginButton.png
 
+#begin UI/loginButtonActive.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/loginButtonActive.png
+
+#begin UI/loginButtonHover.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/loginButtonHover.png
+
+#begin UI/loginScreenBackground.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/loginScreenBackground.png
+
+#begin UI/logo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/logo.png
+
 #begin UI/registerButton.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -596,6 +668,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:UI/registerButton.png
+
+#begin UI/shields.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/shields.png
 
 #begin UI/sidePanelBackground.png
 /importer:TextureImporter
