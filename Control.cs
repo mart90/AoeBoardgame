@@ -172,6 +172,9 @@ namespace AoeBoardgame
             base.Update(gameTime);
         }
 
+        /// <summary>
+        /// Runs every frame
+        /// </summary>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);

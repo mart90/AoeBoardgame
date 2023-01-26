@@ -552,16 +552,10 @@ namespace AoeBoardgame
                 return;
             }
 
-            if (State == GameState.PlacingBuilding)
+            if (State == GameState.PlacingBuilding && tile.TemporaryColor == TileColor.Teal) // Teal means valid destination
             {
-                if (tile.TemporaryColor == TileColor.Teal) // Valid destination
-                {
-                    QueueBuilding(_placingBuildingType, (ICanMakeBuildings)SelectedObject, tile);
-                }
-                else
-                {
-                    ClearCurrentSelection();
-                }
+                QueueBuilding(_placingBuildingType, (ICanMakeBuildings)SelectedObject, tile);
+                return;
             }
 
             ClearCurrentSelection();
@@ -610,15 +604,11 @@ namespace AoeBoardgame
                     }
                 }
             }
-            else if (tile.Object is IEconomicBuilding economicBuilding && economicBuilding.Units.Any())
+            
+            if (tile.Object is IEconomicBuilding economicBuilding && economicBuilding.Units.Any())
             {
                 // Enable one-click movement from economic buildings
                 State = GameState.MovingObject;
-            }
-
-            if (tile.Object is ICanMakeBuildings builder2 && builder2.HasBuildingQueued())
-            {
-                Map.Tiles.Single(e => e == builder2.BuildingDestinationTile).SetTemporaryColor(TileColor.Orange);
             }
         }
 
