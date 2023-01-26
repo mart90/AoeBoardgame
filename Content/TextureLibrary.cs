@@ -57,14 +57,20 @@ namespace AoeBoardgame
         {
             return _colorTextures.Single(e => e.TileColor == tileColor).Texture;
         }
-        public Texture2D GetUiTextureByType(UiType uiType)
+
+        public UiTexture GetUiTextureByType(UiType uiType)
         {
-            return _UiTextures.Single(e => e.UiType == uiType).Texture;
+            return _UiTextures.Single(e => e.UiType == uiType);
         }
 
         public IntPtr TextureToIntPtr(Texture2D texture)
         {
             return _imGUIRenderer.BindTexture(texture);
+        }
+
+        public IntPtr GetIntPtrByUiType(UiType uiType)
+        {
+            return TextureToIntPtr(_UiTextures.Single(e => e.UiType == uiType).Texture);
         }
 
         private void AddTileTextures(ContentManager contentManager)
@@ -284,13 +290,14 @@ namespace AoeBoardgame
             _UiTextures.Add(new UiTexture
             {
                 UiType = UiType.LoginButton,
-                Texture = contentManager.Load<Texture2D>("UI/LoginButton")
+                Texture = contentManager.Load<Texture2D>("UI/LoginButton"),
             }); 
             _UiTextures.Add(new UiTexture
             {
                 UiType = UiType.LoginButtonActive,
                 Texture = contentManager.Load<Texture2D>("UI/LoginButtonActive")
-            }); _UiTextures.Add(new UiTexture
+            }); 
+            _UiTextures.Add(new UiTexture
             {
                 UiType = UiType.LoginButtonHover,
                 Texture = contentManager.Load<Texture2D>("UI/LoginButtonHover")

@@ -1646,8 +1646,7 @@ namespace AoeBoardgame
             ImGui.SetWindowPos(new System.Numerics.Vector2(1480, -20));
             ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new System.Numerics.Vector4(0, 0, 0, 0));
-            Texture2D windowBg = _textureLibrary.GetUiTextureByType(UiType.SidePanelBackground);
-            ImGui.Image(_textureLibrary.TextureToIntPtr(windowBg), new System.Numerics.Vector2(430, 1000));
+            ImGui.Image(_textureLibrary.GetIntPtrByUiType(UiType.SidePanelBackground), new System.Numerics.Vector2(430, 1000));
             ImGui.End();
             Map.Draw(spriteBatch, ActivePlayer);
 
@@ -1694,8 +1693,7 @@ namespace AoeBoardgame
                     ImGui.PushStyleColor(ImGuiCol.Button, new System.Numerics.Vector4(0, 0, 0, 0));
                     ImGui.PushStyleColor(ImGuiCol.ButtonActive, new System.Numerics.Vector4(0, 0, 0, 0));
                     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new System.Numerics.Vector4(0, 0, 0, 0));
-                    Texture2D endTurnButton = _textureLibrary.GetUiTextureByType(UiType.EndTurnButton);
-                    ImGui.ImageButton(_textureLibrary.TextureToIntPtr(endTurnButton), new System.Numerics.Vector2(100, 90));
+                    ImGui.ImageButton(_textureLibrary.GetIntPtrByUiType(UiType.EndTurnButton), new System.Numerics.Vector2(100, 90));
                     ImGui.PopStyleColor();
                     if (ImGui.IsItemActive())
                     {
